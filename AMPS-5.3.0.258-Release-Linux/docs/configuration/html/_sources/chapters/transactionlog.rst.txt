@@ -1,0 +1,130 @@
+.. include:: ./macros.inc
+.. index:: transaction log, recording messages,
+
+11. Transaction Log
+===================
+
+AMPS includes the ability to record and replay messages. This capability
+can be used by applications for durable subscriptions, reliable publish,
+and historical replay. The AMPS transaction log is also the foundation
+of the high availability features in AMPS. To enable message recording
+and replay, configure a ``TransactionLog`` to keep a journal of messages
+published to an AMPS instance. The |userguide-bookmark-subs| covers how to use the
+transaction log for historical replay, durable publish, and durable
+subscriptions. The |userguide-ha| covers the use cases where 
+a ``TransactionLog`` can be used to maximize the up-time of your
+AMPS instance.
+
+.. _#table-configref-transaction-log:
+
++-------------------------------+-------------------------------------------------------------------------------+
+| **Element**                   | **Description**                                                               |
++===============================+===============================================================================+
+| ``JournalDirectory``          | Filesystem location where journal files will be stored.                       |
+|                               |                                                                               |
+|                               | This is the directory where AMPS will create new journal files as             |
+|                               | messages are recorded to the transaction log.                                 |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``JournalArchiveDirectory``   | File system location where journal files are archived.                        |
+|                               |                                                                               |
+|                               | The archive directory is intended to allow older files to be stored on a      |
+|                               | higher-capacity (but potentially slower) device.                              |
+|                               |                                                                               |
+|                               | Journal files in this directory are part of the transaction log. AMPS can     |
+|                               | replicate from these files, provide bookmark replay from these files,         |
+|                               | distribute queue messages from these files, and so on.                        |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``PreallocatedJournalFiles``  | The number of journal files AMPS will create as part of the server startup.   |
+|                               |                                                                               |
+|                               | *Default: 2. Minimum: 1*                                                      |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``JournalSize``               | Sets the target size for AMPS to use when calculating the size of journal     |
+|                               | files.                                                                        |
+|                               |                                                                               |
+|                               | AMPS allocates journal files based on the size of an internal buffer. This    |
+|                               | option sets the target size for the journal file: AMPS will use the smallest  |
+|                               | file size that is an even multiple of the internal buffer                     |
+|                               | *without going under* the specified ``JournalSize``. Notice that AMPS does not|
+|                               | grow journal files once they are allocated. When a journal file is full, AMPS |
+|                               | uses the next journal file.                                                   |
+|                               |                                                                               |
+|                               | AMPS accepts ``MinJournalSize`` as a synonym for ``JournalSize``.             |
+|                               |                                                                               |
+|                               | *Default: 1GB. Minimum: 10M*                                                  |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``Topic``                     | The topic to include in the transaction log. When no ``Topic`` is specified,  |
+|                               | AMPS initializes transaction log management for the instance, but does not    |
+|                               | persist messages. If a ``Topic`` is specified, then all messages which match  |
+|                               | exactly the specified topic or regular expression will be included in the     |
+|                               | transaction log. If you want all topics of a specific message type to be      |
+|                               | persisted, use the regular expression ``.*`` for the name of the topic.       |
+|                               |                                                                               |
+|                               | Multiple ``Topic`` elements can be included in a ``TransactionLog`` element.  |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``FlushInterval``             | The interval at which messages will be flushed the journal file during        |
+|                               | periods of slow activity.                                                     |
+|                               |                                                                               |
+|                               | *Default: 100ms Maximum: 100ms Minimum: 30us*                                 |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``MetadataIndexing``          | Specifies whether to create journal index files for the journal. When set to  |
+|                               | ``persistent``, AMPS creates journal index files. When set to ``transient``,  |
+|                               | AMPS does not create journal index files.                                     |
+|                               |                                                                               |
+|                               | When journal index files are not persisted, AMPS must rebuild the index       |
+|                               | from the journal during recovery. This requires AMPS to read the journal,     |
+|                               | which can increase the amount of time it takes for AMPS to start and begin    |
+|                               | accepting client connections.                                                 |
+|                               |                                                                               |
+|                               | *Default: persistent*                                                         |
++-------------------------------+-------------------------------------------------------------------------------+
+| ``O_DIRECT``                  | Where supported, ``O_DIRECT`` will perform DMA directly from/to physical      |
+|                               | memory to a userspace buffer. Having this enabled can improve AMPS            |
+|                               | performance, however not all devices support ``O_DIRECT``. When ``O_DIRECT``  |
+|                               | is disabled, data loss can occur because the operating system can             |
+|                               | acknowledge that data has been written to the device before the actual write  |
+|                               | has happened.                                                                 |
+|                               |                                                                               |
+|                               | *Default: enabled.*                                                           |
++-------------------------------+-------------------------------------------------------------------------------+
+| **DEPRECATED**                | *This element is no longer necessary in releases of AMPS 4.0 and greater. If  |
+| ``BatchSize``                 | this element is present in the configuration, AMPS emits a deprecation        |
+|                               | warning and ignores the configured value.*                                    |
++-------------------------------+-------------------------------------------------------------------------------+
+
+**Table 11.1:** *TransactionLog Configuration Parameters*
+
+:ref:`Example 11.1<#listing-transaction-log-config>` demonstrates a 
+transaction log where the journal file will be written to ``./amps/journal``. When AMPS starts, a single
+journal file will be pre-allocated as noted by the
+``PreallocatedJournalFiles`` setting; and when the first journal file is
+completely full, a new journal file will be created. This journal is
+going to contain only those messages which match the topic ``orders``
+and also have a message type of ``fix``. If, at any time, there is 40us
+of inactivity while there is data to be flushed to the journal file,
+AMPS will proactively flush the data to the file.
+
+.. _#listing-transaction-log-config:
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        ...
+
+        <TransactionLog>
+            <JournalDirectory>./amps/journal/</JournalDirectory>
+            <PreallocatedJournalFiles>1</PreallocatedJournalFiles>
+            <MinJournalSize>10MB</MinJournalSize>
+            <Topic>
+                <Name>orders</Name>
+                <MessageType>nvfix</MessageType>
+            </Topic>
+            <Topic>
+                <Name>LOGGED_.*</Name>
+                <MessageType>json</MessageType>
+            </Topic>
+        </TransactionLog>
+
+        ...
+    </AMPSConfig>
+
+**Example 11.1:** *Transaction Log Configuration Example*

@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. Message Types &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Transports" href="transports.html" />
+    <link rel="prev" title="5. Modules" href="modules.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">5. Modules</a></li>
+      <li>Next: <a href="transports.html" title="next chapter">7. Transports</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="message-types">
+<span id="index-0"></span><h1>6. Message Types<a class="headerlink" href="#message-types" title="Permalink to this headline">¶</a></h1>
+<p>This tag defines the message types supported by the AMPS instance. A
+single AMPS instance can support multiple message types, as
+<code class="docutils literal"><span class="pre">MessageTypes</span></code> can contain multiple <code class="docutils literal"><span class="pre">MessageType</span></code> definitions.</p>
+<p><code class="docutils literal"><span class="pre">MessageType</span></code> definitions for <code class="docutils literal"><span class="pre">fix</span></code>, <code class="docutils literal"><span class="pre">nvfix</span></code>, <code class="docutils literal"><span class="pre">xml</span></code>, <code class="docutils literal"><span class="pre">json</span></code>,
+<code class="docutils literal"><span class="pre">bflat</span></code>, <code class="docutils literal"><span class="pre">msgpack</span></code>, <code class="docutils literal"><span class="pre">bson</span></code>, and <code class="docutils literal"><span class="pre">binary</span></code> are automatically
+loaded by AMPS.  You only need to define a new <code class="docutils literal"><span class="pre">MessageType</span></code> for
+these types if the settings for the message type need to be changed
+(for example, to create a custom FIX-based type that changes the
+<code class="docutils literal"><span class="pre">FieldSeparator</span></code> of the message).</p>
+<p>AMPS loads the capability to use Google protocol buffer (<code class="docutils literal"><span class="pre">protobuf</span></code>)
+messages by default. To use protocol buffer messages, you configure one
+or more message types that use the <code class="docutils literal"><span class="pre">protobuf</span></code> module and load the
+<code class="docutils literal"><span class="pre">.proto</span></code> files that define the format of the messags you will be
+processing with AMPS.</p>
+<p>AMPS also supports the ability to create a composite message type by
+combining a number of existing message types. Composite message types
+are defined using the <code class="docutils literal"><span class="pre">MessageType</span></code> configuration element.</p>
+<table border="1" class="docutils" id="table-configref-msgtype-parameters">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><em>Name</em></th>
+<th class="head"><em>Description</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Name</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">This element defines the name for the message type. The name is used to
+specify <code class="docutils literal"><span class="pre">MessageType</span></code> in other sections such as <code class="docutils literal"><span class="pre">Transport</span></code>,
+<code class="docutils literal"><span class="pre">TransactionLog</span></code> and the elements of the <code class="docutils literal"><span class="pre">SOW</span></code> section.</p>
+<p class="last">By default, AMPS loads message types for <code class="docutils literal"><span class="pre">fix</span></code>, <code class="docutils literal"><span class="pre">nvfix</span></code>, <code class="docutils literal"><span class="pre">soapfix</span></code>,
+<code class="docutils literal"><span class="pre">json</span></code>, <code class="docutils literal"><span class="pre">bflat</span></code>, <code class="docutils literal"><span class="pre">msgpack</span></code>, <code class="docutils literal"><span class="pre">bson</span></code>, <code class="docutils literal"><span class="pre">xml</span></code> and <code class="docutils literal"><span class="pre">binary</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Module</span></code></td>
+<td><p class="first">The element specifies the name of the module that will be loaded for this
+message type.</p>
+<p>By default, AMPS loads the modules that implement the following message
+types: <code class="docutils literal"><span class="pre">fix</span></code>, <code class="docutils literal"><span class="pre">nvfix</span></code>, <code class="docutils literal"><span class="pre">soapfix</span></code>, <code class="docutils literal"><span class="pre">json</span></code>, <code class="docutils literal"><span class="pre">bflat</span></code>, <code class="docutils literal"><span class="pre">msgpack</span></code>,
+<code class="docutils literal"><span class="pre">bson</span></code>, <code class="docutils literal"><span class="pre">xml</span></code>, <code class="docutils literal"><span class="pre">protobuf</span></code>, and <code class="docutils literal"><span class="pre">binary</span></code>.</p>
+<p class="last">AMPS supports creating composite message types out of existing message types
+using the <code class="docutils literal"><span class="pre">composite-global</span></code> and <code class="docutils literal"><span class="pre">composite-local</span></code> modules, which are
+loaded by default.message type specifying module</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">AMPSVersionCompliance</span></code></td>
+<td><p class="first">Sets the version compatibility for FIX messages that AMPS sends to the
+<code class="docutils literal"><span class="pre">/AMPS/SOWStats</span></code> topic.</p>
+<p>AMPS accepts three values for this option:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">2</span></code> creates messages that use the FIX field tags used by AMPS 2.X
+versions.</li>
+<li><code class="docutils literal"><span class="pre">4</span></code> creates messages that use the default FIX field tags. With this
+version, FIX messages use different field numbering for <code class="docutils literal"><span class="pre">/AMPS/SOWStats</span></code>
+and <code class="docutils literal"><span class="pre">/AMPS/ClientStatus</span></code> messages.</li>
+<li><code class="docutils literal"><span class="pre">5</span></code> creates messages that use a unified set of FIX tags. When this option
+is set to 5, AMPS uses consistent field numbering between
+<code class="docutils literal"><span class="pre">/AMPS/SOWStats</span></code> and <code class="docutils literal"><span class="pre">/AMPS/ClientStatus</span></code> messages.</li>
+</ul>
+<p>Default: <code class="docutils literal"><span class="pre">4</span></code>. For compatibility with the largest number of existing
+installations, this parameter defaults to <code class="docutils literal"><span class="pre">4</span></code>.</p>
+<p>For message types other than FIX, there is no difference between <code class="docutils literal"><span class="pre">4</span></code> and
+<code class="docutils literal"><span class="pre">5</span></code>. These message types were not supported in AMPS 2.X. AMPS provides
+reasonable values for these message types when this value is set to <code class="docutils literal"><span class="pre">2</span></code>,
+but there is no backward compatibilty to enforce.</p>
+<p class="last">For most cases, you can leave this option set to the default. If you are
+using a system that requires consistent FIX tags across messages, set this
+parameter to <code class="docutils literal"><span class="pre">5</span></code>. If you are using an existing system that expects AMPS 2.X
+tags, set this parameter to <code class="docutils literal"><span class="pre">2</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Options</span></code></td>
+<td>Options to pass to a custom message type module. AMPS does not specify the
+format or type of the elements within an <code class="docutils literal"><span class="pre">Options</span></code> element. AMPS simply
+parses the XML and then sends the XML to the module. If you are configuring a
+custom message type, see the documentation for that message type module for
+details.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">FieldSeparator</span></code></td>
+<td><p class="first"><em>Option</em>: Applies to <code class="docutils literal"><span class="pre">fix</span></code> and <code class="docutils literal"><span class="pre">nvfix</span></code> message types.</p>
+<p class="last">Sequence of characters used to separate field items in a FIX message. Note:
+this field is the ASCII value of the char sequence.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">HeaderSeparator</span></code></td>
+<td><p class="first"><em>Option</em>: Applies to <code class="docutils literal"><span class="pre">fix</span></code> and <code class="docutils literal"><span class="pre">nvfix</span></code> message types.</p>
+<p class="last">Sequence of characters used to separate the header from the body in a FIX
+message. Note: this field is the ASCII value of the char sequence.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageSeparator</span></code></td>
+<td><p class="first"><em>Option</em>: Applies to <code class="docutils literal"><span class="pre">fix</span></code> and <code class="docutils literal"><span class="pre">nvfix</span></code> message types.</p>
+<p class="last">Sequence of characters used to separate message items in the body in a FIX
+message. Note: this field is the ASCII value of the char sequence.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">EarlyTerminationOptimization</span></code></td>
+<td><p class="first"><em>Option</em>: Applies to the <code class="docutils literal"><span class="pre">json</span></code> message type.</p>
+<p>By default, AMPS includes a optimization to allow the server to to only
+partially parse JSON messages. This may result in unexpected behavior for
+some messages. For example, given a message such as
+<code class="docutils literal"><span class="pre">{</span> <span class="pre">&quot;code&quot;</span> <span class="pre">:</span> <span class="pre">1,</span> <span class="pre">&quot;data&quot;</span> <span class="pre">:</span> <span class="pre">&quot;some</span> <span class="pre">data&quot;,</span> <span class="pre">&quot;code&quot;</span> <span class="pre">:</span> <span class="pre">2</span> <span class="pre">}</span></code>, AMPS will report the
+value of <code class="docutils literal"><span class="pre">code</span></code> as <code class="docutils literal"><span class="pre">1</span></code> when this optimization is active. To ensure
+consistent results, in this mode AMPS always  reports the first value for a
+field even when AMPS fully parses the message.</p>
+<p>When set to <code class="docutils literal"><span class="pre">false</span></code>, the optimization is disabled. AMPS will fully parse
+all JSON messages and report the last value for a field. For the message
+above, AMPS would report the value of <code class="docutils literal"><span class="pre">code</span></code> as <code class="docutils literal"><span class="pre">2</span></code>.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">true</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Type</span></code></td>
+<td><p class="first"><em>Required</em>: Applies to message types that use the <code class="docutils literal"><span class="pre">protobuf</span></code> module. The
+name of the type within the <code class="docutils literal"><span class="pre">.proto</span></code> file to use for this message type. The
+name must be package-qualified (for example, <code class="docutils literal"><span class="pre">my.package.Message</span></code> would
+load the type <code class="docutils literal"><span class="pre">Message</span></code> within the package <code class="docutils literal"><span class="pre">my.package</span></code>).</p>
+<p class="last"><em>Obsolete usage</em> A previous meaning of this element was made obsolete in AMPS
+4.0 and later versions. That usage was replaced by the <code class="docutils literal"><span class="pre">Module</span></code> directive.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MessageType</span></code></td>
+<td><p class="first"><em>Required</em>: Applies to message types that use the <code class="docutils literal"><span class="pre">composite-local</span></code> or
+<code class="docutils literal"><span class="pre">composite-global</span></code> modules.</p>
+<p>For composite message types, the <code class="docutils literal"><span class="pre">MessageType</span></code> definition must contain one
+or more message type declarations that specify the types that the composite
+message type contains.</p>
+<p class="last">See the <a class="reference external" href="../../../user-guide/html/chapters/messageTypes.html#composite-messages">Composite Message Types chapter in the AMPS User Guide</a> for more information on
+composite message types.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ProtoPath</span></code></td>
+<td><p class="first"><em>Required</em>: Applies to message types that use the <code class="docutils literal"><span class="pre">protobuf</span></code> module.</p>
+<p>The path in which to search for <code class="docutils literal"><span class="pre">.proto</span></code> files. The content of this element
+has the following syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="p">;</span> <span class="n">full</span><span class="o">-</span><span class="n">path</span>
+</pre></div>
+</div>
+<p>The alias provides a short identifier to use when searching for <code class="docutils literal"><span class="pre">.proto</span></code>
+files. The full path is the path that is substituted for that identifier.</p>
+<p>A configuration may omit the alias, and simply provide the path. For example,
+to use the path /mnt/repository/protodefs when no alias is provided, you
+would declare a <code class="docutils literal"><span class="pre">ProtoPath</span></code> of:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">repository</span><span class="o">/</span><span class="n">protodefs</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">;</span><span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">repository</span><span class="o">/</span><span class="n">protodefs</span>
+</pre></div>
+</div>
+<p>The following ProtoPath declaration sets <code class="docutils literal"><span class="pre">proto-archive</span></code> as an alias for
+<code class="docutils literal"><span class="pre">/mnt/shared/protofiles</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">proto</span><span class="o">-</span><span class="n">archive</span><span class="p">;</span><span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">shared</span><span class="o">/</span><span class="n">protofiles</span>
+</pre></div>
+</div>
+<p>AMPS uses the aliases provided in this configuration item when processing
+<code class="docutils literal"><span class="pre">import</span></code> statements within the loaded <code class="docutils literal"><span class="pre">.proto</span></code> files, with the empty
+alias used for import statements that do not specify a path alias. For
+example, given the definitions above, this import statement:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s2">&quot;proto-archive/AType.proto&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>will load for the file at <code class="docutils literal"><span class="pre">/mnt/shared/protofiles/AType.proto</span></code>, while the
+import statement:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s2">&quot;MyFavoriteType.proto&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>will load the file at <code class="docutils literal"><span class="pre">/mnt/repository/protodefs/MyFavoriteType.proto</span></code>.</p>
+<p>If no <code class="docutils literal"><span class="pre">ProtoPath</span></code> declaration sets an empty alias, all imports processed by
+AMPS must use one of the aliases set for the instance, or AMPS will fail to
+find the specified file.</p>
+<p>Unless your existing definitions use an aliasing scheme, it is most
+convenient to set the empty alias.</p>
+<p class="last">You may specify any number of <code class="docutils literal"><span class="pre">ProtoPath</span></code> declarations.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">ProtoFile</span></code></td>
+<td><p class="first"><em>Required</em>: Applies to message types that use Google protocol buffers.</p>
+<p>The name of the <code class="docutils literal"><span class="pre">.proto</span></code> file to use for this message type. To use an
+alias, prefix the name of the file with the alias. For example, if your
+ProtoPath declarations have created the <code class="docutils literal"><span class="pre">proto-archive</span></code> alias for the
+directory in which your . <code class="docutils literal"><span class="pre">proto</span></code> files are stored, you could use the
+following to use the <code class="docutils literal"><span class="pre">my-messages.proto</span></code> file within that directory.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">proto</span><span class="o">-</span><span class="n">archive</span><span class="o">/</span><span class="n">my</span><span class="o">-</span><span class="n">messages</span><span class="o">.</span><span class="n">proto</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 6.1:</strong> <em>Message Type Parameters</em></p>
+<div class="highlight-xml" id="listing-message-types"><div class="highlight"><pre><span></span><span class="nt">&lt;MessageTypes&gt;</span>
+    <span class="c">&lt;!-- Define a FIX-based message type with custom separators --&gt;</span>
+    <span class="nt">&lt;MessageType&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>fix-custom<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;Module&gt;</span>fix<span class="nt">&lt;/Module&gt;</span>
+        <span class="c">&lt;!-- The following are FIX specific options --&gt;</span>
+        <span class="nt">&lt;FieldSeparator&gt;</span>1<span class="nt">&lt;/FieldSeparator&gt;</span>
+        <span class="nt">&lt;HeaderSeparator&gt;</span>2<span class="nt">&lt;/HeaderSeparator&gt;</span>
+        <span class="nt">&lt;MessageSeparator&gt;</span>5<span class="nt">&lt;/MessageSeparator&gt;</span>
+    <span class="nt">&lt;/MessageType&gt;</span>
+
+    <span class="c">&lt;!-- Define a message type for a custom payload. &#39;type-module&#39; must be the</span>
+<span class="c">        Name of a Module specified in the configuration. --&gt;</span>
+    <span class="nt">&lt;MessageType&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>custom-payload<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;Module&gt;</span>type-module<span class="nt">&lt;/Module&gt;</span>
+    <span class="nt">&lt;/MessageType&gt;</span>
+
+    <span class="c">&lt;!-- Define a composite message type that combines a json message and</span>
+<span class="c">        a custom-payload message. --&gt;</span>
+
+    <span class="nt">&lt;MessageType&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>custom-composite<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;Module&gt;</span>composite-local<span class="nt">&lt;/Module&gt;</span>
+        <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;MessageType&gt;</span>custom-payload<span class="nt">&lt;/MessageType&gt;</span>
+    <span class="nt">&lt;/MessageType&gt;</span>
+<span class="nt">&lt;/MessageTypes&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 6.1:</strong> <em>Message Types Example</em></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

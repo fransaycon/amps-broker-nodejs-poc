@@ -1,0 +1,1722 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>25. Replication and High Availability &#8212; AMPS User Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="26. Operation and Deployment" href="operation.html" />
+    <link rel="prev" title="24. Automating AMPS With Actions" href="actions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">25. Replication and High Availability</a><ul>
+<li><a class="reference internal" href="#overview-of-amps-high-availability">Overview of AMPS High Availability</a></li>
+<li><a class="reference internal" href="#high-availability-scenarios">High Availability Scenarios</a><ul>
+<li><a class="reference internal" href="#failover-scenario">Failover Scenario</a></li>
+<li><a class="reference internal" href="#geographic-replication">Geographic Replication</a></li>
+<li><a class="reference internal" href="#geographic-replication-with-high-availability">Geographic Replication with High Availability</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#amps-replication">AMPS Replication</a><ul>
+<li><a class="reference internal" href="#replication-basics">Replication Basics</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#automatic-configuration-validation">Automatic Configuration Validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#benefits-of-replication">Benefits of Replication</a><ul>
+<li><a class="reference internal" href="#sync-vs-async">Sync vs Async</a></li>
+<li><a class="reference internal" href="#replication-compression">Replication Compression</a></li>
+<li><a class="reference internal" href="#destination-server-failover">Destination Server Failover</a></li>
+<li><a class="reference internal" href="#back-replication">Back Replication</a></li>
+<li><a class="reference internal" href="#passthrough-replication">Passthrough Replication</a></li>
+<li><a class="reference internal" href="#guarantees-on-ordering">Guarantees on ordering</a></li>
+<li><a class="reference internal" href="#automatically-downgrading-an-amps-instance">Automatically Downgrading an AMPS instance</a></li>
+<li><a class="reference internal" href="#replication-security">Replication Security</a></li>
+<li><a class="reference internal" href="#maximum-downstream-destinations">Maximum downstream destinations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#high-availability">High Availability</a><ul>
+<li><a class="reference internal" href="#guaranteed-publishing">Guaranteed Publishing</a></li>
+<li><a class="reference internal" href="#durable-publication-and-subscriptions">Durable Publication and Subscriptions</a></li>
+<li><a class="reference internal" href="#heartbeat-in-high-availability">Heartbeat in High Availability</a></li>
+<li><a class="reference internal" href="#slow-client-management-and-capacity-limits">Slow Client Management and Capacity Limits</a><ul>
+<li><a class="reference internal" href="#resource-pool-policies">Resource Pool Policies</a></li>
+<li><a class="reference internal" href="#individual-client-policies">Individual Client Policies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-slow-client-offlining">Configuring Slow Client Offlining</a><ul>
+<li><a class="reference internal" href="#message-ordering-and-replication">Message Ordering and Replication</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#replicated-queues">Replicated Queues</a><ul>
+<li><a class="reference internal" href="#queue-message-ownership">Queue Message Ownership</a><ul>
+<li><a class="reference internal" href="#failover-and-queue-message-ownership">Failover and Queue Message Ownership</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration-for-queue-replication">Configuration for Queue Replication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="actions.html" title="previous chapter">24. Automating AMPS With Actions</a></li>
+      <li>Next: <a href="operation.html" title="next chapter">26. Operation and Deployment</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="replication-and-high-availability">
+<span id="ug-ha"></span><span id="index-0"></span><h1>25. Replication and High Availability<a class="headerlink" href="#replication-and-high-availability" title="Permalink to this headline">¶</a></h1>
+<p>This chapter discusses the support that AMPS provides for replication,
+and how AMPS features help to build systems that provide high
+availability.</p>
+<div class="section" id="overview-of-amps-high-availability">
+<span id="common-ha-overview"></span><h2>Overview of AMPS High Availability<a class="headerlink" href="#overview-of-amps-high-availability" title="Permalink to this headline">¶</a></h2>
+<p>AMPS is designed for high performance, mission-critical applications.
+Those systems typically need to meet availability guarantees. To reach
+those availability guarantees, systems need to be fault tolerant. It&#8217;s
+not realistic to expect that networks will never fail, components will
+never need to be replaced, or that servers will never need maintenance.
+For high availability, you build applications that are fault tolerant:
+that keep working as designed even when part of the system fails or is
+taken offline for maintenance. AMPS is designed with this approach in
+mind. It assumes that components will occasionally fail or need
+maintenance, and helps you to build systems that meet their guarantees
+even when part of the system is offline.</p>
+<p>When you plan for high availability, the first step is to ensure that
+each part of your system has the ability to continue running and
+delivering correct results if any other part of the system fails. You
+also ensure that each part of your system can be independently restarted
+without affecting the other parts of the system.</p>
+<p>The AMPS server includes the following features that help ensure high
+availability:</p>
+<ul class="simple">
+<li><strong>Transaction logging</strong> writes messages to persistent storage. In
+AMPS, the transaction log is not only the definitive record of what
+messages have been processed, it is also fully queryable by clients.
+Highly available systems make use of this capability to keep a
+consistent view of messages for all subscribers and publishers. The
+AMPS transaction log is described in detail in <a class="reference internal" href="txlog.html#ug-txlog"><span class="std std-ref">Chapter 13</span></a>.</li>
+<li><strong>Replication</strong> allows AMPS instances to copy messages between
+instances. AMPS replication is peer-to-peer, and any number of AMPS
+instances can replicate to any number of AMPS instances. Replication
+can be filtered by topic. By default, AMPS instances only replicate
+messages published to that instance. An AMPS instance can also
+replicate messages received via replication using passthrough
+replication: the ability for instances to pass replication messages
+to other AMPS instances.</li>
+<li><strong>Heartbeat monitoring</strong> to actively detect when a connection is
+lost. Each client configures the heartbeat interval for that
+connection.</li>
+</ul>
+<p>The AMPS client libraries include the following features to help ensure
+high availability:</p>
+<ul>
+<li><p class="first"><strong>Heartbeat monitoring</strong> to actively detect when a connection is
+lost. As mentioned above, the interval for the heatbeat is
+configurable on a connection-by-connection basis. The interval for
+heartbeat can be set by the client, allowing you to configure a
+longer timeout on higher latency connections or less critical
+operations, and a lower timeout on fast connections or for clients
+that must detect failover quickly.</p>
+</li>
+<li><p class="first"><strong>Automatic reconnection and failover</strong> allows clients to
+automatically reconnect when disconnection occurs, and to locate and
+connect to an active instance.</p>
+</li>
+<li><p class="first"><strong>Guaranteed publication</strong> from clients, including an optional
+persistent message store. This allows message publication to survive
+client restarts as well as server failover.</p>
+</li>
+<li><p class="first"><strong>Subscription recovery</strong> and <strong>transaction log playback</strong> allows
+clients to recover the state of their messaging after restarts.</p>
+<p>When used with a regular subscription or a sow and subscribe, the
+HAClient can restore the subscription at the point the client
+reconnects to AMPS.</p>
+<p>When used with a bookmark subscription, the HAClient can provide the
+ability to resume at the point the client lost the connection. These
+features guarantee that clients receive all messages published in the
+order published, including messages received while the clients were
+offline. Replay and resumable subscription features are provided by
+the transaction log, as described in <a class="reference internal" href="txlog.html#ug-txlog"><span class="std std-ref">Chapter 13</span></a>.</p>
+</li>
+</ul>
+<p>For details on each client library, see the developer&#8217;s guide for that
+library. Further samples can be found in the evaluation kit for the
+client, available from the 60East website at <a class="reference external" href="http://www.crankuptheamps.com/evaluate">http://www.crankuptheamps.com/evaluate</a>.</p>
+</div>
+<div class="section" id="high-availability-scenarios">
+<h2>High Availability Scenarios<a class="headerlink" href="#high-availability-scenarios" title="Permalink to this headline">¶</a></h2>
+<p>You design your high availability strategy to meet the needs of your
+application, your business, and your network. This section describes
+commonly-deployed scenarios for high availability.</p>
+<div class="section" id="failover-scenario">
+<h3>Failover Scenario<a class="headerlink" href="#failover-scenario" title="Permalink to this headline">¶</a></h3>
+<p>One of the most common scenarios is for two AMPS instances to replicate
+to each other. This replication is synchronous, so that both instances
+persist a message before AMPS acknowledges the message to the publisher.
+This makes a hot-hot pair. In the figure below, any messages published
+to <code class="docutils literal"><span class="pre">important_topic</span></code> are replicated across instances, so both
+instances have the messages for <code class="docutils literal"><span class="pre">important_topic</span></code>.</p>
+<img alt="../_images/Hot-Hot-Replication.svg" src="../_images/Hot-Hot-Replication.svg" /><p>Notice that, because AMPS replication is peer-to-peer, clients can
+connect to either instance of AMPS when both are running. Further,
+messages can be published to either instance of AMPS and be replicated
+to the other instance. In this case, clients are configured with the
+addresses of both AMPS instances.</p>
+<p>In this case, clients are configured with Instance 1 and Instance 2 as
+equivalent server addresses. If a client cannot connect to one instance,
+it tries the other. Because both instances contain the same messages for
+<code class="docutils literal"><span class="pre">important_topic</span></code>, there is no functional difference in which instance
+a client connects to. Because these instances replicate to each other,
+AMPS can optimize this to a single connection. Two connections are shown
+in the diagram to demonstrate the required configuration.</p>
+<p>Because these instances are intended to be equivalent message sources
+(that is &#8211; a client may fail over from one instance to another instance),
+these instances are configured to use <code class="docutils literal"><span class="pre">sync</span></code> acknowledgement to publishers.
+What that means is that, when a message is published to one of these instances,
+that instance does not acknowledge the message to the publisher as persisted
+until both instances have written the message to disk (although the message can
+be delivered to subscribers once it is peristed locally).</p>
+</div>
+<div class="section" id="geographic-replication">
+<h3>Geographic Replication<a class="headerlink" href="#geographic-replication" title="Permalink to this headline">¶</a></h3>
+<p>AMPS is well suited for replicating messages to different regions, so
+clients in those regions are able to quickly receive and publish
+messages to a local instance. In this case, each region replicates all
+messages on the topic of interest to the other two regions. A variation
+on this strategy is to use a region tag in the content, and use content
+filtering so that each replicates messages intended for use in the other
+regions or worldwide.</p>
+<img alt="../_images/GeoRepl.svg" src="../_images/GeoRepl.svg" /><p>For this scenario, an AMPS instance in each region replicates to an
+instance in the two other regions. For the best performance, replication
+between the regions is asynchronous, so that once an instance in one
+region has persisted the message, the message is acknowledged back to
+the publisher.</p>
+<p>In this case, clients in each region connect <em>only</em> to the AMPS instance in
+that region. Bandwidth within regions is conserved, because each message
+is replicated once to the region, regardless of how many subscribers in
+that region will receive the message. Further, publishers are able to
+publish the message once to a local instance over a relatively fast
+network connection rather than having to publish messages multiple times
+to multiple regions.</p>
+<p>To configure this scenario, the AMPS instances in each region are
+configured to forward messages to known instances in the other two
+regions.</p>
+</div>
+<div class="section" id="geographic-replication-with-high-availability">
+<h3>Geographic Replication with High Availability<a class="headerlink" href="#geographic-replication-with-high-availability" title="Permalink to this headline">¶</a></h3>
+<p>Combining the first two scenarios allows your application to distribute
+messages as required and to have high availability in each region. This
+involves having two or more servers in each region, as shown in the
+figure below.</p>
+<img alt="../_images/Replication-Scenario-with-HA.svg" src="../_images/Replication-Scenario-with-HA.svg" /><p>Each region is configured as a group. Within each group, the instances
+replicate to each other using <code class="docutils literal"><span class="pre">sync</span></code> acknowledgements, to ensure that
+publishers can fail over between the instances. Because a client in a
+given region does not connect to a server outside the region, we can
+configure the replication links between the regions to use <code class="docutils literal"><span class="pre">async</span></code>
+acknowledgement, which could <em>potentially</em> reduce the amount of time
+that an application publishing to AMPS must store messages before receiving
+acknowledgement that the messages are persisted.</p>
+<p>The figure below shows the expanded detail of the configuration for these servers.</p>
+<a class="reference internal image-reference" href="../_images/Chicago-Detail.svg"><img alt="../_images/Chicago-Detail.svg" src="../_images/Chicago-Detail.svg" width="60.0%" /></a>
+<p>The instances in each region are configured to be part of a group for
+that region. Within a region, the instances synchronously replicate to
+each other, and asynchronously replicate to instances at each remote
+site. The instances use the replication downgrade action to ensure that
+message publishing continues in the event that one of the instances goes
+offline. As with all connections where instances replicate to each
+other, this replication is configured as one connection in each
+direction, although AMPS may optimize this to a single replication
+connection.</p>
+<p>Each instance at a site provides passthrough replication from the other
+sites to local instances, so that once a message arrives at the site, it
+is replicated to the other instances at the local site. The remote sites
+are configured in the same way. This configuration balances
+fault-tolerance and performance.</p>
+<p>Each instance at a site replicates to the remote sites. The instance
+specifies one <code class="docutils literal"><span class="pre">Destination</span></code> for each remote site, with the servers at
+the remote site listed as failover equivalents for the remote site. With
+the passthrough configuration, this ensures that each message is
+delivered to each remote site exactly once. Whichever server at the
+remote site receives the message distributes it to the other server
+using passthrough replication.</p>
+<p>With this configuration, publishers at each site publish to the primary
+local AMPS instance, and subscribers subscribe to messages from their
+local AMPS instances. Both publishers and subscribers use the high
+availability features of the AMPS client libraries to ensure that if the
+primary local instance AMPS fails, they automatically failover to the
+other instance. Replication is used to deliver both high availability
+and disaster recovery. In the table below, each row represents a
+replication destination. Servers in brackets are represented as sets of
+<code class="docutils literal"><span class="pre">InetAddr</span></code> elements in the <code class="docutils literal"><span class="pre">Destination</span></code> definition.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Server</th>
+<th class="head">Destinations</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Chicago 1</td>
+<td><ul class="first last simple">
+<li>sync to Chicago 2</li>
+<li>async to [NewYork 1, NewYork 2]</li>
+<li>async to [London 1, London 2]</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td>Chicago 2</td>
+<td><ul class="first last simple">
+<li>sync to Chicago 1</li>
+<li>async to [NewYork 1, NewYork 2]</li>
+<li>async to [London 1, London 2]</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td>NewYork 1</td>
+<td><ul class="first last simple">
+<li>sync to NewYork 2</li>
+<li>async to [Chicago 1, Chicago 2]</li>
+<li>async to [London 1, London 2]</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td>NewYork 2</td>
+<td><ul class="first last simple">
+<li>sync to NewYork 1</li>
+<li>async to [Chicago 1, Chicago 2]</li>
+<li>async to [London 1, London 2]</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td>London 1</td>
+<td><ul class="first last simple">
+<li>sync to London 2</li>
+<li>async to [Chicago 1, Chicago 2]</li>
+<li>async to [NewYork 1, NewYork 2]</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td>London 2</td>
+<td><ul class="first last simple">
+<li>sync to London 1</li>
+<li>async to [Chicago 1, Chicago 2]</li>
+<li>async to [NewYork 1, NewYork 2]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 25.1:</strong> <em>Geographic Replication with HA Destinations</em></p>
+</div>
+</div>
+<div class="section" id="amps-replication">
+<span id="ha-replication"></span><h2>AMPS Replication<a class="headerlink" href="#amps-replication" title="Permalink to this headline">¶</a></h2>
+<p id="index-1">AMPS has the ability to replicate messages to downstream AMPS instances
+once those messages are stored to a transaction log. Replication in AMPS
+involves the configuration of two or more instances designed to share
+some or all of the published messages. Replication is an efficient way
+to split and share message streams between multiple sites where each
+downstream site may only want a subset of the messages from the upstream
+instances. Additionally, replication can be used to improve the
+availability of a set of AMPS instances by creating redundant instances
+for fail-over cases.</p>
+<p>AMPS supports two forms of message acknowledgement for replication links:
+<em>synchronous</em> and <em>asynchronous</em>; these settings control when publishers
+of messages are sent <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgments. These settings do not
+affect when or how messages are replicated, or when or how messages are
+delivered to subscribers unless a subscriber explicitly requests this
+behavior. These settings only affect when AMPS acknowledges to the publisher
+that the message has been persisted.</p>
+<p>AMPS replication consists of a message stream (or, more precisely, a
+command stream) provided to downstream instances. AMPS replicates
+the messages produced as a result of <code class="docutils literal"><span class="pre">publish</span></code> and <code class="docutils literal"><span class="pre">delta_publish</span></code>
+and replicates <code class="docutils literal"><span class="pre">sow_delete</span></code> commands. AMPS does not
+replicate messages produced internally by AMPS, such as the results of
+<code class="docutils literal"><span class="pre">Views</span></code> or updates sent to a <code class="docutils literal"><span class="pre">ConflatedTopic</span></code>. When replicating
+Queues, AMPS also uses the replication connection to send and receive
+administrative commands related to queues, as described in the section
+on Replicated Queues.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="tip" src="../_images/tip.svg" /></td>
+<td>60East recommends that any server that participates in replication
+<em>and</em> that accepts publishes be configured with at least one
+synchronous replication destination.</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that when replicating the results of a <code class="docutils literal"><span class="pre">delta_publish</span></code> command and
+publishes to a topic that provides preprocessing and enrichment, AMPS
+replicates the fully processed and merged message &#8211; exactly the information
+that is written to the local transaction log and sent to subscribers. AMPS does
+<em>not</em> save the original command in the transaction log or replicate the original
+command. Instead, AMPS stores the message produced by the command and replicates that
+message.</p>
+<div class="section" id="replication-basics">
+<h3>Replication Basics<a class="headerlink" href="#replication-basics" title="Permalink to this headline">¶</a></h3>
+<p>Before planning an AMPS replication topology, it can be helpful to understand
+the basics of how AMPS replication works. This section presents a general
+overview of the concepts that are discussed in more detail in the following
+sections.</p>
+<ul class="simple">
+<li><strong>Replication is point-to-point</strong>. Each replication connection involves exactly two
+AMPS instances: a source (that provides messages) and a destination that receives
+messages.</li>
+<li><strong>Replication is always &#8220;push&#8221; replication</strong>. In AMPS, the source configures a
+destination, and pushes messages to that destination. (Notice that it is possible
+to configure the source to wait for the destination to connect, but replication
+is still a &#8220;push&#8221; from the source to the destination once that connection is
+made).</li>
+<li><strong>Replication provides a command stream</strong>. In AMPS replication, the server
+replicates the <em>results</em> of <code class="docutils literal"><span class="pre">publish</span></code>, <code class="docutils literal"><span class="pre">delta_publish</span></code> and <code class="docutils literal"><span class="pre">sow_delete</span></code> commands
+once those results are written to the transaction log. Each individual command is
+replicated, for low latency and fine-grained control of what is replicated.</li>
+<li><strong>Replication is customizable by topic, message type, and content</strong>. AMPS can be configured to
+replicate the entire transaction log, or any subset of the transaction log. This makes it
+easy to use replication to populate view servers, test environments, or similar instances
+that require only partial views of the source data.</li>
+<li><strong>Replication guarantees delivery</strong>. AMPS will not remove a journal file until
+<em>all</em> messages in that journal file have been replicated to, and acknowledged by,
+every destination.</li>
+<li><strong>Replication is composable</strong>. AMPS is capable of building a sophisticated replication
+topology by composing connections. For example, full replication between two servers
+is two point-to-point connections, one in each direction. The basic point-to-point
+nature of connections makes it easy to reason about a single connection, and the
+composable nature of AMPS replication allows you to build replication networks
+that provide data distribution and high availability for applications across
+data centers and around the globe.</li>
+<li><strong>Replication acknowledgement is configurable</strong>, and the acknowledgement mode
+provides different guarantees: <em>async</em> acknowledgement provides durability
+guarantees for the local instance, whereas <em>sync</em> acknowledgement provides
+durability guarantees for both the local instance and the downstream instance.</li>
+</ul>
+<p>This section discusses replication with those basics in mind.</p>
+</div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p id="index-2">Replication configuration involves the configuration of two or more
+instances of AMPS. For testing purposes both instances of AMPS can
+reside on the same physical host before deployment into a production
+environment. When running both instances on one machine, the performance
+characteristics will differ from production, so running both instances
+on one machine is more useful for testing configuration correctness than
+testing overall performance.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="caution" src="../_images/caution.svg" /></td>
+<td>It&#8217;s important to make sure that when running multiple AMPS
+instances on the same host that there are no conflicting ports.
+AMPS will emit an error message and will not start properly if
+it detects that a port is already in use.</td>
+</tr>
+</tbody>
+</table>
+<p>For the purposes of explaining this example, we&#8217;re going to assume a
+simple hot-hot replication case where we have two instances of
+AMPS - the first host is named <code class="docutils literal"><span class="pre">amps-1</span></code> and the second host is named
+<code class="docutils literal"><span class="pre">amps-2</span></code>. Each of the instances are configured to replicate data to
+the other. That is, all messages published to <code class="docutils literal"><span class="pre">amps-1</span></code> are
+replicated to <code class="docutils literal"><span class="pre">amps-2</span></code> and vice versa. This configuration ensures that
+a message published to one instance is available on the other instance in
+the case of a failover (although, of course, the publishers and subscribers
+in this should also be configured for failover).</p>
+<p>We will first show the relevant portion of the configuration used in
+<code class="docutils literal"><span class="pre">amps-1</span></code>, and then we will show the relevant configuration for
+<code class="docutils literal"><span class="pre">amps-2</span></code>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="caution" src="../_images/caution.svg" /></td>
+<td>Every instance that participates in replication must have a
+unique <code class="docutils literal"><span class="pre">Name</span></code>.</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="tip" src="../_images/tip.svg" /></td>
+<td>All replication topics must also have a Transaction Log defined.
+The examples below omit the Transaction Log configuration for
+brevity. Please reference the Transaction Log chapter for
+information on how to configure a transaction log for a topic.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>amps-1<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;Group&gt;</span>DataCenter-NYC-1<span class="nt">&lt;/Group&gt;</span>
+    ...
+
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+
+            <span class="c">&lt;!-- The amps-replication transport is required. This is a proprietary message format</span>
+<span class="c">                used by AMPS to replicate messages between instances. This AMPS instance will</span>
+<span class="c">                receive replication messages on this transport. The instance can receive</span>
+<span class="c">                messages from any number of upstream instances on this transport. --&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>amps-replication<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>localhost:10004<span class="nt">&lt;/InetAddr&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+  <span class="c">&lt;!--</span>
+<span class="c">        Transports for application use also need to</span>
+<span class="c">        be defined. An amps-replication transport can</span>
+<span class="c">        only be used for replication --&gt;</span>
+
+   ... transports for client use here ...
+
+    <span class="nt">&lt;/Transports&gt;</span>
+
+    ...
+
+    <span class="c">&lt;!-- All replication destinations are defined inside the Replication block. --&gt;</span>
+
+    <span class="nt">&lt;Replication&gt;</span>
+
+        <span class="c">&lt;!--</span>
+<span class="c">             Each individual replication destination defines messages being</span>
+<span class="c">             replicated from this instance of AMPS to another instance of AMPS.</span>
+<span class="c">          --&gt;</span>
+
+        <span class="nt">&lt;Destination&gt;</span>
+
+            <span class="c">&lt;!-- The replicated topics and their respective message types are defined here. AMPS</span>
+<span class="c">                allows any number of Topic definitions in a Destination. --&gt;</span>
+            <span class="nt">&lt;Topic&gt;</span>
+                <span class="nt">&lt;MessageType&gt;</span>fix<span class="nt">&lt;/MessageType&gt;</span>
+
+                <span class="c">&lt;!-- The Name definition specifies the name of the topic or topics to be replicated.</span>
+<span class="c">                    The Name option can be either a specific topic name or a regular expression that</span>
+<span class="c">                    matches a set of topic names. --&gt;</span>
+                <span class="nt">&lt;Name&gt;</span>orders<span class="nt">&lt;/Name&gt;</span>
+
+            <span class="nt">&lt;/Topic&gt;</span>
+
+            <span class="nt">&lt;Name&gt;</span>amps-2<span class="nt">&lt;/Name&gt;</span>
+
+            <span class="c">&lt;!-- The group name of the destination instance (or instances). The name specified</span>
+<span class="c">                here must match the Group defined for the remote AMPS instance, or AMPS reports</span>
+<span class="c">                an error and refuses to connect to the remote instance. --&gt;</span>
+            <span class="nt">&lt;Group&gt;</span>DataCenter-NYC-1<span class="nt">&lt;/Group&gt;</span>
+
+            <span class="c">&lt;!-- Replication acknowledgement can be either synchronoous or</span>
+<span class="c">                 asynchronous. This does not affect the speed or priority of</span>
+<span class="c">                 the connection, but does control when this instance will</span>
+<span class="c">                 acknowledge the message as safely persisted. --&gt;</span>
+
+            <span class="nt">&lt;SyncType&gt;</span>sync<span class="nt">&lt;/SyncType&gt;</span>
+
+            <span class="c">&lt;!-- The Transport definition defines the location to which this AMPS instance will</span>
+<span class="c">                replicate messages. The InetAddr points to the hostname and port of the</span>
+<span class="c">                downstream replication instance. The Type for a replication instance should</span>
+<span class="c">                always be amps-replication. --&gt;</span>
+            <span class="nt">&lt;Transport&gt;</span>
+
+                <span class="c">&lt;!-- The address, or list of addresses, for the replication destination. --&gt;</span>
+                <span class="nt">&lt;InetAddr&gt;</span>amps-2-server.example.com:10005<span class="nt">&lt;/InetAddr&gt;</span>
+                <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;/Transport&gt;</span>
+        <span class="nt">&lt;/Destination&gt;</span>
+    <span class="nt">&lt;/Replication&gt;</span>
+
+    ...
+
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 25.1:</strong> <em>Configuration used for amps-1</em></p>
+<p>For the configuration <code class="docutils literal"><span class="pre">amps-2</span></code>, we will use the following in
+<a class="reference internal" href="#repl-amps2-config"><span class="std std-ref">Example 25.2</span></a>. While this example is similar, only the differences
+between the <code class="docutils literal"><span class="pre">amps-1</span></code> configuration will be called out.</p>
+<div class="highlight-xml" id="repl-amps2-config"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>amps-2<span class="nt">&lt;/Name&gt;</span>
+    <span class="nt">&lt;Group&gt;</span>DataCenter-NYC-1<span class="nt">&lt;/Group&gt;</span>
+
+    ...
+
+    <span class="c">&lt;!-- The amps-replication transport is required. This is a proprietary message format</span>
+<span class="c">        used by AMPS to replicate messages between instances. This AMPS instance will</span>
+<span class="c">        receive replication messages on this transport. The instance can receive</span>
+<span class="c">        messages from any number of upstream instances on this transport. --&gt;</span>
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>amps-replication<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+
+            <span class="c">&lt;!-- The port where amps-2 listens for replication messages matches the port where</span>
+<span class="c">                amps-1 is configured to send its replication messages. This AMPS instance will</span>
+<span class="c">                receive replication messages on this transport. The instance can receive</span>
+<span class="c">                messages from any number of upstream instances on this transport. --&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>10005<span class="nt">&lt;/InetAddr&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Transports&gt;</span>
+
+    ...
+
+    <span class="nt">&lt;Replication&gt;</span>
+        <span class="nt">&lt;Destination&gt;</span>
+            <span class="nt">&lt;Topic&gt;</span>
+                <span class="nt">&lt;MessageType&gt;</span>fix<span class="nt">&lt;/MessageType&gt;</span>
+                <span class="nt">&lt;Name&gt;</span>topic<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;/Topic&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>amps-1<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Group&gt;</span>DataCenter-NYC-1<span class="nt">&lt;/Group&gt;</span>
+
+            <span class="nt">&lt;SyncType&gt;</span>sync<span class="nt">&lt;/SyncType&gt;</span>
+            <span class="nt">&lt;Transport&gt;</span>
+
+                <span class="c">&lt;!-- The replication destination port for amps-2 is configured to send replication</span>
+<span class="c">                    messages to the same port on which amps-1 is configured to listen for them. --&gt;</span>
+                <span class="nt">&lt;InetAddr&gt;</span>amps-1-server.example.com:10004<span class="nt">&lt;/InetAddr&gt;</span>
+                <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;/Transport&gt;</span>
+        <span class="nt">&lt;/Destination&gt;</span>
+    <span class="nt">&lt;/Replication&gt;</span>
+
+    ...
+
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 25.2:</strong> <em>Configuration for amps-2</em></p>
+<p>These example configurations replicate the topic named <code class="docutils literal"><span class="pre">topic</span></code> of the message type <code class="docutils literal"><span class="pre">nvfix</span></code>
+between the two instances of AMPS. To replicate more topics, these instances could add
+additional topic blocks. A topic block can also specify a regular expression for the name
+of the topic to replicate. In that case, AMPS will replicate any topic matching
+the regular expression.</p>
+<div class="section" id="automatic-configuration-validation">
+<h4>Automatic Configuration Validation<a class="headerlink" href="#automatic-configuration-validation" title="Permalink to this headline">¶</a></h4>
+<p>Replication can involve coordinating configuration among a large number
+of AMPS instances. It can sometimes be time consuming to ensure that all
+of the instances are configured correctly, and to ensure that a
+configuration change for one instance is also made at the replication
+destinations. For example, if a high-availability pair replicates the
+topics ORDERS, INVENTORY, and CUSTOMERS to a remote disaster recovery
+site, but the disaster recovery site only replicates ORDERS and
+INVENTORY back to the high-availability pair, disaster recovery may not
+occur as planned. Likewise, if only one member of the HA pair replicates
+ORDERS to the other member of the pair, the two instances will contain
+different messages, which could cause problems for the system.</p>
+<p>Starting in the 5.0 release, AMPS automatic replication configuration
+validation makes it easier to keep configuration items consistent across
+a replication fabric.</p>
+<p>Automatic configuration validation is enabled by default. You can turn
+off validation for specific elements of the configuration when you
+configure a <code class="docutils literal"><span class="pre">Topic</span></code> in the <code class="docutils literal"><span class="pre">Destination</span></code>. When validation is
+enabled, AMPS verifies the configuration of a
+remote instance when a replication conneciton is made. If the
+configuration is not compatible with the source for one or more of the
+validation checks, AMPS logs the incompatible configuration and
+does not allow the connection.</p>
+<p>Each <code class="docutils literal"><span class="pre">Topic</span></code> in a replication <code class="docutils literal"><span class="pre">Destination</span></code> can configure a unique
+set of validation checks. By default, all of the checks apply to all
+topics in the <code class="docutils literal"><span class="pre">Destination</span></code>.</p>
+<p>When troubleshooting a replication configuration validation error, it is
+important to look at the AMPS logs on both sides of the connection. Typically, the
+AMPS instance that detects the error will log complete information as to which
+validation check failed and the changes required for the connection to succeed,
+while the other side of the connection will simply note that the
+connection failed validation. This means that if a validation error is reported
+on one instance, but details are not present, the other side of the connection
+detected the error, and will have logged relevant details.</p>
+<p>The table below lists aspects of replication that AMPS validates. By default, replication
+validation treats the downstream instance as though it is intended to be a
+failover partner for this instance. For situations where that is not the case,
+many validation rules can be excluded. For example, if the downstream instance is
+a view server that does not accept publishes and should, therefore, not replicate
+a particular topic back to this instance, the <code class="docutils literal"><span class="pre">replicate</span></code> validation check might
+need to be excluded.</p>
+<p>AMPS performs the following validation checks:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Check</th>
+<th class="head">Validates</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">txlog</span></code></td>
+<td>The topic is contained in the
+transaction log of the remote
+instance.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">replicate</span></code></td>
+<td>The topic is replicated from the
+remote instance back to this
+instance.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">sow</span></code></td>
+<td>If the topic is a SOW topic in this
+instance, it must also be a SOW
+topic in the remote instance.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">cascade</span></code></td>
+<td>The remote instance must enforce the
+same set of validation checks for
+this topic as this instance does.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">queue</span></code></td>
+<td><p class="first">If the topic is a queue in this
+instance, it must also be a queue in
+the remote instance.</p>
+<p class="last">This option cannot be excluded.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">keys</span></code></td>
+<td>If the topic is a SOW topic in this
+instance, it must also be a SOW
+topic in the remote instance and the
+SOW in the remote instance must use
+the same <code class="docutils literal"><span class="pre">Key</span></code> definitions.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">replicate_filter</span></code></td>
+<td>If this topic uses a replication
+filter, the remote instance must use
+the same replication filter for
+replication back to this instance.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">queue_passthrough</span></code></td>
+<td>If the topic is a queue in this
+instance, the remote instance must
+support passthrough from this group.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">queue_underlying</span></code></td>
+<td><p class="first">If the topic is a queue in this
+instance, it must use the same
+underlying topic definition and
+filters in the remote instance.</p>
+<p class="last">This option cannot be excluded.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 25.2:</strong> <em>Replication Configuration Validation</em></p>
+<p>Notice that, by default, <em>all</em> of these checks are applied.</p>
+<p>The sample below shows how to exclude validation checks for a replication
+destination. In this sample, the <code class="docutils literal"><span class="pre">Topic</span></code> does not require the remote
+destination to replicate back to this instance, and does not require that the
+remote destination enforce the same configuration checks for any downstream
+replication of this topic.</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;Destination&gt;</span>
+    ...
+    <span class="nt">&lt;Topic&gt;</span>
+        <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>MyStuff-VIEW<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;ExcludeValidation&gt;</span>replicate,cascade<span class="nt">&lt;/ExcludeValidation&gt;</span>
+    <span class="nt">&lt;/Topic&gt;</span>
+    ...
+<span class="nt">&lt;/Destination&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="benefits-of-replication">
+<h3>Benefits of Replication<a class="headerlink" href="#benefits-of-replication" title="Permalink to this headline">¶</a></h3>
+<p id="index-3">Replication can serve two purposes in AMPS. First, it can increase the
+fault-tolerance of AMPS by creating a spare instance to cut over to when
+an instance fails. Second, replication can be used in message
+delivery to a remote site.</p>
+<p>In order to provide fault tolerance and reliable remote site message
+delivery, for the best possible messaging experience, there are some
+guarantees and features that AMPS has implemented. Those features are
+discussed below.</p>
+<p>Replication in AMPS supports filtering by both topic and by message
+content. This granularity in filtering allows replication sources to
+have complete control over what messages are sent to their downstream
+replication instances.</p>
+<p>Additionally, replication can improve availability of AMPS by creating a
+redundant instance of an AMPS server. Using replication, all of the
+messages which flow into an instance of AMPS can be replicated to
+one or more other instances. This way, if an instance should
+become unresponsive for any reason, applications can fail over
+to another instance to begin processing message streams and requests.</p>
+<div class="section" id="sync-vs-async">
+<h4>Sync vs Async<a class="headerlink" href="#sync-vs-async" title="Permalink to this headline">¶</a></h4>
+<p id="replication-sync-vs-async">When publishing to a topic that is recorded in the transaction log, it
+is recommended that publishers request a <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment
+message response. The <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment message is one of
+the ways in which AMPS guarantees that a message received by AMPS is
+stored in accordance with the configuration. (The <code class="docutils literal"><span class="pre">HAClient</span></code> classes
+in the AMPS client libraries automatically request this acknowledgment
+on each <code class="docutils literal"><span class="pre">publish</span></code> command when a publish store is present.)</p>
+<p>Depending on how AMPS is configured, that <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment
+message will be delivered to the publisher at different times in the
+replication process. There are two options: <em>synchronous</em> or
+<em>asynchronous</em>. These two <code class="docutils literal"><span class="pre">SyncType</span></code> configurations control when
+publishers of messages are sent <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgments.</p>
+<p>For <em>synchronous</em> replication acknowledgements, AMPS will not return a
+<code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment to the publisher for a message until the
+message has been stored to the local transaction log, to the SOW, and
+all downstream synchronous replication destinations have acknowledged
+the message.  <a class="reference internal" href="#ha-figure-sync-ack"><span class="std std-ref">Figure 25.1</span></a>
+shows the cycle of a message being published in a replicated instance, and the
+persisted acknowledgment message being returned back to the publisher.
+Notice that, with this configuration, the publisher will not recieve an
+acknowledgment if the remote destination is unavailable. 60East
+recommends that when you use <code class="docutils literal"><span class="pre">sync</span></code> replication, you also set a policy
+for downgrading the link when a destination is offline, as described in
+<a class="reference internal" href="#ug-replication-downgrade"><span class="std std-ref">Automatically Downgrading an AMPS instance</span></a>.</p>
+<div class="figure" id="ha-figure-sync-ack">
+<a class="reference internal image-reference" href="../_images/HA-sync-ack.svg"><img alt="Synchronous Persistence Acknowledgment" src="../_images/HA-sync-ack.svg" width="75.0%" /></a>
+</div>
+<p><strong>Figure 25.1:</strong> <em>Synchronous Persistence Acknowledgment</em></p>
+<p>In <em>asynchronous</em> replication, the upstream AMPS instance sends the
+<code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment message back to the publisher as soon as
+the message is stored in the local transaction log and SOW stores. The
+upstream AMPS instance then sends the message to downstream replica
+instances. <a class="reference internal" href="#ha-figure-async-ack"><span class="std std-ref">Figure 25.2</span></a>
+shows the cycle of a message being published with a <code class="docutils literal"><span class="pre">SyncType</span></code> configuration set to <em>asynchronous</em>.</p>
+<div class="figure" id="ha-figure-async-ack">
+<a class="reference internal image-reference" href="../_images/HA-async-ack.svg"><img alt="Asynchronous Persistence Acknowledgment" src="../_images/HA-async-ack.svg" width="75.0%" /></a>
+</div>
+<p><strong>Figure 25.2:</strong> <em>Asynchronous Persistence Acknowledgment</em></p>
+<p>By default, replication destinations do not affect when a message is delivered
+to a subscription. A subscriber can optionally request the
+<code class="docutils literal"><span class="pre">fully_durable</span></code> option on a bookmark subscription (that is, a replay from
+the transaction log). When the <code class="docutils literal"><span class="pre">fully_durable</span></code> option is specified, AMPS does
+not deliver a message to that subscriber until all replication destinations
+configured for <code class="docutils literal"><span class="pre">sync</span></code> acknowledgement have acknowledged the message.</p>
+</div>
+<div class="section" id="replication-compression">
+<span id="index-4"></span><h4>Replication Compression<a class="headerlink" href="#replication-compression" title="Permalink to this headline">¶</a></h4>
+<p>AMPS provides the ability to compress the replication connnection. In
+typical use, using replication compression can greatly reduce the
+bandwidth required between AMPS instances.</p>
+<p>The precise amount of compression that AMPS can achieve depends on the
+content of the replicated messages. Compression is configured at the
+replication source, and does not need to be enabled in the transport
+configuration at the instance receiving the replicated messages.</p>
+<p>For AMPS instances that are receiving replicated messages, no additional
+configuration is necessary. AMPS automatically recognizes when an
+incoming replication connection uses compression.</p>
+</div>
+<div class="section" id="destination-server-failover">
+<h4>Destination Server Failover<a class="headerlink" href="#destination-server-failover" title="Permalink to this headline">¶</a></h4>
+<p>Your replication plan may include replication to a server that is part
+of a highly-available group. There are two common approaches to
+destination server failover.</p>
+<p><strong>Wide IP</strong> AMPS replication works transparently with wide IP, and
+many installations use wide IP for destination server failover. The
+advantage of this approach is that it requires no additional
+configuration in AMPS, and redundant servers can be added or removed
+from the wide IP group without reconfiguring the instances that
+replicate to the group. A disadvantage to this approach is that failover
+can require several seconds, and messages are not replicated during the
+time that it takes for failover to occur.</p>
+<p><strong>AMPS failover</strong> AMPS allows you to specify multiple downstream
+servers in the <code class="docutils literal"><span class="pre">InetAddr</span></code> element of a destination. In this case, AMPS
+treats the set list of servers as a list of equivalent servers, listed
+in order of priority.</p>
+<p>When multiple addresses are specified for a destination, each time AMPS
+needs to make a connection to a destination, AMPS starts at the
+beginning of the list and attempts to connect to each address in the
+list. If AMPS is unable to connect to any address in the list, AMPS
+waits for a timeout period, then begins again with the first server on
+the list. Each time AMPS reaches the end of the list without
+establishing a connection, AMPS increases the timeout period.</p>
+<p>This capability allows you to easily set up replication to a
+highly-available group. If the server you are replicating to fails over,
+AMPS uses the prioritized list of servers to re-establish a connection.</p>
+</div>
+<div class="section" id="back-replication">
+<h4>Back Replication<a class="headerlink" href="#back-replication" title="Permalink to this headline">¶</a></h4>
+<p><em>Back Replication</em> is a term used to describe a replication scenario
+where there are two instances of AMPS &#8211; termed <code class="docutils literal"><span class="pre">AMPS-A</span></code> and <code class="docutils literal"><span class="pre">AMPS-B</span></code>
+for this example.</p>
+<p>In a <em>back replication</em> configuration, messages that are published to <code class="docutils literal"><span class="pre">AMPS-A</span></code>
+are replicated to <code class="docutils literal"><span class="pre">AMPS-B</span></code>. Likewise, messages which are published to
+<code class="docutils literal"><span class="pre">AMPS-B</span></code> are replicated to <code class="docutils literal"><span class="pre">AMPS-A</span></code>. This replication scheme is used
+when both instances of AMPS need to be in sync with each other to handle
+a failover scenario with no loss of messages between them. This way, if
+<code class="docutils literal"><span class="pre">AMPS-A</span></code> should fail at any point, applications can immediately fail over
+to the <code class="docutils literal"><span class="pre">AMPS-B</span></code> instance, allowing message flow to resume with as little
+downtime as possible.</p>
+<p>When configuring a set of instances for failover, it is important that
+the instances use <code class="docutils literal"><span class="pre">sync</span></code> message acknowledgement among the set of
+instances that a given client will consider for failover. It should never be
+possible for a publisher to fail over from one instance to another instance
+if the replication link between those instances is configured for <code class="docutils literal"><span class="pre">async</span></code>
+acknowledgements.</p>
+<p id="index-5">Starting with the 5.0 release, when AMPS detects back replication
+between a pair of instances, AMPS will prefer using a single network
+connection between the servers, replicating messages in both directions
+over the single connection. This is particularly useful for situations
+where you need to have messages replicated, but only one server can initiate
+a connection: for example, when one of the servers is in a DMZ, and cannot
+make a connection to a server within the company. AMPS also allows you to
+specify a replication destination with no InetAddr provided: in this case,
+the instance will replicate once the destination establishes a destination,
+but will not initiate a connection. When both instances specify an InetAddr,
+AMPS may temporarily create two connections between the instances while
+replication is being established. In this case, after detecting that
+there are two connections active, AMPS will close one of the network
+connections and allow both AMPS instances to use the remaining network
+connection to publish messages to the other instance.</p>
+</div>
+<div class="section" id="passthrough-replication">
+<h4>Passthrough Replication<a class="headerlink" href="#passthrough-replication" title="Permalink to this headline">¶</a></h4>
+<p>Passthrough Replication is a term used to describe the ability of an
+AMPS instance to pass along replicated messages to another AMPS
+instance. This allows you to easily keep multiple failover or DR
+destinations in sync from a single AMPS instance. Unless passthrough
+replication is configured, an AMPS instance only replicates messages
+published to that instance.</p>
+<p>Passthrough replication uses the name of the originating AMPS group to
+indicate that messages that arrive from that group are to be replicated
+to the specified destination. Passthrough replication supports regex
+server groups, and allows multiple server groups per destination. Notice
+that if the destination instance does not specify a group, the name of
+the instance is the name of the group.</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;Replication&gt;</span>
+    <span class="nt">&lt;Destination&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>AMPS2-HKG<span class="nt">&lt;/Name&gt;</span>
+        <span class="c">&lt;!-- No group specified: this destination is for</span>
+<span class="c">             a server at the same site, and is responsible for</span>
+<span class="c">             populating the specific replication partner. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>amps-replication<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>secondaryhost:10010<span class="nt">&lt;/InetAddr&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+        <span class="nt">&lt;Topic&gt;</span>
+           <span class="nt">&lt;Name&gt;</span>/rep_topic<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>fix<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;/Topic&gt;</span>
+        <span class="nt">&lt;Topic&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>/rep_topic2<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>fix<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;/Topic&gt;</span>
+        <span class="nt">&lt;SyncType&gt;</span>sync<span class="nt">&lt;/SyncType&gt;</span>
+
+        <span class="c">&lt;!-- Specify which messages received via replication will be replicated</span>
+<span class="c">             to this destination (provided that the Topic and MessageType also match).</span>
+
+<span class="c">             This destination will receive messages that arrive via replication from</span>
+<span class="c">             AMPS instances with a group name that begins with NYC. Replicated messages</span>
+<span class="c">             from an instance that is not in a group that matches ^NYC will not be</span>
+<span class="c">             sent to this destination.</span>
+
+<span class="c">             Regardless of the PassThrough configuration, all messages published directly</span>
+<span class="c">             to this instance by an AMPS client will be replicated to this destination</span>
+<span class="c">             if the Topic and MessageType match.</span>
+<span class="c">        --&gt;</span>
+        <span class="nt">&lt;PassThrough&gt;</span>^NYC<span class="nt">&lt;/PassThrough&gt;</span>
+     <span class="nt">&lt;/Destination&gt;</span>
+<span class="nt">&lt;/Replication&gt;</span>
+</pre></div>
+</div>
+<p>When a message is eligible for passthrough replication, topic and
+content filters in the replication destination still apply. The
+passthrough directive simply means that the message is eligible for
+replication from this instance if it comes from an instance in the
+specified group.</p>
+<p>AMPS protects against loops in passthrough replication by tracking the
+instance names or group names that a message has passed through. AMPS
+does not allow a message to travel through the same instance or group
+more than once.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="caution" src="../_images/caution.svg" /></td>
+<td>When using passthrough, AMPS does not allow a message to pass
+through the same instance name or group name more than once, to
+protect against replication loops.</td>
+</tr>
+</tbody>
+</table>
+<p>If an instance replicates a queue, it must also provide passthrough for
+any incoming replication group that replicates that queue (even if the
+incoming replication connection is from the same group that this instance
+belongs to). The reason for this is simple: AMPS must ensure that messages
+for a replicated queue, including acknowledgements and transfer messages, are able
+to reach every instance that hosts the queue if possible, even if a network
+connection fails or an instance goes offline. Therefore, this instance must
+passthrough messages received from other instances that affect the queue.</p>
+</div>
+<div class="section" id="guarantees-on-ordering">
+<h4>Guarantees on ordering<a class="headerlink" href="#guarantees-on-ordering" title="Permalink to this headline">¶</a></h4>
+<p>For each publisher, on a single topic, AMPS is guaranteed to deliver
+messages to subscribers in the same order that the messages were
+published by the original publisher. This guarantee holds true
+regardless of how many publishers or how many subscribers are connected
+to AMPS at any one time.</p>
+<p>For each instance, AMPS is guaranteed to deliver messages in the order
+in which the messages were received by the instance, regardless of
+whether a message is received directly from a publisher or indirectly
+via replication. The message order for the instance is recorded in the
+transaction log, and is guaranteed to remain consistent across server
+restarts.</p>
+<p>These guarantees mean that subscribers will not spend unnecessary CPU
+cycles checking timestamps or other message content to verify which
+message is the most recent, or reordering messages during playback. This
+frees up subscriber resources to do more important work.</p>
+<p>AMPS preserves an absolute order across topics for a single subscription
+for all topics <em>except</em> views, queues, and conflated topics.
+Applications often rely on this behavior to correlate the times at which
+messages to different topics were processed by AMPS. See
+<a class="reference internal" href="pub_sub.html#pub-sub-ordering"><span class="std std-ref">Message Ordering</span></a> for more information.</p>
+</div>
+<div class="section" id="automatically-downgrading-an-amps-instance">
+<span id="ug-replication-downgrade"></span><h4>Automatically Downgrading an AMPS instance<a class="headerlink" href="#automatically-downgrading-an-amps-instance" title="Permalink to this headline">¶</a></h4>
+<p>The AMPS administrative console provides the ability to downgrade a
+replication link from <em>synchronous</em> to <em>asynchronous</em> acknowledgement. This
+feature is useful to relieve memory or storage pressure on publishers
+should a downstream AMPS instance prove unstable, unresponsive, or be
+experiencing excessive latency.</p>
+<p>Downgrading a replication link to <em>asynchronous</em> means that any
+<code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment message that a publisher may be waiting on
+will no longer wait for the downstream instance to confirm the message
+as persisted.  AMPS immediately considers the downstream instance to have
+acknowledged every message that has been sent to that instance, which means
+that if AMPS was waiting for acknowledgment from that instance to deliver
+a <code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment, AMPS immediately sends the <code class="docutils literal"><span class="pre">persisted</span></code>
+acknowledgment when the instance is downgraded.</p>
+<p>AMPS can be configured to automatically downgrade a replication link to
+<code class="docutils literal"><span class="pre">async</span></code> acknowledgement if the remote side of the link cannot keep up with
+persisting messages or becomes unresponsive. This option prevents
+unreliable links from holding up publishers, but increases the chances
+of a single instance failure resulting in message loss, as described
+above. AMPS can also be configured to automatically upgrade a
+replication link that has previously been downgraded.</p>
+<p>Automatic downgrade is implemented as an AMPS action. To configure
+automatic downgrade, add the appropriate action to the configuration
+file as shown below:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+    <span class="nt">&lt;Actions&gt;</span>
+        <span class="nt">&lt;Action&gt;</span>
+            <span class="nt">&lt;On&gt;</span>
+                <span class="nt">&lt;Module&gt;</span>amps-action-on-schedule<span class="nt">&lt;/Module&gt;</span>
+                <span class="nt">&lt;Options&gt;</span>
+
+                    <span class="c">&lt;!--This option determines how often AMPS checks whether destinations have fallen</span>
+<span class="c">                    behind. In this example, AMPS checks destinations every 15 seconds. In most</span>
+<span class="c">                    cases, 60East recommends setting this to half of the Interval setting. --&gt;</span>
+                    <span class="nt">&lt;Every&gt;</span>15s<span class="nt">&lt;/Every&gt;</span>
+                <span class="nt">&lt;/Options&gt;</span>
+            <span class="nt">&lt;/On&gt;</span>
+            <span class="nt">&lt;Do&gt;</span>
+                <span class="nt">&lt;Module&gt;</span>amps-action-do-downgrade-replication<span class="nt">&lt;/Module&gt;</span>
+                <span class="nt">&lt;Options&gt;</span>
+
+                    <span class="c">&lt;!--The maximum amount of time for a destination to fall behind. If AMPS has been</span>
+<span class="c">                     waiting for an acknowledgment from the destination for longer than the</span>
+<span class="c">                     Interval, AMPS downgrades the destination. In this example, AMPS downgrades any</span>
+<span class="c">                     destination for which an acknowledgment has taken longer than 60 seconds. --&gt;</span>
+                    <span class="nt">&lt;Age&gt;</span>60s<span class="nt">&lt;/Age&gt;</span>
+                <span class="nt">&lt;/Options&gt;</span>
+            <span class="nt">&lt;/Do&gt;</span>
+            <span class="nt">&lt;Do&gt;</span>
+                <span class="nt">&lt;Module&gt;</span>amps-action-do-upgrade-replication<span class="nt">&lt;/Module&gt;</span>
+                <span class="nt">&lt;Options&gt;</span>
+
+                   <span class="c">&lt;!-- The threshold for upgrading the replication link back to sync</span>
+<span class="c">                        acknowledgement. If the destination is behind by less than this</span>
+<span class="c">                        amount, and was previously downgraded to async acknowledgement,</span>
+<span class="c">                        AMPS will upgrade to sync acknowledgement.</span>
+
+<span class="c">                        Notice that the upgrade threshold is not the same value as</span>
+<span class="c">                        the downgrade threshold. This is to prevent the connection</span>
+<span class="c">                        from repeatedly upgrading and downgrading if the age of the</span>
+<span class="c">                        oldest unacknowledged message for this destination is consistently</span>
+<span class="c">                        close to the threshold value.</span>
+<span class="c">                        --&gt;</span>
+
+                    <span class="nt">&lt;Age&gt;</span>10s<span class="nt">&lt;/Age&gt;</span>
+                <span class="nt">&lt;/Options&gt;</span>
+            <span class="nt">&lt;/Do&gt;</span>
+        <span class="nt">&lt;/Action&gt;</span>
+    <span class="nt">&lt;/Actions&gt;</span>
+   ...
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p>In this configuration file, AMPS checks every 15 seconds to see if a
+destination has fallen behind by 60 seconds. This helps to guarantee
+that a destination will never exceed the <code class="docutils literal"><span class="pre">Interval</span></code>, even in
+situations where the destination begins falling behind exactly at the
+time AMPS checks for the destination keeping up.</p>
+</div>
+<div class="section" id="replication-security">
+<h4>Replication Security<a class="headerlink" href="#replication-security" title="Permalink to this headline">¶</a></h4>
+<p>AMPS allows authorization and entitlement to be configured on
+replication destinations. For the instance that receives connections,
+you simply configure Authentication and Entitlement for the transport
+definition for the destination, as shown below:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;Transports&gt;</span>
+    <span class="nt">&lt;Transport&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>amps-replication<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+        <span class="nt">&lt;InetAddr&gt;</span>10005<span class="nt">&lt;/InetAddr&gt;</span>
+
+        <span class="c">&lt;!-- Specifies the entitlement module to use to check permissions for incoming</span>
+<span class="c">            connections. The module specified must be defined in the Modules section of the</span>
+<span class="c">            config file, or be one of the default modules provided by AMPS. This snippet</span>
+<span class="c">            uses the default module provided by AMPS for example purposes. --&gt;</span>
+        <span class="nt">&lt;Entitlement&gt;</span>
+            <span class="nt">&lt;Module&gt;</span>amps-default-entitlement-module<span class="nt">&lt;/Module&gt;</span>
+        <span class="nt">&lt;/Entitlement&gt;</span>
+
+        <span class="c">&lt;!-- Specifies the authorization module to use to verify identity for incoming</span>
+<span class="c">            connections. The module specified must be defined in the Modules section of the</span>
+<span class="c">            config file, or be one of the default modules provided by AMPS. This snippet</span>
+<span class="c">            uses the default module provided by AMPS for example purposes. --&gt;</span>
+        <span class="nt">&lt;Authentication&gt;</span>
+            <span class="nt">&lt;Module&gt;</span>amps-default-authentication-module<span class="nt">&lt;/Module&gt;</span>
+       <span class="nt">&lt;/Authentication&gt;</span>
+    <span class="nt">&lt;/Transport&gt;</span>
+ ...
+<span class="nt">&lt;/Transports&gt;</span>
+</pre></div>
+</div>
+<p>For incoming connections, configuration is the same as for other types
+of transports.</p>
+<p>For connections from AMPS to replication destinations, you can configure
+an Authenticator module for the destination transport. Authenticator
+modules provide credentials for outgoing connections from AMPS. For
+authentication protocols that require a challenge and response, the
+Authenticator module handles the responses for the instance requesting
+access.</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;Replication&gt;</span>
+    <span class="nt">&lt;Destination&gt;</span>
+        <span class="nt">&lt;Topic&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>fix<span class="nt">&lt;/MessageType&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>topic<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;/Topic&gt;</span>
+        <span class="nt">&lt;Name&gt;</span>amps-1<span class="nt">&lt;/Name&gt;</span>
+        <span class="nt">&lt;SyncType&gt;</span>async<span class="nt">&lt;/SyncType&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>amps-1-server.example.com:10004<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>amps-replication<span class="nt">&lt;/Type&gt;</span>
+
+            <span class="c">&lt;!-- Specifies the authenticator module to use to provide credentials for the</span>
+<span class="c">                outgoing connection. The module specified must be defined in the Modules section</span>
+<span class="c">                of the config file, or be one of the default modules provided by AMPS. This</span>
+<span class="c">                snippet uses the default module provided by AMPS for example purposes. --&gt;</span>
+            <span class="nt">&lt;Authenticator&gt;</span>
+                <span class="nt">&lt;Module&gt;</span>amps-default-authenticator-module<span class="nt">&lt;/Module&gt;</span>
+            <span class="nt">&lt;/Authenticator&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Destination&gt;</span>
+<span class="nt">&lt;/Replication&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="maximum-downstream-destinations">
+<h4>Maximum downstream destinations<a class="headerlink" href="#maximum-downstream-destinations" title="Permalink to this headline">¶</a></h4>
+<p>AMPS has support for up to 64 synchronous downstream replication
+instances and unlimited asynchronous destinations.</p>
+</div>
+</div>
+</div>
+<div class="section" id="high-availability">
+<h2>High Availability<a class="headerlink" href="#high-availability" title="Permalink to this headline">¶</a></h2>
+<p>AMPS High Availability, which includes multi-site replication and the
+transaction log, is designed to provide long uptimes and speedy recovery
+from disasters. Replication allows deployments to improve upon the
+already rock-solid stability of AMPS. Additionally, AMPS journaling
+provides the persisted state necessary to make sure that client recovery
+is fast, painless, and error free.</p>
+<div class="section" id="guaranteed-publishing">
+<span id="ug-guaranteed-publishing"></span><h3>Guaranteed Publishing<a class="headerlink" href="#guaranteed-publishing" title="Permalink to this headline">¶</a></h3>
+<p id="index-6">An interruption in service while publishing messages could be disastrous
+if the publisher doesn&#8217;t know which message was last persisted to AMPS.
+To prevent this from happening, AMPS has support for <em>guaranteed
+publishing</em>.</p>
+<p>With guaranteed publishing, the AMPS client library is responsible for
+retaining and retransmitting the message until the server acknowledges that
+the message has successfully been persisted to the server and has been
+acknowledged as persisted by any replication destinations that are configured
+for synchronous replication.  This means that each message always has at least
+one part of the system (either the client library or the AMPS server)
+responsible for persisting the message, and if failover occurs, that part
+of the system can retain and recover the message as necessary.</p>
+<p>An important part of guaranteed publishing is to be able to uniquely identify
+messages.  In AMPS, the unique identifier for a message is a <em>bookmark</em>, which
+is formed from a combination of a number derived from the client name and
+a <em>sequence number</em> managed by the client. A sequence number is simply an
+ever-increasing number assigned by a publisher to any operation that
+changes the state of persistent storage in AMPS (that is, <code class="docutils literal"><span class="pre">publish</span></code> or
+<code class="docutils literal"><span class="pre">sow_delete</span></code> commands).</p>
+<p>The AMPS clients automatically manage sequence numbers when applications
+use the named methods or the <code class="docutils literal"><span class="pre">Command</span></code> interface. The libraries set the
+sequence number on each published message, ensure that the sequence number
+increases as appropriate, and initialize the sequence number at <code class="docutils literal"><span class="pre">logon</span></code>
+using information retrieved from the server acknowledgment of the <code class="docutils literal"><span class="pre">logon</span></code>
+command. The sequence number is also used for acknowledgments. The
+<code class="docutils literal"><span class="pre">persisted</span></code> acknowledgment returned in response to a
+<code class="docutils literal"><span class="pre">publish</span></code> command contains the sequence number of last message persisted
+rather than the <code class="docutils literal"><span class="pre">CommandId</span></code> of the publish command message (for more details see <a class="reference internal" href="acks.html#ug-ack-conflation"><span class="std std-ref">Ack Conflation</span></a>).</p>
+<p>The <code class="docutils literal"><span class="pre">logon</span></code> command supports a <code class="docutils literal"><span class="pre">processed</span></code> acknowledgment message,
+which will return the <code class="docutils literal"><span class="pre">Sequence</span></code> of the last record that AMPS has
+persisted. When the <code class="docutils literal"><span class="pre">processed</span></code> acknowledgment message is returned to
+the publisher, the <code class="docutils literal"><span class="pre">Sequence</span></code> corresponds to the last message
+persisted by AMPS. The publisher can then use that sequence to determine
+if it needs to 1) re-publish messages that were not persisted by AMPS,
+or 2) continue publishing messages from where it left off. Acknowledging
+persisted messages across logon sessions allows AMPS to guarantee
+publishing. The HAClient classes in the AMPS clients manage sequence
+numbers, including setting a meaningful initial sequence number based on
+the response from the <code class="docutils literal"><span class="pre">logon</span></code> command, automatically.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="tip" src="../_images/tip.svg" /></td>
+<td>It is recommended as a best practice that all publishers request
+a <code class="docutils literal"><span class="pre">processed</span></code> acknowledgment message with every <code class="docutils literal"><span class="pre">logon</span></code>
+command. This ensures that the <code class="docutils literal"><span class="pre">Sequence</span></code> returned in the
+acknowledgment message matches the publisher&#8217;s last published
+message. The 60East AMPS clients do this automatically when
+using the named logon methods. If you are building the command
+yourself or using a custom client, you may need to add this
+request to the command yourself.</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the acknowledgment messages, AMPS also keeps track of the
+published messages from a client based on the client&#8217;s name. The client
+name is set during the <code class="docutils literal"><span class="pre">logon</span></code> command, so to set a consistent client
+name, it is necessary for an application to log on to AMPS. A logon is
+required by default in AMPS versions 5.0 and later, and optional by
+default in AMPS versions previous to 5.0.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="important" src="../_images/important.svg" /></td>
+<td><p class="first">All publishers must set a unique client name field when logging
+on to AMPS. This allows AMPS to correlate the sequence numbers
+of incoming publish messages to a specific client, which is
+required for reliable publishing, replication, and duplicate
+detection in the server. In the event that multiple publishers
+have the same client name, AMPS can no longer reliably correlate
+messages using the publish sequence number and client name.</p>
+<p class="last">When a transaction log is enabled for AMPS, it is an error for
+two clients to connect to an instance with the same name.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="durable-publication-and-subscriptions">
+<h3>Durable Publication and Subscriptions<a class="headerlink" href="#durable-publication-and-subscriptions" title="Permalink to this headline">¶</a></h3>
+<p id="index-7">The AMPS client libraries include features to enable durable
+subscription and durable publication. In this chapter we&#8217;ve covered how
+publishing messages to a transaction log persists them. We&#8217;ve also
+covered how the transaction log can be queried (subscribed) with a
+bookmark for replay. Now, putting these two features together yields
+<em>durable subscriptions</em>.</p>
+<p>A <em>durable subscriber</em> is one that receives all messages published to a
+topic (including a regular expression topic), even when the subscriber
+is offline. In AMPS this is accomplished through the use of the bookmark
+subscription on a client.</p>
+<p>Implementation of a <em>durable subscription</em> in AMPS is accomplished on
+the client by persisting the last observed bookmark field received from
+a subscription. This enables a client to recover and resubscribe from
+the exact point in the transaction log where it left off.</p>
+<p>A durable publisher maintains a persistent record of messages published
+until AMPS acknowledges that the message has been persisted.
+Implementation of a durable publisher in AMPS is accomplished on the
+client by persisting outgoing messages until AMPS sends a <code class="docutils literal"><span class="pre">persisted</span></code>
+acknowledgment that says that this message, or a later message, has
+been persisted. At that point, the publishers can remove the message
+from the persistent store. Should the publisher restart, or should AMPS
+fail over, the publisher can re-send messages from the persistent store.
+AMPS uses the sequence number in the message to discard any duplicates.
+This helps ensure that no messages are lost, and provides
+fault-tolerance for publishers.</p>
+<p>The AMPS C++, Java, C# and Python clients each provide different
+implementation of persistent subscriptions and persistent publication.
+Please refer to the <em>High Availability</em> chapter of the <em>Client
+Development Guide</em> for the language of your choice to see how this
+feature is implemented.</p>
+</div>
+<div class="section" id="heartbeat-in-high-availability">
+<h3>Heartbeat in High Availability<a class="headerlink" href="#heartbeat-in-high-availability" title="Permalink to this headline">¶</a></h3>
+<p id="index-8">Use of the heartbeat feature allows your application to quickly recover
+from detected connection failures. By default, connection failure
+detection occurs when AMPS receives an operating system error on the
+connection. This system may result in unpredictable delays in detecting
+a connection failure on the client, particularly when failures in
+network routing hardware occur, and the client primarily acts as a
+subscriber.</p>
+<p>The heartbeat feature of the AMPS server and the AMPS clients allows
+connection failure to be detected quickly. Heartbeats ensure that
+regular messages are sent between the AMPS client and server on a
+predictable schedule. The AMPS server assumes disconnection has occurred
+if these regular heartbeats cease, ensuring disconnection is detected in
+a timely manner.</p>
+<p>Heartbeats are initialized by the AMPS client by sending a <code class="docutils literal"><span class="pre">heartbeat</span></code>
+message to the AMPS server. To enable heartbeats in your application,
+refer to the <em>High Availability</em> chapter in the Developer Guide for your
+specific client language.</p>
+</div>
+<div class="section" id="slow-client-management-and-capacity-limits">
+<span id="ug-slow-client-management"></span><span id="index-9"></span><h3>Slow Client Management and Capacity Limits<a class="headerlink" href="#slow-client-management-and-capacity-limits" title="Permalink to this headline">¶</a></h3>
+<p>AMPS provides the ability to manage memory consumption for clients to
+prevent slow clients, or clients that require large amounts of state, to
+disrupt service to the instance.</p>
+<p>Sometimes, AMPS can publish messages faster than an individual client
+can consume messages, particularly in applications where the pattern of
+messages includes &#8220;bursts&#8221; of messages. Clients that are unable to
+consume messages faster or equal to the rate messages are being sent to
+them are &#8220;slow clients&#8221;. By default, AMPS queues messages for a slow
+client in memory to grant the slow client the opportunity to catch up.
+However, scenarios may arise where a client can be over-subscribed to
+the point that the client cannot consume messages as fast as messages
+are being sent to it. In particular, this can happen with the results of
+a large SOW query, where AMPS generates all of the messages for the
+query much faster than the network can transmit the messages.</p>
+<p>Some features, such as conflated subscriptions, aggregated
+subscriptions and pagination require AMPS to buffer messages in memory
+for extended periods of time. Without a way to set limits on memory
+consumption, subscribers using these features could cause AMPS to exceed
+available memory and reduce performance or exit.</p>
+<p>Memory capacity limits, typically called <em>slow client management</em>, are
+one of the ways that AMPS prevents slow clients, or clients that consume
+large amounts of memory, from disrupting service to other clients connected
+to the instance. 60East recommends enabling slow client management for
+instances that serve high message volume or are mission critical.</p>
+<p>There are two methods that AMPS uses for managing slow clients to
+minimize the effect of slow clients on the AMPS instance:</p>
+<ul class="simple">
+<li><em>Client offlining</em>. When client offlining occurs, AMPS buffers the
+messages for that client to disk. This relieves pressure on memory,
+while allowing the client to continue processing messages.</li>
+<li><em>Disconnection</em>. When disconnection occurs, AMPS closes the client
+connection, which immediately ends any subscriptions, in-progress
+<code class="docutils literal"><span class="pre">sow</span></code> queries, or other commands from that client. AMPS also
+removes any offlined messages for that client.</li>
+</ul>
+<p>AMPS provides resource pool protection, to protect the capacity of the
+instance as a whole, and client-level protection, to identify
+unresponsive clients.</p>
+<div class="section" id="resource-pool-policies">
+<h4>Resource Pool Policies<a class="headerlink" href="#resource-pool-policies" title="Permalink to this headline">¶</a></h4>
+<p>AMPS uses resource pools for memory and disk consumption for clients.
+When the memory limit is exceeded, AMPS chooses a client to be offlined.
+When the disk limit is exceeded, AMPS chooses a client to be
+disconnected.</p>
+<p>When choosing which client will be offlined or disconnected, AMPS
+identifies the client that uses the largest amount of resources (memory
+and/or disk). That client will be offlined or disconnected. The memory
+consumption calculated for a client includes both buffered messages and
+memory used to support features such as conflated subscriptions and aggregated
+subscriptions.</p>
+<p>AMPS allows you to use a global resource pool for the entire instance, a
+resource pool for each transport, or any combination of the two
+approaches. By default, AMPS configures a global resource pool that is
+shared across all transports. When an individual transport specifies a
+different setting for a resource pool, that transport receives an
+individual resource pool. For example, you might set high resource
+limits for a particular transport that serves a mission-critical
+application, allowing connections from that application to consume more
+resources than connections for less important applications.</p>
+<p>The following table shows resource pool options for slow client
+management:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Element</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code></td>
+<td><p class="first">The total amount of memory to
+allocate to messages before
+offlining clients.</p>
+<p class="last">Default: 10% of total host memory or
+10% of the amount of host memory
+AMPS is allowed to consume (as
+reported by <code class="docutils literal"><span class="pre">ulimit</span> <span class="pre">-m</span></code> ),
+whichever is <em>lowest</em>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MessageDiskLimit</span></code></td>
+<td><p class="first">The total amount of disk space to
+allocate to messages before
+disconnecting clients.</p>
+<p class="last">Default: 1GB or the amount specified
+in the MessageMemoryLimit, whichever
+is <em>highest</em>.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageDiskPath</span></code></td>
+<td><p class="first">The path to use to write offline
+files.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">/var/tmp</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 25.3:</strong> <em>Slow Client: Resource Pool Policies</em></p>
+</div>
+<div class="section" id="individual-client-policies">
+<h4>Individual Client Policies<a class="headerlink" href="#individual-client-policies" title="Permalink to this headline">¶</a></h4>
+<p>AMPS also allows you to set policies that apply to individual clients.
+These policies are applied to clients independently of the instance
+level policies. For example, a client that exceeds the capacity limit
+for an individual client will be disconnected, even if the instance
+overall has enough capacity to hold messages for the client.</p>
+<p>As with the Resource Pool Policies, Transports can either use
+instance-level settings or create settings specific to that transport.</p>
+<p>The following table shows the client level options for slow client
+management:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Element</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ClientMessageAgeLimit</span></code></td>
+<td><p class="first">The maximum amount of time for the
+client to lag behind. If a message
+for the client has been held longer
+than this time, the client will be
+disconnected. This parameter is an
+AMPS time interval (for example,
+<code class="docutils literal"><span class="pre">30s</span></code> for 30 seconds, or <code class="docutils literal"><span class="pre">1h</span></code>
+for 1 hour).</p>
+<p class="last">Default: No age limit</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">ClientMaxCapacity</span></code></td>
+<td><p class="first">The amount of available capacity a
+single client can consume. Before a
+client is offlined, this limit
+applies to the
+<code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code>. After a
+client is offlined, this limit
+applies to the <code class="docutils literal"><span class="pre">MessageDiskLimit</span></code>.
+This parameter is a percentage of
+the total.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">100%</span></code> (no effective
+limit)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 25.4:</strong> <em>Slow Client: Individual Client Policies</em></p>
+<p>Client offlining can require careful configuration, particularly in
+situations where applications retrieve large result sets from SOW
+queries when the application starts up. More information on tuning slow
+client offlining for AMPS is available in
+<a class="reference internal" href="operation.html#ug-ops-client-offlining"><span class="std std-ref">Slow Client Offlining for Large Result Sets</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="configuring-slow-client-offlining">
+<h2>Configuring Slow Client Offlining<a class="headerlink" href="#configuring-slow-client-offlining" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+
+
+    <span class="nt">&lt;MessageMemoryLimit&gt;</span>10GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+    <span class="nt">&lt;MessageDiskPath&gt;</span>/mnt/fastio/AMPS/offline<span class="nt">&lt;/MessageDiskPath&gt;</span>
+    <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>30s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+
+    ...
+
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9007<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-bson-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9010<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>bson<span class="nt">&lt;/MessageType&gt;</span>
+
+            <span class="c">&lt;!-- However, this transport does not allow clients to fall as far behind as the</span>
+<span class="c">                instance-level setting --&gt;</span>
+
+            <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>15s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport has a separate 35GB MessageMemoryLimit</span>
+<span class="c">            and a 70GB MessageDiskLimit. It uses the instance-wide</span>
+<span class="c">            30s parameter for the ClientMessageAgeLimit --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>highpri-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9995<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+            <span class="nt">&lt;MessageMemoryLimit&gt;</span>35GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+            <span class="nt">&lt;MessageDiskLimit&gt;</span>70GB<span class="nt">&lt;/MessageDiskLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Transports&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="message-ordering-and-replication">
+<h3>Message Ordering and Replication<a class="headerlink" href="#message-ordering-and-replication" title="Permalink to this headline">¶</a></h3>
+<p>AMPS uses the name of the publisher and the sequence number assigned by
+the publisher to ensure that messages from each publisher are published
+in order. However, AMPS does not enforce order across publishers. This
+means that, in a failover situation, that messages from different
+publishers may be interleaved in a different order on different servers,
+even though the message stream from each publisher is preserved in
+order. Each instance preserves the order in which messages were
+processed by that instance, and enforces that order.</p>
+</div>
+</div>
+<div class="section" id="replicated-queues">
+<span id="index-10"></span><h2>Replicated Queues<a class="headerlink" href="#replicated-queues" title="Permalink to this headline">¶</a></h2>
+<p>AMPS provides a unique approach to replicating queues. This approach is
+designed to offer high performance in the most common cases, while
+continuing to provide delivery model guarantees, resilience and failover
+in the event that one of the replicated instances goes offline.</p>
+<p>When a queue is replicated, AMPS replicates the <code class="docutils literal"><span class="pre">publish</span></code> commands to
+the underlying topic, the <code class="docutils literal"><span class="pre">sow_delete</span></code> commands that contain the
+acknowledgment messages, and special queue management commands that are
+internal to AMPS.</p>
+<div class="section" id="queue-message-ownership">
+<h3>Queue Message Ownership<a class="headerlink" href="#queue-message-ownership" title="Permalink to this headline">¶</a></h3>
+<p>To guarantee that no message is delivered more than once, AMPS tracks
+ownership of the message within the network of replicated instances.
+When a message is first published to AMPS, the instance that receives
+the publish command owns the message. Although all replicated instances
+downstream instances record the publish command in their transaction
+logs, they do not provide the message to queue subscribers unless that
+instance owns the message.</p>
+<p>Only one instance can own a message at any given time. To transfer
+ownership, an instance that does not currently own the message makes a
+request to the current message owner. The owning instance makes an
+explicit decision to transfer ownership, and replicates the transfer
+notification to all instances to which the queue topic is replicated.</p>
+<p>The instance that owns a message will always deliver the message to a
+local subscriber if possible. This means that performance for local
+subscribers is unaffected by the number of downstream instances.
+However, this also means that if the local subscribers are keeping up
+with the message volume being published to the queue, the owning
+instance will never need to grant a transfer of ownership.</p>
+<p>Downstream instances can request that the owner transfer ownership of a
+message.</p>
+<p>A downstream instance will make this request if:</p>
+<ol class="arabic simple">
+<li>The downstream instance has subscriptions for that topic with
+available backlog, <em>and</em></li>
+<li>The amount of time since the message arrived at the instance is
+greater than the typical time between the replicated message arriving
+and the replicated acknowledgment arriving.</li>
+</ol>
+<p>Notice that this approach is intended to minimize ungranted transfer
+requests. In normal circumstances, the typical processing time reflects
+the speed at which the local processors are consuming messages at a
+steady state. Downstream instances will only request messages that have
+been seen to exceed that time, indicating that the processors are not
+keeping up with the incoming message rate.</p>
+<p>The instance that owns the message will grant ownership to a requesting
+instance if:</p>
+<ol class="arabic simple">
+<li>The request is the first request received for this message, <em>and</em></li>
+<li>There are no subscribers on the owning instance that can accept the
+message</li>
+</ol>
+<p>When the owning instance grants the request, it logs the transfer in its
+transaction log and sends the transfer of ownership to all instances
+that are receiving replicated messages for the queue. When the owning
+instance does not grant the transfer of ownership, it takes no action.</p>
+<p>Notice that your replication topology must be able to replicate
+acknowledgments to all instances that receive messages for the queue.
+Otherwise, an instance that does not receive the acknowledgments will
+not consider the messages to be processed. Replication validation can
+help to identify topologies that do not meet this requirement.</p>
+<div class="section" id="failover-and-queue-message-ownership">
+<h4>Failover and Queue Message Ownership<a class="headerlink" href="#failover-and-queue-message-ownership" title="Permalink to this headline">¶</a></h4>
+<p>When an instance that contains a queue fails or is shut down, that
+instance is no longer able to grant ownership requests for the messages
+that it owns. By default, those messages become unavailable for
+delivery, since there is no longer a central coordination point at which
+to ensure that the messages are only delivered once.</p>
+<p>AMPS provides a way to make those messages available. Through the admin
+console, you can choose to <code class="docutils literal"><span class="pre">enable_proxied_transfer</span></code>, which allows an
+instance to act as an ownership proxy for an instance that has gone
+offline. In this mode, the local instance can assume ownership of
+messages that is owned by an offline instance.</p>
+<p>Use this setting with care: when active, it is possible for messages to
+be delivered twice if the instance that had previously owned the message
+comes back online, or if multiple instances have proxied transfer
+enabled for the same queue.</p>
+<p>In general, you <code class="docutils literal"><span class="pre">enable_proxied_transfer</span></code> as a temporary recovery step
+while one of the instances is offline, and then disable proxied transfer
+when the instance comes back online, or when all of the messages owned
+by that instance have been processed.</p>
+</div>
+</div>
+<div class="section" id="configuration-for-queue-replication">
+<h3>Configuration for Queue Replication<a class="headerlink" href="#configuration-for-queue-replication" title="Permalink to this headline">¶</a></h3>
+<p>To provide replication for a distributed queue, AMPS requires that the
+replication configuration:</p>
+<ol class="arabic">
+<li><p class="first">Provide bidirectional replication between the instances. In other
+words, if instance A replicates a queue to instance B, instance B
+must also replicate that queue to instance A.</p>
+</li>
+<li><p class="first">If the topic is a queue on one instance, it must be a queue on all
+replicated instances.</p>
+</li>
+<li><p class="first">On all replicated instances, the queue must use the same underlying
+topic definition and filters. For queues that use a regular
+expression as the topic definition, this means that the regular
+expression must be the same.</p>
+</li>
+<li><p class="first">The underlying topics must be replicated to all replicated instances
+(since this is where the messages for the queue are stored).</p>
+</li>
+<li><p class="first">Replicated instances must provide passthrough for instances that
+replicate queues. For example, consider the following replication
+topology: Instance A in group One replicates a queue to instance B in
+group Two. Instance B in group Two replicates the queue to instance C
+in group Three.</p>
+<p>For this configuration, instance B must provide passthrough for group
+Three to instance A, and must also provide passthrough for group One
+to instance C. The reason for this is to ensure that ownership
+transfer and acknowledgment messages can reach all instances that
+maintain a copy of the queue.</p>
+</li>
+</ol>
+<p>Notice that the requirements above apply only to queue topics. If the
+underlying topic uses a different name than the queue topic, it is
+possible to replicate the messages from the underlying topic without
+replicating the queue itself. This approach can be convenient for simply
+recording and storing the messages provided to the queue on an archival
+or auditing instance. When only the underlying topic (or topics) are
+replicated, the requirements above do not apply, since AMPS does not
+provide queuing behavior for the underlying topics.</p>
+<p>A queue defined with <code class="docutils literal"><span class="pre">LocalQueue</span></code> cannot be replicated. The data from
+the underlying topics for the queue can be replicated without special
+restrictions. The queue topic itself, however, cannot be replicated.
+AMPS reports an error if any <code class="docutils literal"><span class="pre">LocalQueue</span></code> topic is replicated.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2017 60East Technologies, Inc.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

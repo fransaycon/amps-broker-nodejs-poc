@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns:gliffy="http://www.gliffy.com"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="-55 197 500 533"
+	 style="enable-background:new -55 197 500 533;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:none;}
+	.st2{font-family:'ArialMT';}
+	.st3{font-size:12px;}
+	.st4{fill:#A8A8A8;fill-opacity:0.6;}
+	.st5{fill:#FFFFFF;stroke:#333333;stroke-width:3;}
+	.st6{font-family:'Arial-BoldMT';}
+	.st7{font-size:18px;}
+	.st8{fill:none;stroke:#000000;stroke-width:2;stroke-dasharray:23,0;}
+	.st9{stroke:#333333;}
+	.st10{stroke:#000000;stroke-width:2;}
+	.st11{fill:none;stroke:#000000;stroke-width:2;stroke-dasharray:6,12;}
+</style>
+<rect x="-52" y="196.5" class="st0" width="499" height="399"/>
+<g transform="translate(214.75,214.25) rotate(0 33.25 11.75)">
+	<rect x="-55" y="197" class="st1" width="66.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -50.4434 195)" class="st2 st3">group_end</text>
+	</g>
+</g>
+<g transform="translate(172.375,176.25) rotate(0 76.625 11.75)">
+	<rect x="-55" y="197" class="st1" width="153.3" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -36.7314 195)" class="st2 st3">matching sow records</text>
+	</g>
+</g>
+<g transform="translate(181.5,135.25) rotate(0 66.5 11.75)">
+	<rect x="-55" y="197" class="st1" width="133" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -48.2129 195)" class="st2 st3">group_begin response</text>
+	</g>
+</g>
+<g transform="translate(124.75,95.25) rotate(0 122.25 11.75)">
+	<rect x="-55" y="197" class="st1" width="244.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -14.375 195)" class="st2 st3">sow_and_subscribe command</text>
+	</g>
+</g>
+<g transform="translate(12.0,23.625) rotate(0 70.0 19.375)">
+	<g transform="translate(4.0,4.0)">
+		<rect x="-55" y="197" class="st4" width="140" height="38.8"/>
+	</g>
+	<rect x="-55" y="197" class="st5" width="140" height="38.8"/>
+	<g transform="translate(0.0,27.375)">
+		<text transform="matrix(1 0 0 1 -10.0005 194)" class="st6 st7">Client</text>
+	</g>
+</g>
+<g transform="translate(82.0,62.375)">
+	<path class="st8" d="M-54.9,197v411.8c0,10.2-0.5,15.3-1.6,15.3h-1.6"/>
+	<g transform="translate(0.0,135.0625)">
+	</g>
+</g>
+<g transform="translate(9.5,333.5) rotate(0 69.5 7.5)">
+	<g transform="translate(4.0,4.0)">
+		<rect x="-57" y="344.5" class="st4" width="139" height="15"/>
+	</g>
+	<rect x="-57" y="344.5" class="st9" width="139" height="15"/>
+</g>
+<g transform="translate(348.0,24.625) rotate(0 70.0 19.375)">
+	<g transform="translate(4.0,4.0)">
+		<rect x="-55" y="197" class="st4" width="140" height="38.8"/>
+	</g>
+	<rect x="-55" y="197" class="st5" width="140" height="38.8"/>
+	<g transform="translate(0.0,27.375)">
+		<text transform="matrix(1 0 0 1 -11.0024 194)" class="st6 st7">AMPS</text>
+	</g>
+</g>
+<g transform="translate(418.0,63.375)">
+	<path class="st8" d="M-55,197v409.9c0,10.2-0.5,15.3-1.5,15.3H-58"/>
+	<g transform="translate(0.0,135.0625)">
+	</g>
+</g>
+<g transform="translate(345.5,334.5) rotate(0 69.5 7.5)">
+	<g transform="translate(4.0,4.0)">
+		<rect x="-57" y="344.5" class="st4" width="139" height="15"/>
+	</g>
+	<rect x="-57" y="344.5" class="st9" width="139" height="15"/>
+</g>
+<g transform="translate(82.0,117.0)">
+	<path class="st8" d="M-55,197h156.5c6.7,0,10,0,10,0l0,0l0,0H275"/>
+	<g transform="translate(333.0,0.0) rotate(180.0)">
+		<polygon class="st10" points="58,-197 64,-200 64,-194 		"/>
+	</g>
+	<g transform="translate(161.5,0.0)">
+	</g>
+</g>
+<g transform="translate(417.0,155.0)">
+	<path class="st11" d="M-55,197h-156c-6.7,0-10,0-10,0l0,0l0,0h-163"/>
+	<g transform="translate(-332.0,0.0) rotate(360.0)">
+		<polygon class="st10" points="-52,197 -46,194 -46,200 		"/>
+	</g>
+	<g transform="translate(-161.0,0.0)">
+	</g>
+</g>
+<g transform="translate(416.0,196.0)">
+	<path class="st11" d="M-55,197h-155.5c-6.7,0-10,0-10,0l0,0l0,0H-383"/>
+	<g transform="translate(-331.0,0.0) rotate(360.0)">
+		<polygon class="st10" points="-52,197 -46,194 -46,200 		"/>
+	</g>
+	<g transform="translate(-160.5,0.0)">
+	</g>
+</g>
+<g transform="translate(416.0,236.0)">
+	<path class="st11" d="M-55,197h-155c-6.7,0-10-0.2-10-0.5l0,0c0-0.3-0.2-0.5-0.5-0.5H-382"/>
+	<g transform="translate(-330.0,-1.0) rotate(360.0)">
+		<polygon class="st10" points="-52,197 -46,194 -46,200 		"/>
+	</g>
+	<g transform="translate(-159.75,0.0)">
+	</g>
+</g>
+<g transform="translate(214.75,214.25) rotate(0 33.25 11.75)">
+	<rect x="-60.5" y="237.4" class="st1" width="66.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -117.75 235.375)" class="st2 st3">publish messages matching subscription</text>
+	</g>
+</g>
+<g transform="translate(416.0,236.0)">
+	<path class="st11" d="M-60.5,237.4h-155c-6.7,0-10-0.2-10-0.5l0,0c0-0.3-0.2-0.5-0.5-0.5h-161.5"/>
+	<g transform="translate(-330.0,-1.0) rotate(360.0)">
+		<polygon class="st10" points="-57.5,237.4 -51.5,234.4 -51.5,240.4 		"/>
+	</g>
+	<g transform="translate(-159.75,0.0)">
+	</g>
+</g>
+<g transform="translate(124.75,95.25) rotate(0 122.25 11.75)">
+	<rect x="-54" y="395.8" class="st1" width="244.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -29.25 393.75)" class="st2 st3">sow_and_subscribe command with replace</text>
+	</g>
+</g>
+<g transform="translate(82.0,117.0)">
+	<path class="st8" d="M-54,395.8h156.5c6.7,0,10,0,10,0l0,0l0,0H276"/>
+	<g transform="translate(333.0,0.0) rotate(180.0)">
+		<polygon class="st10" points="57,-395.8 63,-398.8 63,-392.8 		"/>
+	</g>
+	<g transform="translate(161.5,0.0)">
+	</g>
+</g>
+<g transform="translate(214.75,214.25) rotate(0 33.25 11.75)">
+	<rect x="-57.5" y="395.5" class="st1" width="66.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -52.9434 393.5)" class="st2 st3">group_end</text>
+	</g>
+</g>
+<g transform="translate(172.375,176.25) rotate(0 76.625 11.75)">
+	<rect x="-57.5" y="395.5" class="st1" width="153.3" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -91.2314 393.5)" class="st2 st3">newly matching sow records and oof messages</text>
+	</g>
+</g>
+<g transform="translate(181.5,135.25) rotate(0 66.5 11.75)">
+	<rect x="-57.5" y="395.5" class="st1" width="133" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -50.7129 393.5)" class="st2 st3">group_begin response</text>
+	</g>
+</g>
+<g transform="translate(417.0,155.0)">
+	<path class="st11" d="M-57.5,395.5h-156c-6.7,0-10,0-10,0l0,0l0,0h-163"/>
+	<g transform="translate(-332.0,0.0) rotate(360.0)">
+		<polygon class="st10" points="-54.5,395.5 -48.5,392.5 -48.5,398.5 		"/>
+	</g>
+	<g transform="translate(-161.0,0.0)">
+	</g>
+</g>
+<g transform="translate(416.0,196.0)">
+	<path class="st11" d="M-57.5,395.5H-213c-6.7,0-10,0-10,0l0,0l0,0h-162.5"/>
+	<g transform="translate(-331.0,0.0) rotate(360.0)">
+		<polygon class="st10" points="-54.5,395.5 -48.5,392.5 -48.5,398.5 		"/>
+	</g>
+	<g transform="translate(-160.5,0.0)">
+	</g>
+</g>
+<g transform="translate(416.0,236.0)">
+	<path class="st11" d="M-57.5,395.5h-155c-6.7,0-10-0.2-10-0.5l0,0c0-0.3-0.2-0.5-0.5-0.5h-161.5"/>
+	<g transform="translate(-330.0,-1.0) rotate(360.0)">
+		<polygon class="st10" points="-54.5,395.5 -48.5,392.5 -48.5,398.5 		"/>
+	</g>
+	<g transform="translate(-159.75,0.0)">
+	</g>
+</g>
+<g transform="translate(214.75,214.25) rotate(0 33.25 11.75)">
+	<rect x="-57.5" y="429.4" class="st1" width="66.5" height="23.5"/>
+	<g transform="translate(0.0,16.75)">
+		<text transform="matrix(1 0 0 1 -145 427.375)" class="st2 st3">publish messages matching updated subscription</text>
+	</g>
+</g>
+<g transform="translate(416.0,236.0)">
+	<path class="st11" d="M-57.5,429.4h-155c-6.7,0-10-0.2-10-0.5l0,0c0-0.3-0.2-0.5-0.5-0.5h-161.5"/>
+	<g transform="translate(-330.0,-1.0) rotate(360.0)">
+		<polygon class="st10" points="-54.5,429.4 -48.5,426.4 -48.5,432.4 		"/>
+	</g>
+	<g transform="translate(-159.75,0.0)">
+	</g>
+</g>
+</svg>

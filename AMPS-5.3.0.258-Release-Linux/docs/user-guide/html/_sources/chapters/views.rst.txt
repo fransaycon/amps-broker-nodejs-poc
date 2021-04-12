@@ -1,0 +1,90 @@
+.. index:: Views, AMPS; Views,
+
+.. include:: ./macros.inc
+.. _#ug-views:
+
+13. Aggregating and Analyzing Data in AMPS
+==========================================
+
+AMPS contains a high-performance aggregation engine, which can be used
+to project one SOW topic onto another, similar to the ``CREATE VIEW``
+functionality found in most RDBMS software. The aggregation engine can
+join input from multiple topics, of the same or different message types,
+and can produce output in different message types.
+
+View topics are part of the AMPS State of the World, which means that
+views support delta subscriptions and out of focus (OOF) tracking. A
+view can also be used as the underlying topic for another view.
+
+In addition, for the limited cases where a view is not practical, AMPS
+allows an individual subscription to request aggregation and projection
+a single SOW topic.
+
+Notice that the features described in this chapter are designed for cases
+where an application needs to aggregate data across messages or to perform
+a calculation on an individual message that should not be preserved as a
+part of that message.
+
+To modify a message as it is published to AMPS, use *preprocessing or
+enrichment*.  To simply retrieve a subset of the fields in a message, use
+*select lists*.
+
+.. _#ug-views-understanding:
+
+Understanding Views
+--------------------
+
+Views allow you to aggregate messages from one or more SOW topics in
+AMPS and present the aggregation as a new SOW topic. AMPS stores the
+contents of the view as serialized messages in memory, similar to a
+materialized view in RDBMS software.
+
+Views are often used to simplify subscriber implementation and can
+reduce the network traffic to subscribers. For example, if some clients
+will only process orders where the total cost of the order exceeds a
+certain value, you can both simplify subscriber code and reduce network
+traffic by creating a view that contains a calculated field for the
+total cost. Rather than receiving all messages and calculating the cost,
+subscribers can filter on the calculated field. You can also combine
+information from multiple topics. For example, you could create a view
+that contains orders from high-priority customers that exceed a certain
+dollar amount.
+
+AMPS sends messages to view topics the same way that AMPS sends messages
+to SOW topics: when a message arrives that updates the value of a
+message in the view, AMPS sends a message on the view topic. Likewise,
+you can query a view the same way that you query a SOW topic.
+
+Defining a view is straightforward. You set the name of the view, the
+SOW topic or topics from which messages originate and describe how you
+want to aggregate, or project, the messages. AMPS creates a topic and
+projects the messages as requested.
+
++-----------+------------------------------------------------------------------+
+| |caution| | All message types that you specify in a view must support view   |
+|           | creation. The AMPS default message types all support views.      |
++-----------+------------------------------------------------------------------+
+
+Because AMPS uses the SOW topics of the underlying messages to determine
+when to update the view, the underlying topics used in a view must have
+a SOW configured. In addition, the topics must be defined in the AMPS
+configuration file before the view is defined.
+
+AMPS updates each view after a publish or delta publish to a message in
+an underlying topic. Updates are processed for each view in the order in
+which AMPS processed the updates to the underlying topic. AMPS processes
+these updates asynchronously, after each SOW update is persisted. For
+additional performance, AMPS provides the ability to conflate updates to
+views that process high velocity updates, as described in
+:ref:`#inlineviewconflation`.
+
+
+.. include:: ./joins.inc
+Constructing Fields
+-------------------
+
+The AMPS expression language is used to construct fields in aggregates,
+as described in :ref:`Chapter 4 Constructing Fields <#ug-constructing-fields>`.
+
+.. include:: ./view-examples.inc
+.. include:: ./aggregated_subscriptions.inc

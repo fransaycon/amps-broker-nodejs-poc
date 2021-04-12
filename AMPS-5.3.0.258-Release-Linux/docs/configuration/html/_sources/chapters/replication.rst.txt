@@ -1,0 +1,405 @@
+.. index:: replication,
+
+10. Replication Destination
+============================
+
+An AMPS replication target is defined within the ``Replication`` section
+of an AMPS configuration file. Within the ``Replication`` section, there
+are one or more ``Destination`` sections, each specifying a unique
+replication target. :ref:`Table 10.1<#table-configref-sow-replica-def>` 
+contains a listing of the parameters for the ``Destination`` section in the ``Replication``
+section of an AMPS configuration file.
+
+.. _#table-configref-sow-replica-def:
+
++---------------------------+---------------------------------------------------------+
+| **Element**               | **Description**                                         |
++===========================+=========================================================+
+| ::                        | Required parent tag, which defines a unique replication |
+|                           | target.                                                 |
+|     Destination           |                                                         |
++---------------------------+---------------------------------------------------------+
+| ::                        | Defines how synchronization of ``ack`` messages is      |
+|                           | handled, either ``sync`` or ``async``.                  |
+|     SyncType              |                                                         |
++---------------------------+---------------------------------------------------------+
+| ::                        | The message type and URI where messages will be         |
+|                           | replicated. Requires a ``Type``, which must be          |
+|     Transport             | ``amps-replication`` or ``amps-replication-secure``.    |
+|                           | The element may have one or more ``InetAddr`` elements. |
+|                           |                                                         |
+|                           | AMPS supports multiple ``Transport`` items within a     |
+|                           | ``Destination``. When multiple Transports are provided, |
+|                           | AMPS interprets these as transports for redundant       |
+|                           | servers, listed in priority order. If AMPS cannot       |
+|                           | connect to any of the internet addresses in a           |
+|                           | transport, AMPS tries the next ``Transport``, in the    |
+|                           | order in which the ``Transport`` items appear in the    |
+|                           | file. When AMPS has tried all of the ``Transport``      |
+|                           | items, AMPS tries again at the beginning of the list of |
+|                           | transports.                                             |
+|                           |                                                         |
+|                           | To provide failover, use multiple ``InetAddr`` elements |
+|                           | within a single ``Transport`` for servers that can use  |
+|                           | the same ``Authenticator`` context (that is, the same   |
+|                           | credentials provided with the same authentication       |
+|                           | scheme). Use multiple ``Transport`` elements if the     |
+|                           | failover servers require different authentication.      |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Type</code></b>                            |
+|                           |                                                         |
+|                           | The ``Type`` of a replication destination must always   |
+|                           | be ``amps-replication`` or ``amps-replication-secure``. |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>InetAddr</code></b>                        |
+|                           |                                                         |
+|                           | A Transport for a replication destination can contain   |
+|                           | one or more ``InetAddr`` elements.                      |
+|                           |                                                         |
+|                           | When a single ``InetAddr`` element is present, AMPS     |
+|                           | connects to that address for replication.               |
+|                           |                                                         |
+|                           | When more than one ``InetAddr`` element is present,     |
+|                           | AMPS uses the list of addresses as a prioritized list   |
+|                           | of failover servers to provide high availability. The   |
+|                           | list is in priority order, with the most preferred      |
+|                           | server at the beginning of the list. Each time AMPS     |
+|                           | needs to make a connection for this ``Destination``,    |
+|                           | AMPS starts with the first address in the list and      |
+|                           | tries each address in order until a connection          |
+|                           | succeeds. If no connection succeeds, AMPS waits for a   |
+|                           | timeout period and then either moves to the next        |
+|                           | ``Transport`` (if more than one ``Transport`` is        |
+|                           | present in the destination) or starts again with the    |
+|                           | first address in the list. Each time AMPS tries all of  |
+|                           | the addresses in the list without a successful          |
+|                           | connection, AMPS increases the timeout period between   |
+|                           | tries, up to a maximum timeout. The first time through  |
+|                           | the list, upon startup, AMPS gives addresses extra      |
+|                           | time, up to 60 seconds, to connect successfully.        |
+|                           |                                                         |
+|                           | If no ``InetAddr`` is specified, then this              |
+|                           | ``Destination`` does not make an outgoing connection.   |
+|                           | Instead, this instance will wait for the remote         |
+|                           | instance specified in the ``Destination`` to connect,   |
+|                           | and replicate to that instance once the connection is   |
+|                           | established.                                            |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>ReconnectTimeout</code></b>                |
+|                           |                                                         |
+|                           | A list of intervals that specifies how long AMPS will   |
+|                           | attempt to connect to a given ``InetAddr`` before       |
+|                           | to connect to the next entry.                           |
+|                           |                                                         |
+|                           | This configuration item can contain a single interval,  |
+|                           | which will be used for all ``InetAddr`` entries in the  |
+|                           | transport, or a comma-delimited list of intervals. When |
+|                           | a comma-delimited list is provided, the number of       |
+|                           | intervals provided must match the number of             |
+|                           | ``InetAddr`` entries in the ``Transport``, and each     |
+|                           | interval is used for the corresponding ``InetAddr``.    |
+|                           | (In other words, the first entry in the list is used    |
+|                           | for the first ``InetAddr``, the second entry in the list|
+|                           | is used for the second ``InetAddr``, and so on.)        |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Authenticator</code></b>                   |
+|                           |                                                         |
+|                           | A ``Transport`` element within a ``Destination`` may    |
+|                           | contain an ``Authenticator`` element, which specifies a |
+|                           | module that provides credentials to use when connecting |
+|                           | to the destination. All of the ``InetAddr`` elements    |
+|                           | specified within a ``Transport`` use the same           |
+|                           | ``Authenticator``.                                      |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Authentication</code></b>                  |
+|                           |                                                         |
+|                           | A ``Transport`` element within a ``Destination`` may    |
+|                           | contain an ``Authentication`` element, which specifies  |
+|                           | the ``Authentication`` module to use when establishing  |
+|                           | a bidirectional replication connection.                 |
+|                           | All of the ``InetAddr`` elements specified within a     |
+|                           | ``Transport`` use the same ``Authentication`` module.   |  
+|                           | If this element is not specified, AMPS will use the     |
+|                           | ``Authentication`` module specified for the incoming    |
+|                           | ``Transport`` with a ``Name`` matching the ``Type`` of  |
+|                           | this ``Transport``, or the ``Authentication`` for the   |
+|                           | instance if no such ``Transport`` is present.           |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Entitlement</code></b>                     |
+|                           |                                                         |
+|                           | A ``Transport`` element within a ``Destination`` may    |
+|                           | contain an ``Entitlement`` element, which specifies     |
+|                           | the ``Entitlement`` module to use when establishing     |
+|                           | a bidirectional replication connection.                 |
+|                           | All of the ``InetAddr`` elements specified within a     |
+|                           | ``Transport`` use the same ``Entitlement`` module.      |  
+|                           | If this element is not specified, AMPS will use the     |
+|                           | ``Entitlement`` module specified for the incoming       |
+|                           | ``Transport`` with a ``Name`` matching the ``Type`` of  |
+|                           | this ``Transport``, or the ``Entitlement`` for the      |
+|                           | instance if no such ``Transport`` is present.           |
+|                           |                                                         |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Certificate</code></b>                     |
+|                           |                                                         |
+|                           | A ``Transport`` element that specifies                  |
+|                           | ``amps-replication-secure`` as the transport type must  |
+|                           | provide a certificate to use for the SSL connection.    |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>PrivateKey</code></b>                      |
+|                           |                                                         |
+|                           | A ``Transport`` element that specifies                  |
+|                           | ``amps-replication-secure`` as the transport type must  |
+|                           | provide a private key to use for the SSL connection.    |
+|                           |                                                         |
+|                           | .. raw:: html                                           |
+|                           |                                                         |
+|                           |     <b><code>Ciphers</code></b>                         |
+|                           |                                                         |
+|                           | A ``Transport`` element that specifies                  |
+|                           | ``amps-replication-secure`` as the transport type may   |
+|                           | provide a cipher list to use for the SSL connection.    |
++---------------------------+---------------------------------------------------------+
+| ::                        | The group that the downstream destination is a member   |
+|                           | of. The ``Group`` of the downstream instance must match |
+|     Group                 | the ``Group`` specified in this destination, or AMPS    |
+|                           | reports an error and will not replicate to that         |
+|                           | destination.                                            |
+|                           |                                                         |
+|                           | There is no built in default for this value. AMPS       |
+|                           | requires that a destination have a ``Group`` defined.   |
+|                           | If a ``Name`` is specified, and no ``Group`` is         |
+|                           | specified, AMPS will use the value of the ``Name``      |
+|                           | as the value for the ``Group``. This behavior is for    |
+|                           | convenience to match the behavior of an AMPS instance   |
+|                           | when no ``Group`` is specified at the instance level    |
+|                           | configuration.                                          |
+|                           |                                                         |
+|                           | If a ``Group`` is specified                             |
+|                           | and no ``Name`` is specified, AMPS uses the value of    |
+|                           | the ``Group`` as the ``Name``. Notice that the ``Name`` |
+|                           | must be unique within an AMPS instance. If your         |
+|                           | replication configuration requires more than one        |
+|                           | ``Destination`` that replicates to the same ``Group``,  |
+|                           | and does *not* want AMPS replication to treat all of    |
+|                           | those servers as identical, use the ``Name`` element    |
+|                           | instead of the ``Group`` element.                       |
++---------------------------+---------------------------------------------------------+
+| ``Name``                  | The name of the destination. This name appears in the   |
+|                           | AMPS logs when AMPS logs a message about this           |
+|                           | destination. The ``Name`` must be unique in the AMPS    |
+|                           | instance. When not present, AMPS uses the ``Group``     |
+|                           | provided as the destination ``Name``. The ``Name``      |
+|                           | should either the name or the ``Group`` of the remote   |
+|                           | instance.                                               |
+|                           |                                                         |
+|                           | 60East recommends setting the ``Name`` only when your   |
+|                           | replication configuration replicates to more than one   |
+|                           | instance in a given group and the configuration does    |
+|                           | not need to treat the servers within the group as       |
+|                           | interchangeable. If it is important to replicate to a   |
+|                           | specific AMPS instance, rather than any server in the   |
+|                           | ``Group``, set the ``Name`` rather than the ``Group``,  |
+|                           | and use the ``Name`` of that instance.                  |
+|                           |                                                         |
+|                           | For example, if you have three servers in the           |
+|                           | ``AMPS-LA`` group, the server ``AMPS-LA-1`` would have  |
+|                           | separate ``Destination`` configurations for             |
+|                           | ``AMPS-LA-2`` and ``AMPS-LA-3``. Those ``Destination``  |
+|                           | configurations would use the ``Name`` of the remote     |
+|                           | server (``AMPS-LA-2`` or ``AMPS-LA-3``) rather than the |
+|                           | ``Group`` that is common to all of the servers.         |
+|                           |                                                         |
+|                           | There is no default for this value. If a ``Group`` is   |
+|                           | specified and no ``Name`` is specified, AMPS uses the   |
+|                           | value of the ``Group`` as the ``Name`` of the           |
+|                           | destination.                                            |
++---------------------------+---------------------------------------------------------+
+| ``Topic``                 | Defines the topic name to replicate. Requires a         |
+|                           | ``Name`` and ``MessageType``. See the following table   |
+|                           | (:ref:`Table 10.2 <#table-configref-replication-topic>`)|
+|                           | for details.                                            |
++---------------------------+---------------------------------------------------------+
+| ``PassThrough``           | Specifies source instances to pass through to this      |
+|                           | destination. The value of this element is a regular     |
+|                           | expression which is matched against the group name of   |
+|                           | the instance that sent the replication message to this  |
+|                           | instance. When the regular expression matches, the      |
+|                           | replication message is eligible for passthrough, and    |
+|                           | will be sent to the destination if the ``Topic``        |
+|                           | specifications match the message.                       |
++---------------------------+---------------------------------------------------------+
+| ``Compression``           | Specifies whether to use compression for this           |
+|                           | destination. When set to ``enabled``, AMPS compresses   |
+|                           | traffic to this destination.                            |
+|                           |                                                         |
+|                           | Default: ``disabled``                                   |
++---------------------------+---------------------------------------------------------+
+| ``AckConflationInterval`` | Specifies the interval to use for conflating            |
+|                           | acknowledgement messages from this destination.         |
+|                           |                                                         |
+|                           | This value must be an interval of less than 1 second.   |
+|                           |                                                         |
+|                           | See the *User Guide* chapter on acknowledgement         |
+|                           | messages for details on this setting.                   |
+|                           |                                                         |
+|                           | Default: ``1s``                                         |
++---------------------------+---------------------------------------------------------+
+
+**Table 10.1:** *Replication Destination*
+
+A replication destination can contain any number of Topic definition
+elements. For simplicity in working with the configuration file, 60East
+recommends using a few ``Topic`` elements with regular expression
+patterns over large numbers of individual topic declarations.
+
+.. _#table-configref-replication-topic:
+
++-----------------------+---------------------------------------------------------------------------+
+| **Element**           | **Description**                                                           |
++=======================+===========================================================================+
+| ::                    | The name of the topic to replicate. The ``Name`` can be either a literal  |
+|                       | topic name or a regular expression.                                       |
+|     Name              |                                                                           |
+|                       | When ``Name`` is a literal topic, a topic with that name and the          |
+|                       | specified message type must be captured in a transaction log. When        |
+|                       | ``Name`` is a regular expression, only topics that match the expression,  |
+|                       | match the message type, and are present in a transaction log are          |
+|                       | replicated.                                                               |
++-----------------------+---------------------------------------------------------------------------+
+| ::                    | The message type of the topic to replicate.                               |
+|                       |                                                                           |
+|     MessageType       |                                                                           |
++-----------------------+---------------------------------------------------------------------------+
+| ``Filter``            | A content filter to apply to the topics. When present, only messages that |
+|                       | match the filter are replicated. This filter follows the standard AMPS    |
+|                       | filter syntax.                                                            |
++-----------------------+---------------------------------------------------------------------------+
+| ``IncludeValidation`` | The set of configuration checks to validate for this topic.               |
+|                       |                                                                           |
+|                       | Default: All validation options listed below are included by default.     |
++-----------------------+---------------------------------------------------------------------------+
+| ``ExcludeValidation`` | The set of configuration checks to exclude for this topic. If the same    |
+|                       | check appears in both ``IncludeValidation`` and ``ExcludeValidation``,    |
+|                       | ``ExcludeValidation`` takes precedence and the check will not be run.     |
+|                       |                                                                           |
+|                       | Default: None of the validation options listed below are excluded by      |
+|                       | default.                                                                  |
++-----------------------+---------------------------------------------------------------------------+
+
+**Table 10.2:** *Replication Destination : Topic Definition*
+
+AMPS supports the following automatic configuration validation checks:
+
++-----------------------+--------------------------------------+
+| Check                 | Validates                            |
++=======================+======================================+
+| ``txlog``             | The topic is contained in the        |
+|                       | transaction log of the remote        |
+|                       | instance.                            |
++-----------------------+--------------------------------------+
+| ``replicate``         | The topic is replicated from the     |
+|                       | remote instance back to this         |
+|                       | instance.                            |
++-----------------------+--------------------------------------+
+| ``sow``               | If the topic is a SOW topic in this  |
+|                       | instance, it must also be a SOW      |
+|                       | topic in the remote instance.        |
++-----------------------+--------------------------------------+
+| ``cascade``           | The remote instance must enforce the |
+|                       | same set of validation checks for    |
+|                       | this topic as this instance does.    |
++-----------------------+--------------------------------------+
+| ``queue``             | If the topic is a queue in this      |
+|                       | instance, it must also be a queue in |
+|                       | the remote instance.                 |
+|                       |                                      |
+|                       | This option cannot be excluded.      |
++-----------------------+--------------------------------------+
+| ``keys``              | If the topic is a SOW topic in this  |
+|                       | instance, it must also be a SOW      |
+|                       | topic in the remote instance and the |
+|                       | SOW in the remote instance must use  |
+|                       | the same ``Key`` definitions.        |
++-----------------------+--------------------------------------+
+| ``replicate_filter``  | If this topic uses a replication     |
+|                       | filter, the remote instance must use |
+|                       | the same replication filter for      |
+|                       | replication back to this instance.   |
++-----------------------+--------------------------------------+
+| ``queue_passthrough`` | If the topic is a queue in this      |
+|                       | instance, the remote instance must   |
+|                       | support passthrough from this group. |
++-----------------------+--------------------------------------+
+| ``queue_underlying``  | If the topic is a queue in this      |
+|                       | instance, it must use the same       |
+|                       | underlying topic definition and      |
+|                       | filters in the remote instance.      |
+|                       |                                      |
+|                       | This option cannot be excluded.      |
++-----------------------+--------------------------------------+
+
+**Table 10.3:** *Replication Configuration Validation*
+
+.. code-block:: xml
+
+    <Replication>
+        <Destination>
+            <Name>amps-2</Name>
+            <Group>Data-Center-NYC-1</Group>
+            <Topic>
+                <Name>ORDER_STATE-Replication</Name>
+                <MessageType>xml</MessageType>
+            </Topic>
+            <Topic>
+                <Name>REFERENCE_INFO-.*</Name>
+                <MessageType>json</MessageType>
+                <Filter>/state = 'published'</Filter>
+            </Topic>
+            <SyncType>sync</SyncType>
+            <Compression>enabled</Compression>
+            <Transport>
+                <Type>amps-replication</Type>
+                <InetAddr>interface1.example.com:19005</InetAddr>
+                <InetAddr>interface2.example.com:19080</InetAddr>
+                <Authenticator>
+                    <Module>my-credentials-store-module</Module>
+                </Authenticator>
+            </Transport>
+            <PassThrough>Data-Center-(ORD|HKG)-.*</PassThrough>
+        </Destination>
+        <Destination>
+            <Name>NYC-View-Server</Name>
+            <Group>Data-Center-NYC-1</Group>
+            <Topic>
+                <Name>ORDER_STATE</Name>
+                <MessageType>json</MessageType>
+                <ExcludeValidation>replicate,cascade,sow</ExcludeValidation>
+            </Topic>
+            <SyncType>async</SyncType>
+            <Compression>enabled</Compression>
+            <Transport>
+                <Type>amps-replication</Type>
+                <InetAddr>view-server-a.example.com:19005</InetAddr>
+                <InetAddr>view-server-b.example.com:19080</InetAddr>
+            </Transport>
+        </Destination>
+    </Replication>
+
+**Example 10.1:** *Replication Example*

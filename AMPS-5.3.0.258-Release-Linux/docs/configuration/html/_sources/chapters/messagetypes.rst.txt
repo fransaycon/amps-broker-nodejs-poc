@@ -1,0 +1,246 @@
+.. include:: ./macros.inc
+.. index:: MessageType; defining and configuring,
+
+6. Message Types
+=================
+
+This tag defines the message types supported by the AMPS instance. A
+single AMPS instance can support multiple message types, as
+``MessageTypes`` can contain multiple ``MessageType`` definitions.
+
+``MessageType`` definitions for ``fix``, ``nvfix``, ``xml``, ``json``,
+``bflat``, ``msgpack``, ``bson``, and ``binary`` are automatically
+loaded by AMPS.  You only need to define a new ``MessageType`` for 
+these types if the settings for the message type need to be changed
+(for example, to create a custom FIX-based type that changes the
+``FieldSeparator`` of the message).
+
+AMPS loads the capability to use Google protocol buffer (``protobuf``)
+messages by default. To use protocol buffer messages, you configure one
+or more message types that use the ``protobuf`` module and load the
+``.proto`` files that define the format of the messags you will be
+processing with AMPS.
+
+AMPS also supports the ability to create a composite message type by
+combining a number of existing message types. Composite message types
+are defined using the ``MessageType`` configuration element.
+
+.. _#table-configref-msgType-parameters:
+
++-----------------------------------+-------------------------------------------------------------------------------+
+| *Name*                            | *Description*                                                                 |
++===================================+===============================================================================+
+| ::                                | This element defines the name for the message type. The name is used to       |
+|                                   | specify ``MessageType`` in other sections such as ``Transport``,              |
+|     Name                          | ``TransactionLog`` and the elements of the ``SOW`` section.                   |
+|                                   |                                                                               | 
+|                                   | By default, AMPS loads message types for ``fix``, ``nvfix``, ``soapfix``,     |
+|                                   | ``json``, ``bflat``, ``msgpack``, ``bson``, ``xml`` and ``binary``.           |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``Module``                        | The element specifies the name of the module that will be loaded for this     |
+|                                   | message type.                                                                 |
+|                                   |                                                                               |
+|                                   | By default, AMPS loads the modules that implement the following message       |
+|                                   | types: ``fix``, ``nvfix``, ``soapfix``, ``json``, ``bflat``, ``msgpack``,     |
+|                                   | ``bson``, ``xml``, ``protobuf``, and ``binary``.                              |
+|                                   |                                                                               |
+|                                   | AMPS supports creating composite message types out of existing message types  |
+|                                   | using the ``composite-global`` and ``composite-local`` modules, which are     |
+|                                   | loaded by default.message type specifying module                              |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``AMPSVersionCompliance``         | Sets the version compatibility for FIX messages that AMPS sends to the        |
+|                                   | ``/AMPS/SOWStats`` topic.                                                     |
+|                                   |                                                                               |
+|                                   | AMPS accepts three values for this option:                                    |
+|                                   |                                                                               |
+|                                   | -  ``2`` creates messages that use the FIX field tags used by AMPS 2.X        |
+|                                   |    versions.                                                                  |
+|                                   |                                                                               |
+|                                   | -  ``4`` creates messages that use the default FIX field tags. With this      |
+|                                   |    version, FIX messages use different field numbering for ``/AMPS/SOWStats`` |
+|                                   |    and ``/AMPS/ClientStatus`` messages.                                       |
+|                                   |                                                                               |
+|                                   | -  ``5`` creates messages that use a unified set of FIX tags. When this option| 
+|                                   |    is set to 5, AMPS uses consistent field numbering between                  |
+|                                   |    ``/AMPS/SOWStats`` and ``/AMPS/ClientStatus`` messages.                    |
+|                                   |                                                                               |
+|                                   | Default: ``4``. For compatibility with the largest number of existing         |
+|                                   | installations, this parameter defaults to ``4``.                              |
+|                                   |                                                                               |
+|                                   | For message types other than FIX, there is no difference between ``4`` and    |
+|                                   | ``5``. These message types were not supported in AMPS 2.X. AMPS provides      |
+|                                   | reasonable values for these message types when this value is set to ``2``,    |
+|                                   | but there is no backward compatibilty to enforce.                             |
+|                                   |                                                                               |
+|                                   | For most cases, you can leave this option set to the default. If you are      |
+|                                   | using a system that requires consistent FIX tags across messages, set this    |
+|                                   | parameter to ``5``. If you are using an existing system that expects AMPS 2.X |
+|                                   | tags, set this parameter to ``2``.                                            |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``Options``                       | Options to pass to a custom message type module. AMPS does not specify the    |
+|                                   | format or type of the elements within an ``Options`` element. AMPS simply     |
+|                                   | parses the XML and then sends the XML to the module. If you are configuring a |
+|                                   | custom message type, see the documentation for that message type module for   |
+|                                   | details.                                                                      |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``FieldSeparator``                | *Option*: Applies to ``fix`` and ``nvfix`` message types.                     |
+|                                   |                                                                               |
+|                                   | Sequence of characters used to separate field items in a FIX message. Note:   |
+|                                   | this field is the ASCII value of the char sequence.                           |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``HeaderSeparator``               | *Option*: Applies to ``fix`` and ``nvfix`` message types.                     |
+|                                   |                                                                               |
+|                                   | Sequence of characters used to separate the header from the body in a FIX     |
+|                                   | message. Note: this field is the ASCII value of the char sequence.            |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``MessageSeparator``              | *Option*: Applies to ``fix`` and ``nvfix`` message types.                     |
+|                                   |                                                                               |
+|                                   | Sequence of characters used to separate message items in the body in a FIX    |
+|                                   | message. Note: this field is the ASCII value of the char sequence.            |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``EarlyTerminationOptimization``  | *Option*: Applies to the ``json`` message type.                               |
+|                                   |                                                                               |
+|                                   | By default, AMPS includes a optimization to allow the server to to only       |
+|                                   | partially parse JSON messages. This may result in unexpected behavior for     |
+|                                   | some messages. For example, given a message such as                           |
+|                                   | ``{ "code" : 1, "data" : "some data", "code" : 2 }``, AMPS will report the    |
+|                                   | value of ``code`` as ``1`` when this optimization is active. To ensure        |
+|                                   | consistent results, in this mode AMPS always  reports the first value for a   |
+|                                   | field even when AMPS fully parses the message.                                |
+|                                   |                                                                               |
+|                                   | When set to ``false``, the optimization is disabled. AMPS will fully parse    |
+|                                   | all JSON messages and report the last value for a field. For the message      |
+|                                   | above, AMPS would report the value of ``code`` as ``2``.                      |
+|                                   |                                                                               |
+|                                   | Default: ``true``                                                             |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``Type``                          | *Required*: Applies to message types that use the ``protobuf`` module. The    |
+|                                   | name of the type within the ``.proto`` file to use for this message type. The |
+|                                   | name must be package-qualified (for example, ``my.package.Message`` would     |
+|                                   | load the type ``Message`` within the package ``my.package``).                 |
+|                                   |                                                                               |
+|                                   | *Obsolete usage* A previous meaning of this element was made obsolete in AMPS |
+|                                   | 4.0 and later versions. That usage was replaced by the ``Module`` directive.  |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``MessageType``                   | *Required*: Applies to message types that use the ``composite-local`` or      |
+|                                   | ``composite-global`` modules.                                                 |
+|                                   |                                                                               |
+|                                   | For composite message types, the ``MessageType`` definition must contain one  |
+|                                   | or more message type declarations that specify the types that the composite   |
+|                                   | message type contains.                                                        |
+|                                   |                                                                               |
+|                                   | See the |userguide-composite-message-types| for more information on           |
+|                                   | composite message types.                                                      |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``ProtoPath``                     | *Required*: Applies to message types that use the ``protobuf`` module.        |
+|                                   |                                                                               |
+|                                   | The path in which to search for ``.proto`` files. The content of this element |
+|                                   | has the following syntax:                                                     |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     alias ; full-path                                                         |
+|                                   |                                                                               |
+|                                   | The alias provides a short identifier to use when searching for ``.proto``    |
+|                                   | files. The full path is the path that is substituted for that identifier.     |
+|                                   |                                                                               |
+|                                   | A configuration may omit the alias, and simply provide the path. For example, |
+|                                   | to use the path /mnt/repository/protodefs when no alias is provided, you      |
+|                                   | would declare a ``ProtoPath`` of:                                             |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     /mnt/repository/protodefs                                                 |
+|                                   |                                                                               |
+|                                   |                                                                               |
+|                                   | or                                                                            |
+|                                   |                                                                               |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     ;/mnt/repository/protodefs                                                |
+|                                   |                                                                               |
+|                                   |                                                                               |
+|                                   | The following ProtoPath declaration sets ``proto-archive`` as an alias for    |
+|                                   | ``/mnt/shared/protofiles``.                                                   |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     proto-archive;/mnt/shared/protofiles                                      |
+|                                   |                                                                               |
+|                                   | AMPS uses the aliases provided in this configuration item when processing     |
+|                                   | ``import`` statements within the loaded ``.proto`` files, with the empty      |
+|                                   | alias used for import statements that do not specify a path alias. For        |
+|                                   | example, given the definitions above, this import statement:                  |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     import "proto-archive/AType.proto";                                       |
+|                                   |                                                                               |
+|                                   | will load for the file at ``/mnt/shared/protofiles/AType.proto``, while the   |
+|                                   | import statement:                                                             |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     import "MyFavoriteType.proto";                                            |
+|                                   |                                                                               |
+|                                   | will load the file at ``/mnt/repository/protodefs/MyFavoriteType.proto``.     |
+|                                   |                                                                               |
+|                                   | If no ``ProtoPath`` declaration sets an empty alias, all imports processed by |
+|                                   | AMPS must use one of the aliases set for the instance, or AMPS will fail to   |
+|                                   | find the specified file.                                                      |
+|                                   |                                                                               |
+|                                   | Unless your existing definitions use an aliasing scheme, it is most           |
+|                                   | convenient to set the empty alias.                                            |
+|                                   |                                                                               |
+|                                   | You may specify any number of ``ProtoPath`` declarations.                     |
++-----------------------------------+-------------------------------------------------------------------------------+
+| ``ProtoFile``                     | *Required*: Applies to message types that use Google protocol buffers.        |
+|                                   |                                                                               |
+|                                   | The name of the ``.proto`` file to use for this message type. To use an       |
+|                                   | alias, prefix the name of the file with the alias. For example, if your       |
+|                                   | ProtoPath declarations have created the ``proto-archive`` alias for the       |
+|                                   | directory in which your . ``proto`` files are stored, you could use the       |
+|                                   | following to use the ``my-messages.proto`` file within that directory.        |
+|                                   |                                                                               |
+|                                   | ::                                                                            |
+|                                   |                                                                               |
+|                                   |     proto-archive/my-messages.proto                                           |
++-----------------------------------+-------------------------------------------------------------------------------+
+
+**Table 6.1:** *Message Type Parameters*
+
+.. _#listing-message-types:
+
+.. code-block:: xml
+
+    <MessageTypes>
+        <!-- Define a FIX-based message type with custom separators -->
+        <MessageType>
+            <Name>fix-custom</Name>
+            <Module>fix</Module>
+            <!-- The following are FIX specific options -->
+            <FieldSeparator>1</FieldSeparator>
+            <HeaderSeparator>2</HeaderSeparator>
+            <MessageSeparator>5</MessageSeparator>
+        </MessageType>
+
+        <!-- Define a message type for a custom payload. 'type-module' must be the
+            Name of a Module specified in the configuration. -->
+        <MessageType>
+            <Name>custom-payload</Name>
+            <Module>type-module</Module>
+        </MessageType>
+
+        <!-- Define a composite message type that combines a json message and
+            a custom-payload message. -->
+
+        <MessageType>
+            <Name>custom-composite</Name>
+            <Module>composite-local</Module>
+            <MessageType>json</MessageType>
+            <MessageType>custom-payload</MessageType>
+        </MessageType>
+    </MessageTypes>
+
+**Example 6.1:** *Message Types Example*

@@ -1,0 +1,232 @@
+#!/usr/bin/env python
+
+############################################################################
+##
+## Copyright (c) 2012-2017 60East Technologies Inc., All Rights Reserved.
+##
+## This computer software is owned by 60East Technologies Inc. and is
+## protected by U.S. copyright laws and other laws and by international
+## treaties.  This computer software is furnished by 60East Technologies
+## Inc. pursuant to a written license agreement and may be used, copied,
+## transmitted, and stored only in accordance with the terms of such
+## license agreement and with the inclusion of the above copyright notice.
+## This computer software or any other copies thereof may not be provided
+## or otherwise made available to any other person.
+##
+## U.S. Government Restricted Rights.  This computer software: (a) was
+## developed at private expense and is in all respects the proprietary
+## information of 60East Technologies Inc; (b) was not developed with
+## government funds; (c) is a trade secret of 60East Technologies Inc.
+## for all purposes of the Freedom of Information Act; and (d) is a
+## commercial item and thus, pursuant to Section 12.212 of the Federal
+## Acquisition Regulations (FAR) and DFAR Supplement Section 227.7202,
+## Government's use, duplication or disclosure of the computer software
+## is subject to the restrictions set forth by 60East Technologies Inc.
+##
+############################################################################
+
+
+"""
+This is the AMPS minidump reporting utility. It may be used as an alternative
+to emailing minidumps for analysis. Provide one or more minidumps to be
+analyzed by the 60East Technologies team.
+"""
+
+import urllib2
+import urllib
+import mimetools
+import mimetypes
+import itertools
+import sys
+import tarfile
+import glob
+from optparse import OptionParser
+
+URL = "http://services.crankuptheamps.com/amps/minidump"
+
+
+class MultiPartForm(object):
+    """ Class for building the form that will be posted."""
+
+    def __init__(self):
+        self.message_fields = []
+        self.minidumps      = []
+        self.minidump_count = 0
+        self.boundary       = mimetools.choose_boundary()
+
+    def get_content_type(self):
+        """ Returns the content type of the form.
+
+        :returns: content type of the form.
+        """
+        return 'multipart/form-data; boundary=%s' % self.boundary
+
+    def _get_file_field(self):
+        """ Generate and return the field name for each minidump file.
+
+        :returns: unique field name
+        """
+        self.minidump_count += 1
+        return "minidump-" + str(self.minidump_count)
+
+    def add_field(self, name, value):
+        """Add data field to form."""
+        self.message_fields.append((name, value))
+
+    def add_file(self, file_path, is_virtual_tar=False):
+        """Add file field to form."""
+        field = self._get_file_field()
+        if is_virtual_tar:
+            filename = "minidumps.tar.gz"
+            body = file_path.getvalue()
+        else:
+            filename = file_path.split("/")[-1]
+            with open(file_path) as minidump_file:
+                body = minidump_file.read()
+
+        mime_type = mimetypes.guess_type(
+            filename)[0] or 'application/octet-stream'
+        self.minidumps.append((field, filename, mime_type, body))
+
+    def __str__(self):
+        """Creates the string representation of the form data.
+
+        :returns: form data as a string.
+        """
+        parts = []
+        part_boundary = '--' + self.boundary
+
+        for name, value in self.message_fields:
+            parts.append(
+                [part_boundary, 'Content-Disposition: form-data; name="%s"' % name, '', value])
+
+        for field_name, filename, content_type, body in self.minidumps:
+            parts.append(
+                [part_boundary, 'Content-Disposition: file; name="%s"; filename="%s"' %
+                 (field_name, filename), 'Content-Type: %s' %
+                 content_type, '', body])
+
+        send_list = list(itertools.chain(*parts))
+        send_list.append(part_boundary + '--')
+        send_list.append('')
+        return '\r\n'.join(send_list)
+
+
+def get_params():
+    """Parse and validate command line arguments.
+
+    :returns: dictionary of command line arguments.
+    """
+    cl_params = {}
+    usage = "%prog [options] [minidumps]"
+    description = "This is the AMPS minidump reporting utility. " + \
+                  "It may be used as an alternative to emailing minidumps for analysis. " + \
+                  "Provide one or more minidumps to be analyzed by the 60East Technologies team. " + \
+                  "Minidumps may be specified individually or as a glob."
+    parser = OptionParser(usage=usage, description=description)
+    parser.add_option("-e", "--email", dest='sender_email',
+                      help="Email address to be used as sender.")
+    parser.add_option("-s", "--subject", dest='subject',
+                      help="The subject field of the email.")
+    parser.add_option("-b", "--body", dest='body',
+                      help="The body of the email.")
+    parser.add_option("-c", "--compress", action='store_true', dest='compress',
+                      help="Create tar.gz before sending multiple minidumps.")
+    parser.add_option("-t", "--ticket", dest='ticket',
+                      help="The ticket number you are submitting a minidump for.")
+
+    (options, args) = parser.parse_args()
+
+    if not options.subject or not options.sender_email or not args:
+        parser.print_help()
+        print "Error: please provide an email address, subject, and minidump file(s)."
+        sys.exit(1)
+
+    minidump_files = []
+    for arg in args:
+        file_list = glob.glob(arg)
+        if len(file_list) == 0:
+            print "Error: could not locate file: %s" %(arg)
+            sys.exit(1)
+        minidump_files.extend(file_list)
+
+    cl_params['sender_email'] = options.sender_email
+    cl_params['subject'] = options.subject
+    cl_params['body'] = options.body
+    cl_params['minidumps'] = minidump_files
+    cl_params['compress'] = options.compress
+    cl_params['ticket'] = options.ticket
+
+    return cl_params
+
+
+def post_message(message):
+    """Construct and send request to the server.
+
+    :param message: The string version of the contructed MultiPartForm.
+    :type message: string
+
+    :returns: response from the server.
+    """
+    request = urllib2.Request(URL)
+    body = str(message)
+
+    request.add_header('Content-type', message.get_content_type())
+    request.add_header('Content-length', len(body))
+    request.add_data(body)
+
+    response = urllib2.urlopen(request)
+    return response.read()
+
+
+def main():
+    params = get_params()
+
+    skip_params = ["minidumps", "compress"]  # params that do not need to be
+                                             # added to the MultiPartForm
+    message = MultiPartForm()
+    for param in params:
+        # we only need to add the set data fields.
+        if param in skip_params or params[param] is None:
+            continue
+        message.add_field(param, params[param])
+
+    # Only compress if enabled and more than one file is given.
+    if len(params["minidumps"]) > 1 and params["compress"]:
+        try:
+            from cStringIO import StringIO as TarIO
+        except ImportError:
+            from io import BytesIO as TarIO
+
+        targz_file = TarIO()
+        tar_out = tarfile.open(fileobj=targz_file, mode='w:gz')
+        try:
+            for minidump in params["minidumps"]:
+                tar_out.add(minidump)
+        except:
+            print "Error: Could not add file: %s" % (minidump)
+            sys.exit(1)
+        finally:
+            tar_out.close()
+        try:
+            message.add_file(targz_file, True)
+        except:
+            print "Error: tar.gz file could not be added to form."
+            sys.exit(1)
+    else:
+        for minidump in params["minidumps"]:
+            try:
+                message.add_file(minidump)
+            except:
+                print "Error: Could not add file: %s" % (minidump)
+                sys.exit(1)
+
+    try:
+        r = post_message(message)
+        print r
+    except:
+        print "Error: Application could not be reached. This could be due to network or proxy issues. If you are unable to resolve this issue, contact support@crankuptheamps.com"
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()

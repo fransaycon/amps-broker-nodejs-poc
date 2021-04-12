@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Transports &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Logging" href="logging.html" />
+    <link rel="prev" title="6. Message Types" href="messagetypes.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Transports</a><ul>
+<li><a class="reference internal" href="#configuring-slow-client-offlining">Configuring Slow Client Offlining</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="messagetypes.html" title="previous chapter">6. Message Types</a></li>
+      <li>Next: <a href="logging.html" title="next chapter">8. Logging</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="transports">
+<span id="index-0"></span><h1>7. Transports<a class="headerlink" href="#transports" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">Transports</span></code> element configures how AMPS communicates with
+publishers and subscribers, as well as how AMPS accepts connections for
+replication. The Transports element is a container for one or more
+<code class="docutils literal"><span class="pre">Transport</span></code> elements. Each <code class="docutils literal"><span class="pre">Transport</span></code> is a combination of a network
+transport, an AMPS header protocol, and a message type.</p>
+<p>A <code class="docutils literal"><span class="pre">Transport</span></code> also specifies the <code class="docutils literal"><span class="pre">Authentication</span></code> used to validate
+the users that connect, and the <code class="docutils literal"><span class="pre">Entitlement</span></code> used to enforce
+permissions for users that connect over that transport.</p>
+<p>AMPS supports a variety of network transports, header protocols and
+message formats for communication between publishers and subscribers.
+This section describes how to configure a <code class="docutils literal"><span class="pre">Transport</span></code>.</p>
+<table border="1" class="docutils" id="table-configref-transport-parameters">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Name</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The name to use for this Transport. This name appears in the AMPS log for messages
+related to the transport.</p>
+<p class="last">There is no default for this value. When the <code class="docutils literal"><span class="pre">Type</span></code> of the <code class="docutils literal"><span class="pre">Transport</span></code> is
+<code class="docutils literal"><span class="pre">amps-replication</span></code> or <code class="docutils literal"><span class="pre">amps-replication-secure</span></code>, 60East recommends that the
+<code class="docutils literal"><span class="pre">Name</span></code> of the <code class="docutils literal"><span class="pre">Transport</span></code> match the value of the <code class="docutils literal"><span class="pre">Type</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Protocol</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">This element defines the protocol to use for sending and receiving messages. The
+protocol is typically <code class="docutils literal"><span class="pre">amps</span></code>, the name of a specific protocol for interoperability
+with another system or a legacy application, or the name of a custom protocol module
+specified in the <code class="docutils literal"><span class="pre">Modules</span></code> element.</p>
+<p>AMPS provides support for the following protocols:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Protocol Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">amps</span></code></td>
+<td><p class="first">Standard AMPS messaging, using compact headers in JSON format.</p>
+<p class="last">AMPS accepts <code class="docutils literal"><span class="pre">json</span></code> as a synonym for <code class="docutils literal"><span class="pre">amps</span></code> in a protocol
+declaration.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">fix-session</span></code></td>
+<td>FIX session protocol, for use with systems that publish FIX
+messages using this format.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">websocket</span></code></td>
+<td>Websocket protocol, using JSON format headers.</td>
+</tr>
+<tr class="row-odd"><td><em>Legacy protocols</em></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">fix</span></code></td>
+<td>Standard AMPS messaging, using headers in FIX format.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">nvfix</span></code></td>
+<td>Standard AMPS messaging, using headers in NVFIX format.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">soap</span></code></td>
+<td>Standard AMPS messaging, using headers in SOAP format.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">xml</span></code></td>
+<td>Standard AMPS messaging, using headers in XML format.</td>
+</tr>
+</tbody>
+</table>
+<p>60East recommends using the <code class="docutils literal"><span class="pre">amps</span></code> protocol for general purpose AMPS messaging.
+When your application uses the the FIX session layer or Websockets, use those
+protocols.</p>
+<p class="last">Older versions of AMPS used message headers in the same format as the message type:
+if your instance supports applications that expect to use a specific message type
+protocol, use that protocol in your <code class="docutils literal"><span class="pre">Transport</span></code> configuration.</p>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Type</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The type of Transport.</p>
+<p>Valid values include: <code class="docutils literal"><span class="pre">tcp</span></code>, <code class="docutils literal"><span class="pre">tcps</span></code>, <code class="docutils literal"><span class="pre">amps-replication</span></code>,
+<code class="docutils literal"><span class="pre">amps-replication-secure</span></code>, <code class="docutils literal"><span class="pre">amps-unix</span></code></p>
+<p><code class="docutils literal"><span class="pre">tcp</span></code> is the standard TCP transport.</p>
+<p><code class="docutils literal"><span class="pre">tcps</span></code> is secure TCP transport: this transport type uses SSL and requires a
+certificate and private key to be set.</p>
+<p><code class="docutils literal"><span class="pre">amps-replication</span></code> is for inbound replication connections. Notice that AMPS
+replication does not use the same transport type as other applications.</p>
+<p><code class="docutils literal"><span class="pre">amps-replication-secure</span></code> is for inbound replication connections that use SSL.
+Notice that AMPS replication does not use the same transport type as other
+applications. This transport type requires a certificate and private key to be set.</p>
+<p class="last"><code class="docutils literal"><span class="pre">amps-unix</span></code> is for incoming client connections over Unix domain sockets. This
+transport type requires a <code class="docutils literal"><span class="pre">FileName</span></code>, which is the location on the file system
+where the Unix domain socket will be created.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">InetAddr</span></code></td>
+<td><p class="first">The port on which AMPS will listen for this transport. This element can also specify
+an IP address, in which case AMPS listens only on that address. If no IP address is
+specified, AMPS listens on all available addresses.</p>
+<p class="last">This element is not required for transports of the <code class="docutils literal"><span class="pre">amps-unix</span></code> <code class="docutils literal"><span class="pre">Type</span></code>, but is
+required for all other <code class="docutils literal"><span class="pre">Type</span></code> values.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageType</span></code></td>
+<td><p class="first">Restricts a transport to a single message type. When provided, AMPS assumes that all
+connections to this transport use the specified <code class="docutils literal"><span class="pre">MessageType</span></code>. If a different
+<code class="docutils literal"><span class="pre">MessageType</span></code> is provided in the connection string, AMPS refuses the connection. If
+no <code class="docutils literal"><span class="pre">MessageType</span></code> is provided in the connection string, AMPS accepts the connection
+and assumes that the connection uses the specified <code class="docutils literal"><span class="pre">MessageType</span></code>.</p>
+<p>When the <code class="docutils literal"><span class="pre">Transport</span></code> <code class="docutils literal"><span class="pre">Type</span></code> is <code class="docutils literal"><span class="pre">amps-replication</span></code> or
+<code class="docutils literal"><span class="pre">amps-replication-secure</span></code>, this element is ignored and the <code class="docutils literal"><span class="pre">Transport</span></code> accepts
+all message types configured in the instance.</p>
+<p>When present, this is a reference to the name of a specific message type defined in
+the <code class="docutils literal"><span class="pre">MessageTypes</span></code> section or one of the message types that AMPS loads by default.</p>
+<p>In this release, AMPS loads the following message types by default: <code class="docutils literal"><span class="pre">fix</span></code>,
+<code class="docutils literal"><span class="pre">nvfix</span></code>, <code class="docutils literal"><span class="pre">xml</span></code>, <code class="docutils literal"><span class="pre">json</span></code>, <code class="docutils literal"><span class="pre">msgpack</span></code>, <code class="docutils literal"><span class="pre">bson</span></code>, <code class="docutils literal"><span class="pre">bflat</span></code> and <code class="docutils literal"><span class="pre">binary</span></code>.
+Composite message types, and message types based on Google Protocol Buffers, must be
+defined in the <code class="docutils literal"><span class="pre">MessageTypes</span></code> element before they can be used.</p>
+<p>A <code class="docutils literal"><span class="pre">Transport</span></code> that uses the <code class="docutils literal"><span class="pre">amps</span></code> <code class="docutils literal"><span class="pre">Protocol</span></code> defaults to accepting all message
+types defined by the instance, and does not require setting a <code class="docutils literal"><span class="pre">MessageType</span></code> element.
+When the <code class="docutils literal"><span class="pre">Transport</span></code> does not specify a <code class="docutils literal"><span class="pre">MessageType</span></code>, the connecting client must
+declare the message type it will use when logging on. A <code class="docutils literal"><span class="pre">Transport</span></code> that uses the
+<code class="docutils literal"><span class="pre">amps</span></code> protocol can specify a single <code class="docutils literal"><span class="pre">MessageType</span></code> to accept by including this
+element. When a single <code class="docutils literal"><span class="pre">MessageType</span></code> is specified, AMPS does not require that the
+message type is specfied by the client.</p>
+<p class="last"><em>Important</em>: A <code class="docutils literal"><span class="pre">Transport</span></code> that uses one of the legacy <code class="docutils literal"><span class="pre">Protocol</span></code> values (<code class="docutils literal"><span class="pre">fix</span></code>,</p>
+</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><p class="first"><code class="docutils literal"><span class="pre">nvfix</span></code>, or <code class="docutils literal"><span class="pre">xml</span></code>) <em>must</em> specify a <code class="docutils literal"><span class="pre">MessageType</span></code>.</p>
+<p class="last">Default: When the <code class="docutils literal"><span class="pre">Protocol</span></code> is <code class="docutils literal"><span class="pre">amps</span></code>, defaults to accepting all message types
+defined by the instance. When the <code class="docutils literal"><span class="pre">Protocol</span></code> is one of the legacy values, there is
+no default and a <code class="docutils literal"><span class="pre">MessageType</span></code> must be provided.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">InitialState</span></code></td>
+<td><p class="first">Defines whether, when AMPS starts, the transport is enabled or disabled. When the
+transport is disabled, AMPS does not listen for or accept connections on the
+transport. When <code class="docutils literal"><span class="pre">InitialState</span></code> is <code class="docutils literal"><span class="pre">disabled</span></code>, the transport must be explicitly
+enabled after startup (for example, through an action or the administrative console)
+for AMPS to listen for and accept connections on the transport.</p>
+<p>This configuration option can be useful for defining a transport that is only
+available when certain conditions are true: for example, an instance might start with
+the connection used by clients disabled, and let an external monitoring system enable
+the connection during business hours and disable the connection outside of business
+hours.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">enabled</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Entitlement</span></code></td>
+<td><p class="first">Specifies the entitlement module to use for this transport. If no entitlement module
+is provided, the transport uses the default entitlement module for the instance. This
+element must contain a <code class="docutils literal"><span class="pre">Module</span></code> element with the <code class="docutils literal"><span class="pre">Name</span></code> of an entitlement module.
+If the module requires options, those options are provided in an <code class="docutils literal"><span class="pre">Options</span></code> element
+within the <code class="docutils literal"><span class="pre">Entitlement</span></code> element.</p>
+<p class="last">Default: The module specified in the <code class="docutils literal"><span class="pre">Entitlement</span></code> for the instance (defaults to
+<code class="docutils literal"><span class="pre">amps-default-entitlement-module</span></code> if not provided)</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Authentication</span></code></td>
+<td><p class="first">Specifies the authentication module to use for this transport. If no authentication
+module is provided, the transport uses the authentication module for the instance.
+This element must contain a <code class="docutils literal"><span class="pre">Module</span></code> element with the <code class="docutils literal"><span class="pre">Name</span></code> of an authentication
+module. If the module requires options, those options are provided in an <code class="docutils literal"><span class="pre">Options</span></code>
+element within the <code class="docutils literal"><span class="pre">Authentication</span></code> element.</p>
+<p class="last">Default: The module specified in the <code class="docutils literal"><span class="pre">Authentication</span></code> element for the instance
+(defaults to <code class="docutils literal"><span class="pre">amps-default-authentication-module</span></code> if not provided)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code></td>
+<td><p class="first">The total amount of memory to allocate to messages before offlining clients.</p>
+<p>Default: The setting configured at the instance level. If this option is not
+specifically set at the instance level, the instance defaults to 10% of total host
+memory or 10% of the amount of host memory AMPS is allowed to consume (as reported by
+<code class="docutils literal"><span class="pre">ulimit</span> <span class="pre">-m</span></code> ), whichever is <em>lowest</em>.</p>
+<p class="last">This option is specified in bytes, and accepts the standard AMPS notation
+(for example, <code class="docutils literal"><span class="pre">10GB</span></code> or <code class="docutils literal"><span class="pre">250MB</span></code>).</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageDiskLimit</span></code></td>
+<td><p class="first">The total amount of disk space to allocate to messages before disconnecting clients.</p>
+<p>Default: The setting configured at the instance level. If this option is not
+specifically set at the instance level, the instance defaults to 1GB or the amount
+specified in the MessageMemoryLimit, whichever is <em>highest</em>.</p>
+<p class="last">This option is specified in bytes, and accepts the standard AMPS notation
+(for example, <code class="docutils literal"><span class="pre">10GB</span></code> or <code class="docutils literal"><span class="pre">250MB</span></code>).</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MessageDiskPath</span></code></td>
+<td><p class="first">The path to use to write offline files.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">/var/tmp</span></code>, or the setting configured at the instance level</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TransportFilter</span></code></td>
+<td><p class="first">A transport filter to use for the transport. When specified, each command received
+over this transport is provided to the filter.</p>
+<p>This element requires a <code class="docutils literal"><span class="pre">Module</span></code> element, which contains the name of the module
+that provides the filter. This element may contain an <code class="docutils literal"><span class="pre">Options</span></code> element, which
+contains the set of options to provide to the module. The options required by
+a specific module depend on the module: see the documentation for the module
+for details.</p>
+<p>A transport can specify multiple filters. When multiple filters are specified,
+AMPS provides the command to each specified filter, in the order in which the filters
+appear in the transaction log.</p>
+<p class="last">There is no default for this element. If no <code class="docutils literal"><span class="pre">TransportFilter</span></code> is specified,
+AMPS processes commands exactly as they are received.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">ClientMessageAgeLimit</span></code></td>
+<td><p class="first">The maximum amount of time for the client to lag behind. If a message for the client
+has been held longer than this time, the client will be disconnected. This parameter
+is an AMPS time interval (for example, <code class="docutils literal"><span class="pre">30s</span></code> for 30 seconds, or
+<code class="docutils literal"><span class="pre">1h</span></code> for 1 hour).</p>
+<p class="last">Default: No age limit, or the setting configured at the instance level</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ClientMaxCapacity</span></code></td>
+<td><p class="first">The amount of available capacity a single client can consume. Before a client is
+offlined, this limit applies to the <code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code>. After a client is
+offlined, this limit includes the <code class="docutils literal"><span class="pre">MessageDiskLimit</span></code>. This parameter is a
+percentage of the total.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">100%</span></code> (no effective limit), or the setting configured at the instance
+level</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 7.1:</strong> <em>Transport Parameters</em></p>
+<p>Starting with 5.1, AMPS supports encrypting client connections using the
+SSL (Secure Sockets Layer) network protocol. The following parameters
+apply to transports that use SSL. While AMPS performs additional
+configuration validation if the transport is configured with a <code class="docutils literal"><span class="pre">Type</span></code>
+of <code class="docutils literal"><span class="pre">tcps</span></code>, if a <code class="docutils literal"><span class="pre">Certificate</span></code> and <code class="docutils literal"><span class="pre">PrivateKey</span></code> are specified for a
+<code class="docutils literal"><span class="pre">Transport</span></code> of <code class="docutils literal"><span class="pre">tcp</span></code> type, AMPS will use SSL for that <code class="docutils literal"><span class="pre">Transport</span></code>.
+These options also apply to transports of type <code class="docutils literal"><span class="pre">amps-replication-secure</span></code>.</p>
+<table border="1" class="docutils" id="table-configref-transport-ssl">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Certificate</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The certificate file to use for the server.</p>
+<p class="last">Default: There is no default for this option.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">PrivateKey</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The private key to use for the server.</p>
+<p class="last">Default: There is no default for this option.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Ciphers</span></code></td>
+<td><p class="first">The cipher list to use for this transport. The cipher list
+is passed to the OpenSSL  implementation without being
+interpreted by the AMPS server.</p>
+<p class="last">Default: There is no default for this option. For OpenSSL,
+details on the format of the cipher list are available at
+<a class="reference external" href="https://www.openssl.org/docs/man1.1.0/apps/ciphers.html">https://www.openssl.org/docs/man1.1.0/apps/ciphers.html</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 7.2:</strong> <em>SSL Transport Parameters</em></p>
+<p>For protocols of <code class="docutils literal"><span class="pre">Type</span></code> <code class="docutils literal"><span class="pre">amps-unix</span></code>, AMPS requires the following
+additional configuration option:</p>
+<table border="1" class="docutils" id="table-configref-transport-amps-unix">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">FileName</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">Specifies the location on the filesystem where the
+Unix-domain socket will be created. This location
+is the path that will be provided to clients that
+need to connect using this transport.</p>
+<p class="last">This element is required for transports of type
+<code class="docutils literal"><span class="pre">amps-unix</span></code>. There is no default.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 7.3:</strong> <em>Transport Parameters</em></p>
+<p>For protocols of <code class="docutils literal"><span class="pre">Type</span></code> <code class="docutils literal"><span class="pre">websocket</span></code>, AMPS supports the following
+additional configuration option:</p>
+<table border="1" class="docutils" id="table-configref-transport-websocket">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">PerMessageDeflate</span></code></td>
+<td><p class="first">Controls per-message deflation for websocket
+connections.</p>
+<p>When this value is <code class="docutils literal"><span class="pre">disabled</span></code>, AMPS does not
+perform per-message deflation. If this option is
+not present, or is set to any other value, AMPS
+performs per-message deflation.</p>
+<p>Per-message deflation is normally negotiated
+between an application and AMPS during the opening
+handshake of a websocket connection. 60East
+recommends leaving this option enabled unless you
+have a specific reason for disabling it.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">enabled</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 7.4:</strong> <em>Websocket Transport Parameters</em></p>
+<div class="section" id="configuring-slow-client-offlining">
+<span id="listing-transports"></span><h2>Configuring Slow Client Offlining<a class="headerlink" href="#configuring-slow-client-offlining" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+
+
+    <span class="nt">&lt;MessageMemoryLimit&gt;</span>10GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+    <span class="nt">&lt;MessageDiskPath&gt;</span>/mnt/fastio/AMPS/offline<span class="nt">&lt;/MessageDiskPath&gt;</span>
+    <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>30s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+
+    ...
+
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9007<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-bson-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9010<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>bson<span class="nt">&lt;/MessageType&gt;</span>
+
+            <span class="c">&lt;!-- However, this transport does not allow clients to fall as far behind as the</span>
+<span class="c">                instance-level setting --&gt;</span>
+
+            <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>15s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport has a separate 35GB MessageMemoryLimit</span>
+<span class="c">            and a 70GB MessageDiskLimit. It uses the instance-wide</span>
+<span class="c">            30s parameter for the ClientMessageAgeLimit --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>highpri-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9995<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+            <span class="nt">&lt;MessageMemoryLimit&gt;</span>35GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+            <span class="nt">&lt;MessageDiskLimit&gt;</span>70GB<span class="nt">&lt;/MessageDiskLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Transports&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 7.1:</strong> <em>Slow Client Management Configuration Example</em></p>
+<div class="highlight-xml" id="listing-transports-resources"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+
+
+    <span class="nt">&lt;MessageMemoryLimit&gt;</span>10GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+    <span class="nt">&lt;MessageDiskPath&gt;</span>/mnt/fastio/AMPS/offline<span class="nt">&lt;/MessageDiskPath&gt;</span>
+    <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>30s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+
+    ...
+
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9007<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport shares the 10GB MessageMemoryLimit</span>
+<span class="c">            defined for the instance. --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>regular-bson-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9010<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>bson<span class="nt">&lt;/MessageType&gt;</span>
+
+            <span class="c">&lt;!-- However, this transport does not allow clients to fall as far behind as the</span>
+<span class="c">                instance-level setting --&gt;</span>
+
+            <span class="nt">&lt;ClientMessageAgeLimit&gt;</span>15s<span class="nt">&lt;/ClientMessageAgeLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+        <span class="c">&lt;!-- This transport has a separate 35GB MessageMemoryLimit</span>
+<span class="c">            and a 70GB MessageDiskLimit. It uses the instance-wide</span>
+<span class="c">            30s parameter for the ClientMessageAgeLimit --&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>highpri-json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9995<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+            <span class="nt">&lt;MessageMemoryLimit&gt;</span>35GB<span class="nt">&lt;/MessageMemoryLimit&gt;</span>
+            <span class="nt">&lt;MessageDiskLimit&gt;</span>70GB<span class="nt">&lt;/MessageDiskLimit&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Transports&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 7.2:</strong> <em>Transports Example with Resource Management</em></p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    <span class="nt">&lt;Transports&gt;</span>
+
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>translate-legacy-topics<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9017<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;Protocol&gt;</span>amps<span class="nt">&lt;/Protocol&gt;</span>
+            <span class="nt">&lt;TransportFilter&gt;</span>
+                <span class="nt">&lt;Module&gt;</span>amps-topic-translator<span class="nt">&lt;/Module&gt;</span>
+                <span class="nt">&lt;Options&gt;</span>
+                   <span class="nt">&lt;Topic&gt;</span>orders_for_northamerica:NAOrders<span class="nt">&lt;/Topic&gt;</span>
+                   <span class="nt">&lt;Topic&gt;</span>catalog_items:Catalog<span class="nt">&lt;/Topic&gt;</span>
+                   <span class="nt">&lt;Topic&gt;</span>customer_.*:Customers<span class="nt">&lt;/Topic&gt;</span>
+                <span class="nt">&lt;/Options&gt;</span>
+            <span class="nt">&lt;/TransportFilter&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+    <span class="nt">&lt;/Transports&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 7.3:</strong> <em>Transport Filter Example</em></p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    <span class="nt">&lt;Transports&gt;</span>
+
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>ssl-all-message-types<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcps<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9007<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;Protocol&gt;</span>amps<span class="nt">&lt;/Protocol&gt;</span>
+            <span class="nt">&lt;Certificate&gt;</span>${AMPS_INSTALL}/cert.pem<span class="nt">&lt;/Certificate&gt;</span>
+            <span class="nt">&lt;PrivateKey&gt;</span>${AMPS_INSTALL}/key.pem<span class="nt">&lt;/PrivateKey&gt;</span>
+            <span class="nt">&lt;Ciphers&gt;</span>HIGH:!aNULL<span class="nt">&lt;/Ciphers&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+
+    <span class="nt">&lt;/Transports&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 7.4:</strong> <em>SSL Transport Example</em></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

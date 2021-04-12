@@ -1,0 +1,26 @@
+
+4. State of the World (SOW) 
+============================
+
+.. index:: State of the World (SOW), SOW, AMPS; state, Last value cache,
+   Caching, storage,
+
+One of the core features of AMPS is the ability to persist the most
+recent update for each message matching a topic. The State of the World
+can be thought of as a database where messages published to AMPS are
+filtered into topics, and where the topics store the latest update to a
+message. Since AMPS subscriptions are based on the combination of topics
+and filters, the State of the World (SOW) gives subscribers the ability
+to quickly resolve any differences between their data and updated data
+in the SOW by querying the current state of a topic, or a set of
+messages inside a topic.
+
+.. _#sow-how-does-it-work:
+
+.. include:: ./how_does_sow_work.inc
+.. _#sow-queries:
+
+.. include:: ./queries.inc
+.. _#sow-config:
+
+.. include:: ./sow-configuration.inc

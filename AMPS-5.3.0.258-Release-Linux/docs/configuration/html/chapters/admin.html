@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Admin Server and Statistics &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Modules" href="modules.html" />
+    <link rel="prev" title="3. Instance Level Configuration" href="instance.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="instance.html" title="previous chapter">3. Instance Level Configuration</a></li>
+      <li>Next: <a href="modules.html" title="next chapter">5. Modules</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="admin-server-and-statistics">
+<span id="configref-features-admin"></span><span id="index-0"></span><h1>4. Admin Server and Statistics<a class="headerlink" href="#admin-server-and-statistics" title="Permalink to this headline">¶</a></h1>
+<p id="table-configref-admin-parameters">The <code class="docutils literal"><span class="pre">Admin</span></code> tag is used to control the behavior of the administration
+server and statistics collection for the instance.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">InetAddr</span></code></td>
+<td><p class="first">Defines a port for the embedded HTTP admin server, which can then be accessed via a
+browser. This element can also specify an IP address, in which case the HTTP server
+listens only on that address. If no IP address is specified, the HTTP server listens
+on all available addresses.</p>
+<p class="last">There is no default for this parameter. If this parameter is not provided, AMPS does
+not provide an HTTP admin server, but will continue to collect statistics.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">FileName</span></code></td>
+<td><p class="first">Location for storing the statistics information reported by the Admin Server.</p>
+<p>When a filename is provided, 60East recommends configuring an Action to
+periodically truncate the statistics in the file. See <a class="reference internal" href="actions.html#ug-actions-do-stats"><span class="std std-ref">Manage the Statistics Database</span></a>
+for details.</p>
+<p class="last">default: <code class="docutils literal"><span class="pre">:memory:</span></code> When the FileName is set to the default, the statistics
+database is maintained in memory. stats.db file location</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Interval</span></code></td>
+<td><p class="first">The refresh interval for the Admin Server to update gathered statistics.</p>
+<p>default: <code class="docutils literal"><span class="pre">10s</span></code></p>
+<p class="last">minimum: <code class="docutils literal"><span class="pre">1s</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">WWWAuthenticate</span></code></td>
+<td><p class="first">The HTTP authentication type use for the Admin server when <code class="docutils literal"><span class="pre">Authentication</span></code> is
+configured.</p>
+<p>This option accepts one of:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Authentication Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Basic</span> <span class="pre">realm=&quot;&lt;SECURITY_DOMAIN&gt;&quot;</span></code></td>
+<td>Basic authentication</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">NTLM</span></code></td>
+<td>Microsoft security protocol</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Negotiate</span></code></td>
+<td>Negotiated authentication</td>
+</tr>
+</tbody>
+</table>
+<p class="last">Default: <code class="docutils literal"><span class="pre">Negotiate</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Authentication</span></code></td>
+<td>The authentication to use for the Administrative interface.  This is an
+<code class="docutils literal"><span class="pre">Authentication</span></code> element, as described in
+<a class="reference internal" href="authentication.html#configref-authentication"><span class="std std-ref">Authentication</span></a>.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Entitlement</span></code></td>
+<td>The entitlement to use for the Administrative interface. This is an <code class="docutils literal"><span class="pre">Entitlement</span></code>
+element, as described in <a class="reference internal" href="entitlement.html#configref-entitlement"><span class="std std-ref">Entitlement</span></a>.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">AnonymousPaths</span></code></td>
+<td><p class="first">The regular expression that defines paths in the Admin Server that can be accessed
+anonymously without going through authentication and entitlement.</p>
+<p class="last">Default: There is no default for this option</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 4.1:</strong> <em>Admin Parameters</em></p>
+<p>Starting with version 5.2, AMPS supports the ability to connect to the Admin interface
+over HTTPS. To enable HTTPS, provide a <cite>Certificate</cite> and a <cite>PrivateKey</cite> in the
+<cite>Admin</cite> configuration block.</p>
+<table border="1" class="docutils" id="table-configref-admin-https">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Certificate</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The certificate file to use for the admin server.</p>
+<p class="last">Default: There is no default for this option.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">PrivateKey</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The private key to use for the admin server.</p>
+<p class="last">Default: There is no default for this option.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Ciphers</span></code></td>
+<td><p class="first">The cipher list to use for the admin sevrer. The cipher
+list is passed to the OpenSSL  implementation without
+being interpreted by the AMPS server.</p>
+<p class="last">Default: There is no default for this option. For OpenSSL,
+details on the format of the cipher list are available at
+<a class="reference external" href="https://www.openssl.org/docs/man1.1.0/apps/ciphers.html">https://www.openssl.org/docs/man1.1.0/apps/ciphers.html</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 4.2:</strong> <em>HTTPS Parameters for Admin interface</em></p>
+<div class="highlight-XML" id="listing-admin-example"><div class="highlight"><pre><span></span><span class="nt">&lt;Admin&gt;</span>
+    <span class="nt">&lt;InetAddr&gt;</span>localhost:9090<span class="nt">&lt;/InetAddr&gt;</span>
+    <span class="nt">&lt;FileName&gt;</span>stats.db<span class="nt">&lt;/FileName&gt;</span>
+    <span class="nt">&lt;Interval&gt;</span>20s<span class="nt">&lt;/Interval&gt;</span>
+<span class="nt">&lt;/Admin&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 4.1:</strong> <em>Admin Example</em></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

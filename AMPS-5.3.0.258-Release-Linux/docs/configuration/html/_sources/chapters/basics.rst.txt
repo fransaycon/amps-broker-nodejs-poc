@@ -1,0 +1,221 @@
+1. AMPS Configuration Basics
+=============================
+
+If you have not become familiar with the |amps-user-guide|, in
+particular the |userguide-getting-started|, please start there before
+reading this guide.
+
+The easiest way to create a custom XML configuration file for AMPS is to
+start with the sample configuration file produced by the
+``--sample-config`` flag to AMPS. 
+:ref:`Example 1.1<#simple-amps-config>` shows a simplified
+sample configuration file.
+
+.. _#simple-amps-config:
+
+.. code-block:: xml
+
+    <!-- Sample AMPS configuration
+
+         This file defines an AMPS instance that provides publish and
+         subscribe, topic filtering, and content filtering for JSON messages.
+         The instance provides messaging services on port 9007 of the server.
+         This configuration also provides an adminstrative interface on
+         port 8085, and logs serious messages (error and higher severity) to
+         stdout. 
+
+         This sample file does not configure State of the World (SOW) Topics,
+         Transaction Logs, Aggregation and Views, Historical Query, Replication,
+         Authentication and Entitlement, Conflating Topic Replicas, or other
+         features of AMPS.
+
+         More details for the features available and how to configure them are
+         provided in the AMPS User Guide and the AMPS Configuration Reference.
+         Both are available at http://crankuptheamps.com/documentation/
+
+      -->
+
+    <AMPSConfig>
+
+        <!-- Name of the AMPS instance -->
+        <Name>AMPS-Sample</Name>
+
+        <!-- Configure the administrative HTTP server on port 8085
+           This HTTP server provides admin functions and statistics
+           for the instance -->
+
+        <Admin>
+            <InetAddr>localhost:8085</InetAddr>
+        </Admin>
+
+        <!-- Configure a transport for JSON messages over TCP on port 9007 -->
+
+        <Transports>
+            <Transport>
+                <Name>json-tcp</Name>
+                <Type>tcp</Type>
+                <InetAddr>9007</InetAddr>
+                <MessageType>json</MessageType>
+                <Protocol>amps</Protocol>
+            </Transport>
+        </Transports>
+
+        <!-- Log messages of severity 'error' and higher to stdout -->
+
+        <Logging>
+            <Target>
+                <Protocol>stdout</Protocol>
+                <Level>error</Level>
+            </Target>
+        </Logging>
+
+    </AMPSConfig>            
+
+**Example 1.1:** *Simple AMPS configuration file*
+
+The AMPS configuration XML file is defined first by wrapping the config
+file with an ``AMPSConfig`` tag to identify it as a configuration file.
+Next, the instance is given a name using the ``<Name>`` tag.
+
+Once our instance has a name, it is good to define the connection target
+for the administration port. By default, the administration port can be
+found by pointing a browser to ``http://localhost:8085``, but if a
+different port or host name is desired, then that is defined in the
+``Admin`` and ``InetAddr`` tags. The Admin port is discussed more in
+:ref:`Table 4.1 <#table-configref-admin-parameters>`.
+
+Next we describe how to get messages into AMPS. There are several
+different transport types which can be parsed by AMPS, all of which are
+discussed in greater detail in the Transports chapter, but for this
+sample, we keep things simple by focusing on JSON messages over ``tcp``.
+In AMPS, each key to defining each transport is to give them a unique
+``InetAddr`` port and specify the type of message AMPS will process on
+that port using ``MessageType`` tag. The ``MessageType`` tells AMPS how
+to parse the incoming messages on a specific port. In the above example,
+messages are coming in on port 9007, and AMPS uses the JSON parser to
+parse the body of the message. AMPS also requires a ``Protocol`` tag for
+the ``Transport``, which specifies the format of the commands to AMPS.
+In this case, we use the standard ``amps`` protocol. (Older AMPS
+applications and AMPS installations may require a different protocol
+format, such as ``fix`` or ``xml``. There's no functional difference
+between these protocols, but the AMPS server and the clients need to use
+the same protocol format to successfully exchange messages.)
+
+The last portion of the configuration is Logging. In the above example,
+the ``Logging`` tag defines only one log target, but it's quite common
+to have one or more ``Logging`` targets. Again referring to the example,
+all logging messages that are at ``error`` level and above will be
+logged to the logging ``Protocol`` of ``stdout``. In other words, these
+messages will be logged to the terminal, and not to a file. AMPS
+supports a robust set of logging features and configurations, all of
+which are covered in more detail in the |userguide-logging| and in :ref:`Chapter 8<#configref-logging>` of this reference.
+
+
+.. include:: ./sow-units-env.inc
+Including External Files
+-------------------------
+
+.. index:: composing configuration files,
+
+For production applications, AMPS
+configuration files can become large and complicated. In many cases,
+different instances of an AMPS server need to reuse the same
+definitions. For example, both servers in a High-Availability pair may
+need to use the same queue and SOW definitions.
+
+.. index:: Include,
+
+To help you manage complicated configurations and more easily keep
+configuration consistent on different servers, AMPS allows you to
+include external files in the configuration file by using the
+``Include`` directive.
+
+For example, you could use this for a High-Availability pair to include
+a file that defines the queue, transaction log, and topic definitions.
+Both instances could include exactly the same file for those
+definitions, while having different instance names and port numbers.
+
+When AMPS loads a configuration file that contains an Include directive,
+AMPS follows this process:
+
+-  Load and parse the configuration file
+
+-  If the file contains any ``Include`` directives, load and parse the
+   files specified by those directives. If the included files contain
+   Include directives, load and parse the files specified by those
+   directives (and so forth until all Include directives have been
+   processed).
+
+-  Once all files have been loaded and parsed, replace the Include
+   directives in the original files with the parsed files.
+
+AMPS does not process the configuration file until all of the
+``Include`` directives have been resolved and the files have been
+parsed.
+
+A file may not be included by any file that it includes, or it is
+impossible for AMPS to complete the parsing process.
+
+Because each file is individually parsed, XML entities defined in a file
+are not defined for the files that are ``Include``\ d by that file.
+
+To make it easier to identify which elements of the complete AMPS
+configuration file have been inserted through the ``Include`` mechanism,
+AMPS can include comments in the assembled file that indicate the source
+file for configuration elements. By default, this feature is off, and
+XML content is included verbatim. To change the default for the
+instance, use the ``ConfigIncludeCommentDefault`` configuration element
+to enable comments, by default, for every ``Include`` in the instance.
+To override commenting behavior for an individual ``Include``, use the
+``comment`` attribute.
+
+Example
+^^^^^^^
+
+Consider a configuration file with the following ``Logging`` element
+defined:
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        ...
+      
+        <Logging>
+            <Include comment="true">filetarget.xml</Include>
+        </Logging>
+    </AMPSConfig>
+
+After parsing the configuration file, AMPS loads and parses the
+``filetarget.xml`` file and replaces the Include element with the
+contents of that file.
+
+Suppose ``filetarget.xml`` contains the following ``Target`` directive:
+
+.. code-block:: xml
+
+    <Target>
+        <Protocol>file</Protocol>
+        <FileName>/var/log/amps-log-%n.log</FileName>
+        <Level>info</Level>
+    </Target>
+
+The configuration that AMPS uses will be effectively the same as if the
+configuration file contained the following XML:
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        ...
+        
+        <Logging>
+            <!-- Start <Include>filetarget.xml</Include> -->
+            <Target>
+                <Protocol>file</Protocol>
+                <FileName>/var/log/amps-log-%n.log</FileName>
+                <Level>info</Level>
+            </Target>
+            <!-- End <Include>filetarget.xml</Include> -->
+        </Logging>
+      
+        ...
+    </AMPSConfig>

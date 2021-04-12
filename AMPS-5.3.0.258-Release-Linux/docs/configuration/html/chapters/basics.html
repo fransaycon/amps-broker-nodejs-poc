@@ -1,0 +1,707 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. AMPS Configuration Basics &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Generating a Configuration File" href="generating.html" />
+    <link rel="prev" title="Advanced Message Processing System (AMPS) Configuration Reference Guide" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. AMPS Configuration Basics</a><ul>
+<li><a class="reference internal" href="#amps-configuration-file-special-characters">AMPS Configuration File Special Characters</a><ul>
+<li><a class="reference internal" href="#state-of-the-world-file-name">State of the World File Name</a></li>
+<li><a class="reference internal" href="#log-rotation-name">Log Rotation Name</a></li>
+<li><a class="reference internal" href="#dates">Dates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-units-in-the-configuration">Using Units in the Configuration</a></li>
+<li><a class="reference internal" href="#environment-variables-in-amps-configuration">Environment Variables in AMPS Configuration</a></li>
+<li><a class="reference internal" href="#internal-environment-variables">Internal Environment Variables</a></li>
+<li><a class="reference internal" href="#including-external-files">Including External Files</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Advanced Message Processing System (AMPS) Configuration Reference Guide</a></li>
+      <li>Next: <a href="generating.html" title="next chapter">2. Generating a Configuration File</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="amps-configuration-basics">
+<h1>1. AMPS Configuration Basics<a class="headerlink" href="#amps-configuration-basics" title="Permalink to this headline">¶</a></h1>
+<p>If you have not become familiar with the <a class="reference external" href="../../../user-guide/html/index.html">AMPS User Guide</a>, in
+particular the <a class="reference external" href="../../../user-guide/html/chapters/getting_started.html">Getting Started chapter of the AMPS User Guide</a>, please start there before
+reading this guide.</p>
+<p>The easiest way to create a custom XML configuration file for AMPS is to
+start with the sample configuration file produced by the
+<code class="docutils literal"><span class="pre">--sample-config</span></code> flag to AMPS.
+<a class="reference internal" href="#simple-amps-config"><span class="std std-ref">Example 1.1</span></a> shows a simplified
+sample configuration file.</p>
+<div class="highlight-xml" id="simple-amps-config"><div class="highlight"><pre><span></span><span class="c">&lt;!-- Sample AMPS configuration</span>
+
+<span class="c">     This file defines an AMPS instance that provides publish and</span>
+<span class="c">     subscribe, topic filtering, and content filtering for JSON messages.</span>
+<span class="c">     The instance provides messaging services on port 9007 of the server.</span>
+<span class="c">     This configuration also provides an adminstrative interface on</span>
+<span class="c">     port 8085, and logs serious messages (error and higher severity) to</span>
+<span class="c">     stdout.</span>
+
+<span class="c">     This sample file does not configure State of the World (SOW) Topics,</span>
+<span class="c">     Transaction Logs, Aggregation and Views, Historical Query, Replication,</span>
+<span class="c">     Authentication and Entitlement, Conflating Topic Replicas, or other</span>
+<span class="c">     features of AMPS.</span>
+
+<span class="c">     More details for the features available and how to configure them are</span>
+<span class="c">     provided in the AMPS User Guide and the AMPS Configuration Reference.</span>
+<span class="c">     Both are available at http://crankuptheamps.com/documentation/</span>
+
+<span class="c">  --&gt;</span>
+
+<span class="nt">&lt;AMPSConfig&gt;</span>
+
+    <span class="c">&lt;!-- Name of the AMPS instance --&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>AMPS-Sample<span class="nt">&lt;/Name&gt;</span>
+
+    <span class="c">&lt;!-- Configure the administrative HTTP server on port 8085</span>
+<span class="c">       This HTTP server provides admin functions and statistics</span>
+<span class="c">       for the instance --&gt;</span>
+
+    <span class="nt">&lt;Admin&gt;</span>
+        <span class="nt">&lt;InetAddr&gt;</span>localhost:8085<span class="nt">&lt;/InetAddr&gt;</span>
+    <span class="nt">&lt;/Admin&gt;</span>
+
+    <span class="c">&lt;!-- Configure a transport for JSON messages over TCP on port 9007 --&gt;</span>
+
+    <span class="nt">&lt;Transports&gt;</span>
+        <span class="nt">&lt;Transport&gt;</span>
+            <span class="nt">&lt;Name&gt;</span>json-tcp<span class="nt">&lt;/Name&gt;</span>
+            <span class="nt">&lt;Type&gt;</span>tcp<span class="nt">&lt;/Type&gt;</span>
+            <span class="nt">&lt;InetAddr&gt;</span>9007<span class="nt">&lt;/InetAddr&gt;</span>
+            <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+            <span class="nt">&lt;Protocol&gt;</span>amps<span class="nt">&lt;/Protocol&gt;</span>
+        <span class="nt">&lt;/Transport&gt;</span>
+    <span class="nt">&lt;/Transports&gt;</span>
+
+    <span class="c">&lt;!-- Log messages of severity &#39;error&#39; and higher to stdout --&gt;</span>
+
+    <span class="nt">&lt;Logging&gt;</span>
+        <span class="nt">&lt;Target&gt;</span>
+            <span class="nt">&lt;Protocol&gt;</span>stdout<span class="nt">&lt;/Protocol&gt;</span>
+            <span class="nt">&lt;Level&gt;</span>error<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;/Target&gt;</span>
+    <span class="nt">&lt;/Logging&gt;</span>
+
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.1:</strong> <em>Simple AMPS configuration file</em></p>
+<p>The AMPS configuration XML file is defined first by wrapping the config
+file with an <code class="docutils literal"><span class="pre">AMPSConfig</span></code> tag to identify it as a configuration file.
+Next, the instance is given a name using the <code class="docutils literal"><span class="pre">&lt;Name&gt;</span></code> tag.</p>
+<p>Once our instance has a name, it is good to define the connection target
+for the administration port. By default, the administration port can be
+found by pointing a browser to <code class="docutils literal"><span class="pre">http://localhost:8085</span></code>, but if a
+different port or host name is desired, then that is defined in the
+<code class="docutils literal"><span class="pre">Admin</span></code> and <code class="docutils literal"><span class="pre">InetAddr</span></code> tags. The Admin port is discussed more in
+<a class="reference internal" href="admin.html#table-configref-admin-parameters"><span class="std std-ref">Table 4.1</span></a>.</p>
+<p>Next we describe how to get messages into AMPS. There are several
+different transport types which can be parsed by AMPS, all of which are
+discussed in greater detail in the Transports chapter, but for this
+sample, we keep things simple by focusing on JSON messages over <code class="docutils literal"><span class="pre">tcp</span></code>.
+In AMPS, each key to defining each transport is to give them a unique
+<code class="docutils literal"><span class="pre">InetAddr</span></code> port and specify the type of message AMPS will process on
+that port using <code class="docutils literal"><span class="pre">MessageType</span></code> tag. The <code class="docutils literal"><span class="pre">MessageType</span></code> tells AMPS how
+to parse the incoming messages on a specific port. In the above example,
+messages are coming in on port 9007, and AMPS uses the JSON parser to
+parse the body of the message. AMPS also requires a <code class="docutils literal"><span class="pre">Protocol</span></code> tag for
+the <code class="docutils literal"><span class="pre">Transport</span></code>, which specifies the format of the commands to AMPS.
+In this case, we use the standard <code class="docutils literal"><span class="pre">amps</span></code> protocol. (Older AMPS
+applications and AMPS installations may require a different protocol
+format, such as <code class="docutils literal"><span class="pre">fix</span></code> or <code class="docutils literal"><span class="pre">xml</span></code>. There&#8217;s no functional difference
+between these protocols, but the AMPS server and the clients need to use
+the same protocol format to successfully exchange messages.)</p>
+<p>The last portion of the configuration is Logging. In the above example,
+the <code class="docutils literal"><span class="pre">Logging</span></code> tag defines only one log target, but it&#8217;s quite common
+to have one or more <code class="docutils literal"><span class="pre">Logging</span></code> targets. Again referring to the example,
+all logging messages that are at <code class="docutils literal"><span class="pre">error</span></code> level and above will be
+logged to the logging <code class="docutils literal"><span class="pre">Protocol</span></code> of <code class="docutils literal"><span class="pre">stdout</span></code>. In other words, these
+messages will be logged to the terminal, and not to a file. AMPS
+supports a robust set of logging features and configurations, all of
+which are covered in more detail in the <a class="reference external" href="../../../user-guide/html/chapters/logging.html">Logging chapter of the AMPS User Guide</a> and in <a class="reference internal" href="logging.html#configref-logging"><span class="std std-ref">Chapter 8</span></a> of this reference.</p>
+<div class="section" id="amps-configuration-file-special-characters">
+<h2>AMPS Configuration File Special Characters<a class="headerlink" href="#amps-configuration-file-special-characters" title="Permalink to this headline">¶</a></h2>
+<p>In AMPS there are a few special characters that you should be aware of
+when creating your configuration file. These characters can provide some
+handy short cuts and make configuration creation easier, but you should
+also be aware of them so as not to introduce errors.</p>
+<div class="section" id="state-of-the-world-file-name">
+<h3>State of the World File Name<a class="headerlink" href="#state-of-the-world-file-name" title="Permalink to this headline">¶</a></h3>
+<p>When specifying the file for a State of the World database, using the
+<code class="docutils literal"><span class="pre">%n</span></code> string in the file name specifies that the AMPS server will use
+the message type and topic name in that position to create a unique
+filename. <a class="reference internal" href="#listing-sow-filename-token-replacement"><span class="std std-ref">Example 1.2</span></a>
+shows how to use this in the AMPS configuration file.</p>
+<div class="highlight-xml" id="listing-sow-filename-token-replacement"><div class="highlight"><pre><span></span> <span class="nt">&lt;SOW&gt;</span>
+    <span class="nt">&lt;Topic&gt;</span>
+        <span class="nt">&lt;Topic&gt;</span>Customers<span class="nt">&lt;/Topic&gt;</span>
+        <span class="nt">&lt;FileName&gt;</span>./sow/%n.sow<span class="nt">&lt;/FileName&gt;</span>
+        <span class="nt">&lt;MessageType&gt;</span>json<span class="nt">&lt;/MessageType&gt;</span>
+        <span class="nt">&lt;Key&gt;</span>/customerId<span class="nt">&lt;/Key&gt;</span>
+    <span class="nt">&lt;/Topic&gt;</span>
+<span class="nt">&lt;/SOW&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.2:</strong> <em>SOW file name tokens used in configuration file</em></p>
+</div>
+<div class="section" id="log-rotation-name">
+<h3>Log Rotation Name<a class="headerlink" href="#log-rotation-name" title="Permalink to this headline">¶</a></h3>
+<p>When specifying an AMPS log file which has <code class="docutils literal"><span class="pre">RotationThreshold</span></code>
+specified, using the <code class="docutils literal"><span class="pre">%n</span></code> string in the log file name is a useful
+mechanism for ensuring the name of the log file is unique and
+sequential. <a class="reference internal" href="#listing-filename-token-replacement"><span class="std std-ref">Example 1.3</span></a> shows a file name
+token replacement in the AMPS configuration file.</p>
+<div class="highlight-xml" id="listing-filename-token-replacement"><div class="highlight"><pre><span></span><span class="nt">&lt;Logging&gt;</span>
+    <span class="nt">&lt;Target&gt;</span>
+        <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+        <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;FileName&gt;</span>log/log-%n.log<span class="nt">&lt;/FileName&gt;</span>
+        <span class="nt">&lt;RotationThreshold&gt;</span>2G<span class="nt">&lt;/RotationThreshold&gt;</span>
+    <span class="nt">&lt;/Target&gt;</span>
+<span class="nt">&lt;/Logging&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.3:</strong> <em>Log file name used in configuration file</em></p>
+<p>In the above example, a log file will be created in the <code class="docutils literal"><span class="pre">AMPSDIR/log/</span></code>
+directory. The first time this file is created, it will be named
+<code class="docutils literal"><span class="pre">log-1.log</span></code>. Once the log file reaches the <code class="docutils literal"><span class="pre">RotationThreshold</span></code> limit
+of 2G, the previous log file will be saved, and the new log file name
+will be incremented by one. Thus, the next log file will be named
+<code class="docutils literal"><span class="pre">AMPSDIR/log/log-2.log</span></code>.</p>
+</div>
+<div class="section" id="dates">
+<h3>Dates<a class="headerlink" href="#dates" title="Permalink to this headline">¶</a></h3>
+<p>AMPS allows administrators to use date-based file names when specifying
+the file name in the configuration, as demonstrated in
+<a class="reference internal" href="#listing-date-tokens-in-config"><span class="std std-ref">Example 1.4</span></a>.</p>
+<div class="highlight-xml" id="listing-date-tokens-in-config"><div class="highlight"><pre><span></span><span class="nt">&lt;Logging&gt;</span>
+    <span class="nt">&lt;Target&gt;</span>
+        <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+        <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;FileName&gt;</span>
+            log/log-%Y-%m-%dT%H%M%S.log
+        <span class="nt">&lt;/FileName&gt;</span>
+        <span class="nt">&lt;RotationThreshold&gt;</span>2G<span class="nt">&lt;/RotationThreshold&gt;</span>
+    <span class="nt">&lt;/Target&gt;</span>
+<span class="nt">&lt;/Logging&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.4:</strong> <em>Date tokens used in configuration file</em></p>
+<p>In the above example, a log file will be created in the <code class="docutils literal"><span class="pre">$AMPSDIR/log</span></code>
+named <code class="docutils literal"><span class="pre">2011-01-01-120000.log</span></code> if the log was created at noon on
+January 1, 2011.</p>
+<p>AMPS provides full support for the date tokens provided by the standard
+strftime function, with the exception of <code class="docutils literal"><span class="pre">%n</span></code>, as described above. The
+following table shows some of the most commonly used tokens:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="55%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Token</th>
+<th class="head">Provides</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>%a</td>
+<td>Short weekday name</td>
+<td>Fri</td>
+</tr>
+<tr class="row-odd"><td>%A</td>
+<td>Full weekday name</td>
+<td>Friday</td>
+</tr>
+<tr class="row-even"><td>%b</td>
+<td>Short month name</td>
+<td>Feb</td>
+</tr>
+<tr class="row-odd"><td>%B</td>
+<td>Full month name</td>
+<td>February</td>
+</tr>
+<tr class="row-even"><td>%c</td>
+<td>Simple date and time</td>
+<td>Fri Feb 14 17:25:00
+2014</td>
+</tr>
+<tr class="row-odd"><td>%C</td>
+<td>Century</td>
+<td>20</td>
+</tr>
+<tr class="row-even"><td>%d</td>
+<td>Day of the month (leading zero if
+necessary)</td>
+<td>05</td>
+</tr>
+<tr class="row-odd"><td>%D</td>
+<td>Short date format (MM/DD/YY)</td>
+<td>02/20/14</td>
+</tr>
+<tr class="row-even"><td>%e</td>
+<td>Day of the month (leading space if
+necessary)</td>
+<td>5</td>
+</tr>
+<tr class="row-odd"><td>%F</td>
+<td>Short date format (YYYY-MM-DD)</td>
+<td>2014-02-20</td>
+</tr>
+<tr class="row-even"><td>%H</td>
+<td>Hour (00-23)</td>
+<td>17</td>
+</tr>
+<tr class="row-odd"><td>%I</td>
+<td>Hour (00-12)</td>
+<td>05</td>
+</tr>
+<tr class="row-even"><td>%j</td>
+<td>Day of the year (001-366)</td>
+<td>051</td>
+</tr>
+<tr class="row-odd"><td>%m</td>
+<td>Month (01-12)</td>
+<td>02</td>
+</tr>
+<tr class="row-even"><td>%p</td>
+<td>AM or PM</td>
+<td>PM</td>
+</tr>
+<tr class="row-odd"><td>%r</td>
+<td>Current time, 12 hour format</td>
+<td>05:25:00 pm</td>
+</tr>
+<tr class="row-even"><td>%R</td>
+<td>Current time, 24 hour format</td>
+<td>17:25</td>
+</tr>
+<tr class="row-odd"><td>%T</td>
+<td>ISO 8601 Time format</td>
+<td>17:25:00</td>
+</tr>
+<tr class="row-even"><td>%u</td>
+<td>ISO 8601 day of the week (1-7, Monday =
+1)</td>
+<td>5</td>
+</tr>
+<tr class="row-odd"><td>%V</td>
+<td>ISO 8601 week number (00-53)</td>
+<td>07</td>
+</tr>
+<tr class="row-even"><td>%y</td>
+<td>Year, last two digits</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>%Y</td>
+<td>Year, four digits</td>
+<td>2014</td>
+</tr>
+<tr class="row-even"><td>%Z</td>
+<td>Timezone name or abbreviation (blank if
+undetermined)</td>
+<td>PST</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 1.1:</strong> <em>Commonly Used Date and Time Tokens</em></p>
+</div>
+</div>
+<div class="section" id="using-units-in-the-configuration">
+<h2>Using Units in the Configuration<a class="headerlink" href="#using-units-in-the-configuration" title="Permalink to this headline">¶</a></h2>
+<p>To make configuration easy, AMPS permits the use of units to expand
+values. For example, if a time interval is measured in seconds, then the
+letter <code class="docutils literal"><span class="pre">s</span></code> can be appended to the value. For example, the following
+SOW topic definition used the <code class="docutils literal"><span class="pre">Expiration</span></code> tag to set the record
+expiration to 86400 seconds (one day).</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;SOW&gt;</span>
+    <span class="nt">&lt;Topic&gt;</span>
+        ...
+
+        <span class="nt">&lt;Expiration&gt;</span>86400s <span class="nt">&lt;/Expiration&gt;</span>
+
+        ...
+    <span class="nt">&lt;/Topic&gt;</span>
+<span class="nt">&lt;/SOW&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.5:</strong> <em>Expiration using seconds</em></p>
+<p>An even easier way to specify an expiration of one day is to use the
+following <code class="docutils literal"><span class="pre">Expiration</span></code>:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;SOW&gt;</span>
+    <span class="nt">&lt;Topic&gt;</span>
+        ...
+
+        <span class="nt">&lt;Expiration&gt;</span>1d<span class="nt">&lt;/Expiration&gt;</span>
+
+        ...
+    <span class="nt">&lt;/Topic&gt;</span>
+<span class="nt">&lt;/SOW&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.6:</strong> <em>Expiration using days</em></p>
+<p><a class="reference internal" href="#table-configref-time-units"><span class="std std-ref">Table 1.2</span></a> shows a listing of the time units AMPS supports in
+the configuration file.</p>
+<table border="1" class="docutils" id="table-configref-time-units">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Units</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ns</span></code></td>
+<td>nanoseconds</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">us</span></code></td>
+<td>microseconds</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ms</span></code></td>
+<td>milliseconds</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">s</span></code></td>
+<td>seconds</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">m</span></code></td>
+<td>minutes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">h</span></code></td>
+<td>hours</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">d</span></code></td>
+<td>days</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">w</span></code></td>
+<td>weeks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 1.2:</strong> <em>AMPS Configuration - Time Units</em></p>
+<p>AMPS configuration supports a similar mechanism for byte-based units
+when specifying sizes in the configuration file. <a class="reference internal" href="#table-configref-byte-units"><span class="std std-ref">Table 1.3</span></a>
+shows a listing of the byte units AMPS supports in the configuration
+file.</p>
+<table border="1" class="docutils" id="table-configref-byte-units">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Units</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">kb</span></code></td>
+<td>kilobytes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">mb</span></code></td>
+<td>megabytes</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">gb</span></code></td>
+<td>gigabytes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tb</span></code></td>
+<td>terabytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 1.3:</strong> <em>AMPS Configuration - Byte Units</em></p>
+<p>Dealing with large numbers in AMPS configuration can also be simplified
+by using common exponent values to handle raw values. This means that
+instead of having to input <code class="docutils literal"><span class="pre">10000000</span></code> to represent ten million, a user
+can input <code class="docutils literal"><span class="pre">10M</span></code>. <a class="reference internal" href="#table-configref-numeric-units"><span class="std std-ref">Table 1.4</span></a> contains a list of the exponents
+supported.</p>
+<table border="1" class="docutils" id="table-configref-numeric-units">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Units</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>k</td>
+<td>10<sup>3</sup> - thousand</td>
+</tr>
+<tr class="row-odd"><td>M</td>
+<td>10<sup>6</sup> - million</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 1.4:</strong> <em>AMPS Configuration - Numeric Units</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="tip" src="../_images/tip.svg" /></td>
+<td>To make it easier for users to remember the units, AMPS interval
+and byte units are not case sensitive.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="environment-variables-in-amps-configuration">
+<h2>Environment Variables in AMPS Configuration<a class="headerlink" href="#environment-variables-in-amps-configuration" title="Permalink to this headline">¶</a></h2>
+<p>AMPS configuration also allows for environment variables to be used as
+part of the data when specifying a configuration file. These variables
+can be set in the environment when AMPS starts, or passed to AMPS using
+the <code class="docutils literal"><span class="pre">-D</span></code> option on the command line.</p>
+<p>If a global system variable is commonly used in an organization, then it
+may be useful to define this in one location and re-use it across
+multiple AMPS installations or applications. AMPS will replace any token
+wrapped in <code class="docutils literal"><span class="pre">${}</span></code> with the environment variable defined in the current
+user operating system environment. <a class="reference internal" href="#listing-env-var-in-config"><span class="std std-ref">Example 1.7</span></a>
+demonstrates how the environment variable <code class="docutils literal"><span class="pre">ENV_LOG</span></code> is used to define a global
+environment variable for the location of the host logging.</p>
+<div class="highlight-xml" id="listing-env-var-in-config"><div class="highlight"><pre><span></span><span class="nt">&lt;Logging&gt;</span>
+    <span class="nt">&lt;Target&gt;</span>
+        <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+        <span class="nt">&lt;FileName&gt;</span>${ENV_LOG}<span class="nt">&lt;/FileName&gt;</span>
+        <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;RotationThreshold&gt;</span>2G<span class="nt">&lt;/RotationThreshold&gt;</span>
+    <span class="nt">&lt;/Target&gt;</span>
+<span class="nt">&lt;/Logging&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.7:</strong> <em>Environment variables in AMPS configuration</em></p>
+</div>
+<div class="section" id="internal-environment-variables">
+<span id="index-0"></span><h2>Internal Environment Variables<a class="headerlink" href="#internal-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>In addition to supporting custom environment variables, AMPS includes
+a set of environment variables automatically populated by the server.</p>
+<p>These variables are listed below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="39%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable Name</th>
+<th class="head">Contains</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">AMPS_CONFIG_DIRECTORY</span></code></td>
+<td>Directory in which the configuration file
+used to start AMPS is located.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">AMPS_CONFIG_PATH</span></code></td>
+<td>Full path to the configuration file used
+to start AMPS, including the file name.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">AMPS_VERSION</span></code></td>
+<td>Full version number of the AMPS server.</td>
+</tr>
+</tbody>
+</table>
+<p>When AMPS processes the configuration file, AMPS expands these variables
+just as though they were set in the environment. For example, assume
+that AMPS was started with the following command at the command prompt:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="o">%&gt;./</span><span class="n">ampServer</span> <span class="o">../</span><span class="n">amps</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>Given this command, the log file configuration option shown in
+<a class="reference internal" href="#listing-amps-config-env-var"><span class="std std-ref">Example 1.8</span></a> can be used to instruct AMPS to create the log files
+in the same parent directory as the configuration file — in this case
+<code class="docutils literal"><span class="pre">../amps/config/logs/infoLog.log</span></code>.</p>
+<div class="highlight-xml" id="listing-amps-config-env-var"><div class="highlight"><pre><span></span><span class="nt">&lt;Logging&gt;</span>
+    <span class="nt">&lt;Target&gt;</span>
+        <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+        <span class="nt">&lt;FileName&gt;</span>${AMPS_CONFIG_DIRECTORY}/logs/infoLog.log<span class="nt">&lt;/FileName&gt;</span>
+        <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;RotationThreshold&gt;</span>2G<span class="nt">&lt;/RotationThreshold&gt;</span>
+    <span class="nt">&lt;/Target&gt;</span>
+<span class="nt">&lt;/Logging&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 1.8:</strong> <em>AMPS_CONFIG_DIRECTORY environment variable example</em></p>
+</div>
+<div class="section" id="including-external-files">
+<h2>Including External Files<a class="headerlink" href="#including-external-files" title="Permalink to this headline">¶</a></h2>
+<p id="index-1">For production applications, AMPS
+configuration files can become large and complicated. In many cases,
+different instances of an AMPS server need to reuse the same
+definitions. For example, both servers in a High-Availability pair may
+need to use the same queue and SOW definitions.</p>
+<p id="index-2">To help you manage complicated configurations and more easily keep
+configuration consistent on different servers, AMPS allows you to
+include external files in the configuration file by using the
+<code class="docutils literal"><span class="pre">Include</span></code> directive.</p>
+<p>For example, you could use this for a High-Availability pair to include
+a file that defines the queue, transaction log, and topic definitions.
+Both instances could include exactly the same file for those
+definitions, while having different instance names and port numbers.</p>
+<p>When AMPS loads a configuration file that contains an Include directive,
+AMPS follows this process:</p>
+<ul class="simple">
+<li>Load and parse the configuration file</li>
+<li>If the file contains any <code class="docutils literal"><span class="pre">Include</span></code> directives, load and parse the
+files specified by those directives. If the included files contain
+Include directives, load and parse the files specified by those
+directives (and so forth until all Include directives have been
+processed).</li>
+<li>Once all files have been loaded and parsed, replace the Include
+directives in the original files with the parsed files.</li>
+</ul>
+<p>AMPS does not process the configuration file until all of the
+<code class="docutils literal"><span class="pre">Include</span></code> directives have been resolved and the files have been
+parsed.</p>
+<p>A file may not be included by any file that it includes, or it is
+impossible for AMPS to complete the parsing process.</p>
+<p>Because each file is individually parsed, XML entities defined in a file
+are not defined for the files that are <code class="docutils literal"><span class="pre">Include</span></code>d by that file.</p>
+<p>To make it easier to identify which elements of the complete AMPS
+configuration file have been inserted through the <code class="docutils literal"><span class="pre">Include</span></code> mechanism,
+AMPS can include comments in the assembled file that indicate the source
+file for configuration elements. By default, this feature is off, and
+XML content is included verbatim. To change the default for the
+instance, use the <code class="docutils literal"><span class="pre">ConfigIncludeCommentDefault</span></code> configuration element
+to enable comments, by default, for every <code class="docutils literal"><span class="pre">Include</span></code> in the instance.
+To override commenting behavior for an individual <code class="docutils literal"><span class="pre">Include</span></code>, use the
+<code class="docutils literal"><span class="pre">comment</span></code> attribute.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>Consider a configuration file with the following <code class="docutils literal"><span class="pre">Logging</span></code> element
+defined:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+
+    <span class="nt">&lt;Logging&gt;</span>
+        <span class="nt">&lt;Include</span> <span class="na">comment=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>filetarget.xml<span class="nt">&lt;/Include&gt;</span>
+    <span class="nt">&lt;/Logging&gt;</span>
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p>After parsing the configuration file, AMPS loads and parses the
+<code class="docutils literal"><span class="pre">filetarget.xml</span></code> file and replaces the Include element with the
+contents of that file.</p>
+<p>Suppose <code class="docutils literal"><span class="pre">filetarget.xml</span></code> contains the following <code class="docutils literal"><span class="pre">Target</span></code> directive:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;Target&gt;</span>
+    <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+    <span class="nt">&lt;FileName&gt;</span>/var/log/amps-log-%n.log<span class="nt">&lt;/FileName&gt;</span>
+    <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+<span class="nt">&lt;/Target&gt;</span>
+</pre></div>
+</div>
+<p>The configuration that AMPS uses will be effectively the same as if the
+configuration file contained the following XML:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+    ...
+
+    <span class="nt">&lt;Logging&gt;</span>
+        <span class="c">&lt;!-- Start &lt;Include&gt;filetarget.xml&lt;/Include&gt; --&gt;</span>
+        <span class="nt">&lt;Target&gt;</span>
+            <span class="nt">&lt;Protocol&gt;</span>file<span class="nt">&lt;/Protocol&gt;</span>
+            <span class="nt">&lt;FileName&gt;</span>/var/log/amps-log-%n.log<span class="nt">&lt;/FileName&gt;</span>
+            <span class="nt">&lt;Level&gt;</span>info<span class="nt">&lt;/Level&gt;</span>
+        <span class="nt">&lt;/Target&gt;</span>
+        <span class="c">&lt;!-- End &lt;Include&gt;filetarget.xml&lt;/Include&gt; --&gt;</span>
+    <span class="nt">&lt;/Logging&gt;</span>
+
+    ...
+<span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

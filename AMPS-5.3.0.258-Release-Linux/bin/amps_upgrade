@@ -1,0 +1,428 @@
+#!/usr/bin/env python
+###############################################################################
+##
+## Copyright (c) 2012-2019 60East Technologies Inc., All Rights Reserved.
+##
+## This computer software is owned by 60East Technologies Inc. and is
+## protected by U.S. copyright laws and other laws and by international
+## treaties.  This computer software is furnished by 60East Technologies
+## Inc. pursuant to a written license agreement and may be used, copied,
+## transmitted, and stored only in accordance with the terms of such
+## license agreement and with the inclusion of the above copyright notice.
+## This computer software or any other copies thereof may not be provided
+## or otherwise made available to any other person.
+##
+## U.S. Government Restricted Rights.  This computer software: (a) was
+## developed at private expense and is in all respects the proprietary
+## information of 60East Technologies Inc.; (b) was not developed with
+## government funds; (c) is a trade secret of 60East Technologies Inc.
+## for all purposes of the Freedom of Information Act; and (d) is a
+## commercial item and thus, pursuant to Section 12.212 of the Federal
+## Acquisition Regulations (FAR) and DFAR Supplement Section 227.7202,
+## Government's use, duplication or disclosure of the computer software
+## is subject to the restrictions set forth by 60East Technologies Inc..
+##
+###############################################################################
+from __future__ import absolute_import
+from __future__ import print_function
+import sys
+import logging
+
+# Before doing anything, check that we're running at least version 2.5
+if ''.join(map(str, sys.version_info[0:3])) < '260':
+    sys.stderr.write('Error: %s requires Python 2.6.8 or greater.\n' % sys.argv[0])
+    sys.exit(1)
+
+# Insert the lib directory into PYTHONPATH
+import os
+sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), "lib"))
+
+from optparse import OptionParser, OptionGroup
+from os.path import exists, join, basename, dirname
+from os import makedirs
+
+import amps_upgrade_utils
+import amps_upgrade_utils
+import amps_server
+import amps_sow
+import amps_ack
+import amps_journal
+import glob
+
+from shutil import rmtree
+import shutil
+
+
+HOME = None
+HOMES = [os.path.abspath(join(dirname(sys.argv[0]), "..")),
+         os.path.abspath(join(dirname(sys.argv[0]), "../build/install"))]
+for DIR in HOMES:
+    if exists(join(DIR, "bin/ampServer")):
+        HOME = DIR
+
+if HOME is None:
+    if basename(HOMES[0]) == "wip":
+        # development environment
+        sys.stderr.write("couldn't find ampServer in %s/bin, " % HOMES[1] +
+                         "please build the server before proceeding.\n")
+    else:
+        # release environment
+        sys.stderr.write("couldn't find ampServer in %s/bin, " % HOMES[0] +
+                         "please be sure the amps_upgrade script hasn't been " +
+                         "moved away from its release.\n")
+    sys.exit(1)
+
+INSTANCE = amps_server.Instance(HOME)
+VERSION = INSTANCE.version()
+
+
+logger = logging.getLogger("amps_upgrade")
+logger.setLevel(logging.DEBUG)
+
+
+class Main:
+
+    def __init__(self):
+        (self.parser, self.opts, args) = self.parse_options()
+        self.action = self.validate_options(self.opts, args)
+        if self.opts.config is not None and self.opts.work_dir is not None:
+            self.config = amps_server.Config(self.opts.config, self.opts.work_dir)
+            self.stage = amps_upgrade_utils.FileStage(self.config,
+                                                      self.opts.tmp_dir,
+                                                      logger)
+            # logging ...
+            # ... formatting
+            log_format = '%(asctime)s %(levelname).4s %(filename)s:%(lineno)s %(message)s'
+            date_format = '%y%m%dT%H%M%S%z'
+            formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
+            # ... to the console
+            chandler = logging.StreamHandler(sys.stdout)
+            chandler.setFormatter(formatter)
+            if self.opts.verbose:
+                chandler.setLevel(logging.DEBUG)
+            elif self.opts.trace:
+                chandler.setLevel(logging.NOTSET)
+            else:
+                chandler.setLevel(logging.INFO)
+            logger.addHandler(chandler)
+            # ... to a file
+            fhandler = logging.FileHandler(os.path.join(self.opts.tmp_dir, "amps_upgrade.log"))
+            fhandler.setFormatter(formatter)
+            fhandler.setLevel(logging.NOTSET)
+            logger.addHandler(fhandler)
+        self.base = amps_server.Instance(self.opts.base)
+        self.dest = INSTANCE
+
+    def validate_options(self, opts, args):
+        req_config = True
+        req_work_dir = True
+        req_tmp_dir = True
+        action = None
+        if opts.check_current is not None:
+            action = "check_current"
+            req_work_dir = True
+            req_config = True
+        elif opts.dry_run is not None:
+            action = "dry_run"
+        elif opts.very_dry_run is not None:
+            action = "very_dry_run"
+        elif opts.upgrade is not None:
+            action = "upgrade"
+        else:
+            sys.stderr.write("missing required action argument\n")
+            self.parser.print_help()
+            sys.exit(1)
+        missing = []
+        messages = []
+        if opts.base is None:
+            missing.append("--from")
+        elif not exists(join(opts.base, "bin", "ampServer")):
+            messages.append("no ampServer found under base: %s" %
+                            join(opts.base, "bin", "ampServer"))
+        if req_config:
+            if opts.config is None:
+                missing.append("--config")
+            elif not exists(opts.config):
+                messages.append("config file not found: %s" % opts.config)
+        if req_work_dir:
+            if opts.work_dir is None:
+                missing.append("--work-dir")
+            elif not exists(opts.work_dir):
+                messages.append("working directory not found: %s" % opts.work_dir)
+        if req_tmp_dir:
+            if opts.tmp_dir is None:
+                missing.append("--tmp-dir")
+            elif not exists(opts.tmp_dir):
+                messages.append("temp directory not found: %s" % opts.tmp_dir)
+        if len(missing) > 0:
+            messages.append("missing options: %s" % " ".join(missing))
+        if len(args) > 0:
+            messages.append("unrecognized args: %s" % " ".join(args))
+        if len(messages) > 0:
+            sys.stderr.write("\n".join(messages) + "\n")
+            sys.exit(1)
+        return action
+
+    def parse_options(self):
+        parser = OptionParser(usage="usage: %prog [OPTION] ... [ACTION]",
+                              version="amps_upgrade 1.0")
+        parser.add_option("--from",
+                          dest="base",
+                          help="path to the AMPS installation that's to be upgraded, "
+                          "ampServer should be located at BASE/bin/ampServer")
+        parser.add_option("--config",
+                          dest="config",
+                          help="the xml configuration file for the AMPS server to be upgraded")
+        parser.add_option("--work-dir",
+                          dest="work_dir",
+                          help="the working directory from which the ampServer is invoked")
+        parser.add_option("--tmp-dir",
+                          dest="tmp_dir",
+                          help="the directory where temporary upgrade files will be written")
+        parser.add_option("--verbose",
+                          dest="verbose",
+                          help="you want to see details on each operation",
+                          action="store_true",
+                          default=False)
+        parser.add_option("--trace",
+                          dest="trace",
+                          help="you want to see which operations are performed",
+                          action="store_true",
+                          default=False)
+        action_group = OptionGroup(parser, "Action")
+        action_group.add_option("--check-current",
+                                action="store_true",
+                                help="Returns true if the installation is compatible with no upgrade needed")
+        action_group.add_option("--dry-run",
+                                action="store_true",
+                                help="Step through the entire upgrade process, printing activity, "
+                                "upgrading files in tmp directories, and returning false if errors are encountered "
+                                "or upgrade was impossible.  Does NOT write upgraded files back to production.")
+        action_group.add_option("--very-dry-run",
+                                action="store_true",
+                                help="Step through the entire upgrade process, printing activity, performing no "
+                                "actual upgrades, writing nothing to disk, and returning false if errors were "
+                                "encountered or upgrade is impossible")
+        action_group.add_option("--upgrade",
+                                action="store_true",
+                                help="Upgrade configuration and data files, returning false if "
+                                "upgrade is impossible or failed")
+        parser.add_option_group(action_group)
+        (options, args) = parser.parse_args()
+        return (parser, options, args)
+
+    def pair_str(self, begin=None, end=None):
+        if begin is None:
+            begin = self.base.version()
+        if begin == "develop":
+            begin = " develop "
+        if end is None:
+            end = self.dest.version()
+        if end == "develop":
+            end = " develop "
+        return "[%s] --> [%s]" % (begin, end)
+
+    def v(self, version):
+        return "[%s]" % version
+
+    def execute(self):
+        return getattr(self, "execute_%s" % self.action)()
+
+    def execute_check_current(self):
+        debug_to = sys.stderr
+        is_current = True;
+        for component in amps_server.COMPONENTS:
+            for entry in self.stage.files(component):
+                if debug_to: debug_to.write("\n\nis_current=%s\nentry: %s\n\n" % (is_current, entry))
+                if component == "jnl":
+                    for file in amps_upgrade_utils.list_journal_files(entry.live):
+                        if debug_to: debug_to.write("file: %s is_current=%s" % (file, is_current))
+                        if amps_journal.is_up_to_date(file.encode('ascii', 'replace'), print_debug_info_to=debug_to):
+                            if debug_to: debug_to.write("UP TO DATE: %s (is_current was %s)" % (file.encode('ascii', 'replace'), is_current))
+                            is_current = is_current and True
+                        else:
+                            if debug_to: debug_to.write("NOT UP TO DATE: %s (is_current was %s)" % (file.encode('ascii', 'replace'), is_current))
+                            is_current = False
+                if component == "sow":
+                    if amps_sow.is_up_to_date(entry.live, print_debug_info_to=debug_to):
+                        if debug_to: debug_to.write("UP TO DATE: %s (is_current was %s)" % (entry.live, is_current))
+                        is_current = is_current and True
+                    else:
+                        if debug_to: debug_to.write("NOT UP TO DATE: %s (is_current was %s)" % (entry.live, is_current))
+                        is_current = False
+                if component == "ack":
+                    if amps_ack.is_up_to_date(entry.live, print_debug_info_to=debug_to):
+                        if debug_to: debug_to.write("UP TO DATE: %s (is_current was %s)" % (entry.live, is_current))
+                        is_current = is_current and True
+                    else:
+                        if debug_to: debug_to.write("NOT UP TO DATE: %s (is_current was %s)" % (entry.live, is_current))
+                        is_current = False
+        if is_current:
+            return 0
+        else:
+            return 1
+
+    def execute_very_dry_run(self):
+        logger.info("----------- what follows is a very dry run, paths will be checked but no changes will be persisted to disk")
+        return self.execute_upgrade(mode="very_dry")
+
+    def execute_dry_run(self):
+        logger.info("----------- what follows is a dry run in tmp dir, no changes will be written to production")
+        return self.execute_upgrade(mode="dry")
+
+    def execute_upgrade(self, mode="execute"):
+        if mode not in [ "dry", "very_dry", "execute" ]:
+            raise Exception("unknown mode: '%s'" % mode)
+        can_write  = mode in [ "dry", "execute" ]
+        can_deploy = mode in [ "execute" ]
+        (base_ver, dest_ver) = [self.base.version(), self.dest.version()]
+
+        if can_write:
+            self.stage.purge()
+        for component in amps_server.COMPONENTS:
+            self.upgrade(component, write=can_write)
+        logger.info("%s upgrades complete, staged under %s with backups" %
+                  (self.pair_str(), self.stage.root))
+        if can_deploy:
+            self.stage.publish()
+            logger.info("%s upgraded files published to live system." % self.pair_str())
+        elif can_write:
+            logger.info("%s dry run, not publishing files back to live system" % self.pair_str())
+        else:
+            logger.info("%s very dry run, nothing was changed on disk" % self.pair_str())
+        return 0
+
+    def upgrade(self, component, write=True):
+        begin = self.base.version()
+        end = self.dest.version()
+        logger.debug(">>> upgrade %s files from %s to %s" % (component, begin, end))
+        for entry in self.stage.files(component):
+            if component == "jnl":
+                print("component='%s' entry: %s" % (component, entry))
+            logger.debug("upgrading %s entry from %s to %s:\n%s" % (component, begin, end, entry))
+            logger.info("%s upgraded %s staged at %s" %
+                      (self.pair_str(begin, end), component, entry.next))
+            getattr(self, "upgrade_%s" % component)(entry, write=write)
+            logger.debug("upgrade complete for %s" % entry.next)
+        logger.debug("<<< upgrade %s files from %s to %s complete" % (component, begin, end))
+
+    def upgrade_sow(self, entry, write=True):
+        if exists(entry.next):
+            logger.debug("next already exists, no need to upgrade: %s" % entry.next)
+            return
+        tdef = self.find_topic_def(entry.orig)
+        if tdef is None:
+            raise Exception("failed to locate a topic definition in the config file for sow file '%s'" % entry.orig)
+        if write:
+            amps_sow.upgrade(entry.orig, entry.temp,
+                             self.parse_size(tdef["RecordSize"]), tdef["IncrementSize"])
+            move(entry.temp, entry.next)
+        else:
+            logger.info("in no-write mode, skipping sow upgrade: %s" % entry.orig)
+
+
+    def parse_size(self, v):
+        param = v
+        if type(v) == int:
+            return v
+        elif (sys.version_info[0] == 3 and isinstance(v, str)) or (
+            sys.version_info[0] == 2 and (isinstance(v, str) or isinstance(v, unicode))):
+            v = v.encode('ascii', 'ignore')
+            v = v.lower()
+        else:
+            raise ValueError("unrecognized type for size: %s" % type(v))
+        multiplier = 1
+        for (suffix, m) in {
+            "kb": 2**10,
+            "mb": 2**20,
+            "gb": 2**30,
+            "tb": 2**40,
+            }.items():
+            if v.endswith(suffix):
+                v = v.replace(suffix, "")
+                multiplier = m
+        try:
+            return int(v) * multiplier
+        except ValueError as e:
+            raise ValueError("failed to parse '%s'" % param)
+
+
+    def _dot_esc(self, s):
+        s = s.replace("/", ".")
+        while s.startswith("."):
+            s = s[1:]
+        return s
+
+    def find_topic_def(self, filename):
+        logger.debug("find_topic_def(%s)" % filename)
+        for tdef in self.config.data.topic_defs:
+            tdef_filenames = []
+
+            pct_n = "%s.%s" % (self._dot_esc(tdef["Topic"]),
+                               self._dot_esc(tdef["MessageType"]))
+            tdef_filenames.append(tdef["FileName"].replace("%n", pct_n))
+
+            pct_n = self._dot_esc(tdef["Topic"])
+            tdef_filenames.append(tdef["FileName"].replace("%n", pct_n))
+
+            for tdef_filename in tdef_filenames:
+                if self._dot_esc(filename).endswith(self._dot_esc(tdef_filename)):
+                    logger.debug("returning: %s" % tdef)
+                    return tdef
+
+        logger.debug("returning None")
+        return None
+
+    def upgrade_ack(self, entry, write=True):
+        if exists(entry.next):
+            logger.debug("next already exists, no need to upgrade: %s" % entry.next)
+            return
+        if write:
+            amps_ack.upgrade(entry.orig, entry.temp)
+            move(entry.temp, entry.next)
+        else:
+            logger.info("in no-write mode, skipping ack upgrade: %s" % entry.orig)
+
+    def glob_extensions(self, dir, extensions):
+        print("glob_extensions(%s, %s)" % (dir, extensions))
+        for ext in extensions:
+            for f in glob.glob("%s/*.%s" % (dir, ext)):
+                yield f
+
+    def upgrade_jnl(self, entry, write=True):
+        if exists(entry.temp):
+            rmtree(entry.temp)
+        makedirs(entry.temp)
+        if not exists(entry.next):
+            makedirs(entry.next)
+        for orig_file in amps_upgrade_utils.list_journal_files(entry.orig):
+            next_file = join(entry.next, basename(orig_file))
+            if exists(next_file):
+                logger.debug("next already exists, no need to upgrade: %s" % next_file)
+            else:
+                temp_file = join(entry.temp, basename(orig_file))
+                if write:
+                    amps_journal.upgrade(orig_file, temp_file)
+                    move(temp_file, next_file)
+                else:
+                    logger.info("in no-write mode, skipping jnl upgrade: %s" % orig_file)
+
+
+def move(l, r):
+    logger.debug("""move:
+from: %s
+  to: %s""" % (l, r))
+    shutil.move(l, r)
+
+
+def copy(l, r):
+    logger.debug("""copy:
+from: %s
+  to: %s""" % (l, r))
+    shutil.copy2(l, r)
+
+
+if __name__ == "__main__":
+    ret = Main().execute()
+    logger.debug("process exit code: %s" % ret)
+    sys.exit(ret)

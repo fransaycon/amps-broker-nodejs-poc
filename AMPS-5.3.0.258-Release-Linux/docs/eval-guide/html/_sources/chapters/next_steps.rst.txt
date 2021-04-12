@@ -1,0 +1,45 @@
+
+6. Next Steps
+==============
+
+Now that you understand the basics of how AMPS works, you have two
+potential paths forward in your usage of the product:
+
+-  On one path, you may want to learn how to configure, deploy, and
+   administer your own instance of AMPS. For this path, see the *User
+   Guide*, which provides complete information for system administrators
+   who are responsible for the deployment, availability and management
+   of data to other users.
+
+-  Alternatively, you may need to develop an application to work with
+   AMPS, using one of the Developer Guides for Java, Python, C++, or C#.
+   For this path, download one of the evaluation kits from the AMPS
+   developer page at http://www.crankuptheamps.com/developer.
+
+The following sections provide more information about each of these
+paths and also briefly describes some use cases for AMPS.
+
+Operation and Deployment
+--------------------------
+
+In preparing to deploy your instance of AMPS, you must size your host
+environment according to multiple dimensions: memory, storage, CPU, and
+network. The “Operation and Deployment” chapter in the *AMPS User Guide*
+provides guidelines and best practices for configuring the host
+environment. The chapter also specifies recommended settings for running
+AMPS on a Linux operating system.
+
+Application Development
+-----------------------
+
+Each language-specific *Development Guide* explains how to install,
+configure, and develop applications that use AMPS. In order to develop
+applications using an AMPS client, you must understand the basic
+concepts of AMPS, such as *topics*, *subscriptions*, *messages* and
+*SOW*.
+
+You will also need an installed and running AMPS server to use the
+product. Although you can type and compile programs that use AMPS
+without a running server, you will get the most benefit by running the
+programs against a working server. An evaluation version of AMPS is
+available from http://www.crankuptheamps.com/evaluate.

@@ -1,0 +1,194 @@
+
+5. Advanced Topics
+===================
+
+While there is much more content beyond the scope of this document, AMPS
+provides many of the following additional utilities and guides for you
+to learn about the many feature of AMPS.
+
+Event Logging
+-------------
+
+.. index:: Logging, AMPS; logging,
+
+AMPS provides a rich logging framework that supports logging to many
+different targets including the console, syslog, and files. Every error
+and event message within AMPS is uniquely identified and can be filtered
+out or explicitly included in the logger output. The *AMPS User Guide*
+describes the AMPS logger configuration and the unique settings for each
+logging target.
+
+Message Record and Replay 
+-------------------------
+
+.. index:: AMPS; transaction log, message replay,
+
+AMPS supports a fully-queryable transaction log. You can configure the
+transaction log to keep a journal of incoming messages for one or more
+topics, and then replay those messages, in order, from any point in
+time. This capability is often used for historical analysis or
+backtesting. In addition, this capability can be used to provide high
+availability, ensuring that clients do not miss messages in a message
+stream even if the client fails while processing messages.
+
+The AMPS clients provide resumable subscription capability that works
+with the transaction log. Using this capability, you can create
+applications that ensure that clients never miss a message, even if the
+client is shut down and restarted.
+
+.. index:: queues, message queues,
+
+Message Queues
+--------------
+
+AMPS includes high performance queuing built on the AMPS messaging
+engine and transaction log. AMPS message queues combine elements of
+classic message queuing with the advanced messaging features of AMPS,
+including content filtering, aggregation and projection, historical
+replay, and so on. The *Message Queues* chapter in the *AMPS User Guide*
+presents an overview of message queues.
+
+AMPS message queues help you easily solve some common messaging
+problems:
+
+-  Ensuring that a message is only processed once
+
+-  Distributing tasks across workers in a fair manner
+
+-  Ensuring that a message is delivered to and processed by a worker
+
+-  Ensuring that when a worker fails to process a message, that message
+   is redelivered
+
+While it's possible to create applications with these properties by
+using the other features of AMPS, message queues provide these functions
+built into the AMPS server. In addition, message queues allow you to:
+
+-  Replicate messages between AMPS instances while preserving delivery
+   guarantees
+
+-  Create views and aggregates based on the current contents of a queue
+
+-  Filter messages into and out of a queue
+
+-  Provide a single published message to multiple queues
+
+-  Aggregate multiple topics into a single queue
+
+Use message queues when you need to ensure that a message is processed
+by a single consumer. When you need to distribute messages to a number
+of consumers, use the AMPS pub/sub delivery model.
+
+The AMPS client libraries, starting in version 5.0, are queue-aware and
+contain features to make it easier to work with queues and create the
+application behavior that you need. See the *Developer Guide* for the
+client library of your choice for details on how to use these features.
+
+.. index:: AMPS; Topic Replicas, Topic Replicas,
+
+Conflated Topics
+-----------------
+
+To further reduce network bandwidth consumption, AMPS supports a form of
+SOW topic called a “conflated topic.” A conflated topic is a copy of one
+SOW topic into another with the ability to control the update interval.
+Changes to a message that occur between updates are conflated into a
+single message that represents the current state of the message.
+
+To better see the value in a conflated topic, imagine a SOW topic called
+``ORDER_STATE`` exists in an AMPS instance. ``ORDER_STATE`` messages are
+published frequently to the topic. Meanwhile, there are several
+subscribing clients that are watching updates to this topic and
+displaying the latest state in a GUI front-end.
+
+If this GUI front-end only needs updates in five second intervals from
+the ``ORDER_STATE`` topic, then more frequent updates would be wasteful
+of network and client-side processing resources. To reduce network
+congestion, a conflating topic replica of the ``ORDER_STATE`` topic can
+be created which will contain a copy of ``ORDER_STATE`` updated in five
+second intervals. Only the changed records from ``ORDER_STATE`` will be
+copied to the conflating replica topic and then sent to the subscribing
+clients. Those records with multiple updates within the time interval
+will have their latest updated values sent during replication, resulting
+in substantial savings in bandwidth for single records with high update
+rates.
+
+View Topics and Aggregation
+----------------------------
+
+.. index:: Views, AMPS; Views,
+
+AMPS contains a high-performance aggregation engine, which can be used
+to project one topic onto another, similar to the ``CREATE VIEW``
+functionality found in most RDBMS software. Views can JOIN multiple
+topics together, including topics with different message types.
+
+Historical SOW Query
+---------------------
+
+AMPS allows you to configure a SOW topic to retain the historical state
+of the SOW, on a configurable granularity.You can then query for the
+state of the SOW at a point in time, and retrieve results from the saved
+state.
+
+Utilities 
+----------
+
+.. index:: Utilities, AMPS; utilities, Utilities; amps_journal_dump,
+   Utilities; amps_sow_dump, Utilities; ampserr,
+
+AMPS provides several utilities that are not essential to message
+processing, but can be helpful in troubleshooting or tuning an AMPS
+instance. The *User Guide* and *Utility Reference* describe these
+utilities in detail. The utilities include:
+
+-  A command-line client, ``spark``, as a useful tool for diagnostics,
+   such as checking the contents of a SOW topic. The ``spark`` client
+   can also be used for simple scripting to run queries, place
+   subscriptions, and publish data.
+
+-  ``ampserr`` is used to expand and examine error messages that may be
+   observed in the logs. This utility allows a user to input a specific
+   error code, or a class of error codes, examine the error message in
+   more detail, and where applicable, view known solutions to similar
+   issues.
+
+-  ``amps_sow_dump`` is used to inspect the contents of a SOW topic
+   store.
+
+-  ``amps_journal_dump`` is used to examine the contents of an AMPS
+   journal file during debugging and program tuning.
+
+More information about each of these utilities, including usage and
+examples, can be found in the *AMPS Utilities User Guide*.
+
+Monitoring Interface
+---------------------
+
+.. index:: Monitoring Interface,
+
+AMPS provides a monitoring interface which contains information about
+the state of the host system (CPU, memory, disk and network) as well as
+statistics about the state of the AMPS instance it is monitoring
+(clients, SOW state, Journal State and more). AMPS provides this
+information through a RESTful interface for ease of integration into
+existing enterprise monitoring systems.
+
+AMPS can also record statistics in a persistent SQLite database, which
+can be queried using the standard SQLite toolset.
+
+More information about the monitoring system provided in AMPS can be
+found in the *AMPS Monitoring Reference Guide*. More information about
+the statistics database is provided in the *Statistics Database
+Reference*.
+
+High Availability
+------------------
+
+.. index:: High availability, Replication, Transactions, Availability,
+
+The *High Availability* chapter in the *AMPS User Guide* will showcase
+the powerful High Availability features that AMPS provides. This chapter
+describes how to use the AMPS transaction log and AMPS replication to
+provide failover strategies and high availability guarantees.
+

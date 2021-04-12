@@ -1,0 +1,53 @@
+
+.. index:: SOW,
+
+9. State-of-the-World (SOW) Features
+=====================================
+
+The ``SOW`` section of the configuration file holds the configuration
+for the AMPS State of the World.
+
++-----------------------+---------------------------------------------------------------------------------------+
+| **Element**           | **Description**                                                                       |
++=======================+=======================================================================================+
+| ``Topic``             | Specifies that AMPS will record distinct messages for this topic in the State of the  |
+|                       | World. SOW topic definitions are used directly as a last-value cache, and are         |
+|                       | required for many of the advanced messaging features in AMPS such as out-of-focus     |
+|                       | notifications and delta messaging. SOW topic definitions can also be used as the      |
+|                       | underlying topics for views, aggregates, and conflated topics. SOW ``Topic``          |
+|                       | configuration is described in :ref:`SOW/Topic<#configref-topicdefinition>`.           |
++-----------------------+---------------------------------------------------------------------------------------+
+| ``Queue``             | Defines a message queue. Rather than delivering each message to all matching          |
+|                       | subscriptions, message queues provide features to help ensure that each message is    |
+|                       | delivered to and processed by a single subscriber. See the User Guide for a full      |
+|                       | description of the functionality of message queues. Queue configuration is described  |
+|                       | in :ref:`SOW/Queue<#config-queues>`.                                                  |
++-----------------------+---------------------------------------------------------------------------------------+
+| ``View``              | Defines a View over one or more SOW topics, conflated topics, or other views. A view  |
+|                       | can perform aggregation, can JOIN multiple topics together. A view can be based on a  |
+|                       | SOW topic of one message type and project results of a different message type. View   |
+|                       | configuration is described in :ref:`SOW/View<#configref-view>`.                       |
++-----------------------+---------------------------------------------------------------------------------------+
+| ``ConflatedTopic``    | Defines a copy of a SOW topic or view that receives current value updates at a        |
+|                       | specified interval, conflating any changes to values that occur between the scheduled |
+|                       | updates. ConflatedTopic configuration is described in                                 |
+|                       | :ref:`SOW/ConflatedTopic<#configref-conflatedtopic>`.                                 |
++-----------------------+---------------------------------------------------------------------------------------+
+
+**Table 9.1:** *SOW section configuration elements*
+
+The elements within the SOW section are described in detail in the
+following sections.
+
+.. _#configref-topicdefinition:
+
+.. include:: ./topicdefinition.inc
+.. _#config-queues:
+
+.. include:: ./queues.inc
+.. _#configref-view:
+
+.. include:: ./views.inc
+.. _#configref-conflatedtopic:
+
+.. include:: ./conflatedtopic.inc

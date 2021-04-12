@@ -1,0 +1,404 @@
+.. index:: Transport,
+
+7. Transports
+=============
+
+The ``Transports`` element configures how AMPS communicates with
+publishers and subscribers, as well as how AMPS accepts connections for
+replication. The Transports element is a container for one or more
+``Transport`` elements. Each ``Transport`` is a combination of a network
+transport, an AMPS header protocol, and a message type.
+
+A ``Transport`` also specifies the ``Authentication`` used to validate
+the users that connect, and the ``Entitlement`` used to enforce
+permissions for users that connect over that transport.
+
+AMPS supports a variety of network transports, header protocols and
+message formats for communication between publishers and subscribers.
+This section describes how to configure a ``Transport``.
+
+.. _#table-configref-transport-parameters:
+
++---------------------------+---------------------------------------------------------------------------------------+
+| **Element**               | **Description**                                                                       |
++===========================+=======================================================================================+
+| ::                        | The name to use for this Transport. This name appears in the AMPS log for messages    |
+|                           | related to the transport.                                                             |
+|     Name                  |                                                                                       | 
+|                           |                                                                                       |
+|                           | There is no default for this value. When the ``Type`` of the ``Transport`` is         |
+|                           | ``amps-replication`` or ``amps-replication-secure``, 60East recommends that the       |
+|                           | ``Name`` of the ``Transport`` match the value of the ``Type``.                        |
++---------------------------+---------------------------------------------------------------------------------------+
+| ::                        | This element defines the protocol to use for sending and receiving messages. The      |
+|                           | protocol is typically ``amps``, the name of a specific protocol for interoperability  |
+|     Protocol              | with another system or a legacy application, or the name of a custom protocol module  |
+|                           | specified in the ``Modules`` element.                                                 |
+|                           |                                                                                       |
+|                           | AMPS provides support for the following protocols:                                    |
+|                           |                                                                                       |
+|                           | ====================  =============================================================== |
+|                           | Protocol Name         Description                                                     |
+|                           | ====================  =============================================================== |
+|                           | ``amps``              Standard AMPS messaging, using compact headers in JSON format.  |
+|                           |                                                                                       |
+|                           |                       AMPS accepts ``json`` as a synonym for ``amps`` in a protocol   |
+|                           |                       declaration.                                                    |
+|                           |                                                                                       |
+|                           | ``fix-session``       FIX session protocol, for use with systems that publish FIX     |
+|                           |                       messages using this format.                                     |
+|                           |                                                                                       |
+|                           | ``websocket``         Websocket protocol, using JSON format headers.                  |
+|                           |                                                                                       |
+|                           | *Legacy protocols*                                                                    |
+|                           |                                                                                       |
+|                           | ``fix``               Standard AMPS messaging, using headers in FIX format.           |
+|                           |                                                                                       |
+|                           | ``nvfix``             Standard AMPS messaging, using headers in NVFIX format.         |
+|                           |                                                                                       |
+|                           | ``soap``              Standard AMPS messaging, using headers in SOAP format.          |
+|                           |                                                                                       |
+|                           | ``xml``               Standard AMPS messaging, using headers in XML format.           |
+|                           | ====================  =============================================================== |
+|                           |                                                                                       |
+|                           | 60East recommends using the ``amps`` protocol for general purpose AMPS messaging.     |
+|                           | When your application uses the the FIX session layer or Websockets, use those         |
+|                           | protocols.                                                                            |
+|                           |                                                                                       |
+|                           | Older versions of AMPS used message headers in the same format as the message type:   |
+|                           | if your instance supports applications that expect to use a specific message type     |
+|                           | protocol, use that protocol in your ``Transport`` configuration.                      |
++---------------------------+---------------------------------------------------------------------------------------+
+| ::                        | The type of Transport.                                                                |
+|                           |                                                                                       |
+|     Type                  | Valid values include: ``tcp``, ``tcps``, ``amps-replication``,                        |
+|                           | ``amps-replication-secure``, ``amps-unix``                                            |
+|                           |                                                                                       |
+|                           | ``tcp`` is the standard TCP transport.                                                |
+|                           |                                                                                       |
+|                           | ``tcps`` is secure TCP transport: this transport type uses SSL and requires a         |
+|                           | certificate and private key to be set.                                                |
+|                           |                                                                                       |
+|                           | ``amps-replication`` is for inbound replication connections. Notice that AMPS         |
+|                           | replication does not use the same transport type as other applications.               |
+|                           |                                                                                       |
+|                           | ``amps-replication-secure`` is for inbound replication connections that use SSL.      |
+|                           | Notice that AMPS replication does not use the same transport type as other            |
+|                           | applications. This transport type requires a certificate and private key to be set.   |
+|                           |                                                                                       |
+|                           | ``amps-unix`` is for incoming client connections over Unix domain sockets. This       |
+|                           | transport type requires a ``FileName``, which is the location on the file system      |
+|                           | where the Unix domain socket will be created.                                         |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``InetAddr``              | The port on which AMPS will listen for this transport. This element can also specify  |
+|                           | an IP address, in which case AMPS listens only on that address. If no IP address is   |
+|                           | specified, AMPS listens on all available addresses.                                   |
+|                           |                                                                                       |
+|                           | This element is not required for transports of the ``amps-unix`` ``Type``, but is     |
+|                           | required for all other ``Type`` values.                                               |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``MessageType``           | Restricts a transport to a single message type. When provided, AMPS assumes that all  |
+|                           | connections to this transport use the specified ``MessageType``. If a different       |
+|                           | ``MessageType`` is provided in the connection string, AMPS refuses the connection. If |
+|                           | no ``MessageType`` is provided in the connection string, AMPS accepts the connection  |
+|                           | and assumes that the connection uses the specified ``MessageType``.                   |
+|                           |                                                                                       |
+|                           | When the ``Transport`` ``Type`` is ``amps-replication`` or                            |
+|                           | ``amps-replication-secure``, this element is ignored and the ``Transport`` accepts    |
+|                           | all message types configured in the instance.                                         |
+|                           |                                                                                       |
+|                           | When present, this is a reference to the name of a specific message type defined in   |
+|                           | the ``MessageTypes`` section or one of the message types that AMPS loads by default.  |
+|                           |                                                                                       |
+|                           | In this release, AMPS loads the following message types by default: ``fix``,          |
+|                           | ``nvfix``, ``xml``, ``json``, ``msgpack``, ``bson``, ``bflat`` and ``binary``.        |
+|                           | Composite message types, and message types based on Google Protocol Buffers, must be  |
+|                           | defined in the ``MessageTypes`` element before they can be used.                      |
+|                           |                                                                                       |
+|                           | A ``Transport`` that uses the ``amps`` ``Protocol`` defaults to accepting all message |
+|                           | types defined by the instance, and does not require setting a ``MessageType`` element.|
+|                           | When the ``Transport`` does not specify a ``MessageType``, the connecting client must |
+|                           | declare the message type it will use when logging on. A ``Transport`` that uses the   |
+|                           | ``amps`` protocol can specify a single ``MessageType`` to accept by including this    |
+|                           | element. When a single ``MessageType`` is specified, AMPS does not require that the   |
+|                           | message type is specfied by the client.                                               |
+|                           |                                                                                       |
+|                           | *Important*: A ``Transport`` that uses one of the legacy ``Protocol`` values (``fix``,|
++---------------------------+---------------------------------------------------------------------------------------+
+|                           | ``nvfix``, or ``xml``) *must* specify a ``MessageType``.                              |
+|                           |                                                                                       |
+|                           | Default: When the ``Protocol`` is ``amps``, defaults to accepting all message types   |
+|                           | defined by the instance. When the ``Protocol`` is one of the legacy values, there is  |
+|                           | no default and a ``MessageType`` must be provided.                                    |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``InitialState``          | Defines whether, when AMPS starts, the transport is enabled or disabled. When the     |
+|                           | transport is disabled, AMPS does not listen for or accept connections on the          |
+|                           | transport. When ``InitialState`` is ``disabled``, the transport must be explicitly    |
+|                           | enabled after startup (for example, through an action or the administrative console)  |
+|                           | for AMPS to listen for and accept connections on the transport.                       |
+|                           |                                                                                       |
+|                           | This configuration option can be useful for defining a transport that is only         |
+|                           | available when certain conditions are true: for example, an instance might start with |
+|                           | the connection used by clients disabled, and let an external monitoring system enable |
+|                           | the connection during business hours and disable the connection outside of business   |
+|                           | hours.                                                                                |
+|                           |                                                                                       |
+|                           | Default: ``enabled``                                                                  |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``Entitlement``           | Specifies the entitlement module to use for this transport. If no entitlement module  |
+|                           | is provided, the transport uses the default entitlement module for the instance. This |
+|                           | element must contain a ``Module`` element with the ``Name`` of an entitlement module. |
+|                           | If the module requires options, those options are provided in an ``Options`` element  |
+|                           | within the ``Entitlement`` element.                                                   |
+|                           |                                                                                       |
+|                           | Default: The module specified in the ``Entitlement`` for the instance (defaults to    |
+|                           | ``amps-default-entitlement-module`` if not provided)                                  |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``Authentication``        | Specifies the authentication module to use for this transport. If no authentication   |
+|                           | module is provided, the transport uses the authentication module for the instance.    |
+|                           | This element must contain a ``Module`` element with the ``Name`` of an authentication |
+|                           | module. If the module requires options, those options are provided in an ``Options``  |
+|                           | element within the ``Authentication`` element.                                        |
+|                           |                                                                                       |
+|                           | Default: The module specified in the ``Authentication`` element for the instance      |
+|                           | (defaults to ``amps-default-authentication-module`` if not provided)                  |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``MessageMemoryLimit``    | The total amount of memory to allocate to messages before offlining clients.          |
+|                           |                                                                                       |
+|                           | Default: The setting configured at the instance level. If this option is not          |
+|                           | specifically set at the instance level, the instance defaults to 10% of total host    |
+|                           | memory or 10% of the amount of host memory AMPS is allowed to consume (as reported by |
+|                           | ``ulimit -m`` ), whichever is *lowest*.                                               |
+|                           |                                                                                       |
+|                           | This option is specified in bytes, and accepts the standard AMPS notation             |
+|                           | (for example, ``10GB`` or ``250MB``).                                                 |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``MessageDiskLimit``      | The total amount of disk space to allocate to messages before disconnecting clients.  |
+|                           |                                                                                       |
+|                           | Default: The setting configured at the instance level. If this option is not          |
+|                           | specifically set at the instance level, the instance defaults to 1GB or the amount    |
+|                           | specified in the MessageMemoryLimit, whichever is *highest*.                          |
+|                           |                                                                                       |
+|                           | This option is specified in bytes, and accepts the standard AMPS notation             |
+|                           | (for example, ``10GB`` or ``250MB``).                                                 |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``MessageDiskPath``       | The path to use to write offline files.                                               |
+|                           |                                                                                       |
+|                           | Default: ``/var/tmp``, or the setting configured at the instance level                |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``TransportFilter``       | A transport filter to use for the transport. When specified, each command received    |
+|                           | over this transport is provided to the filter.                                        |
+|                           |                                                                                       |
+|                           | This element requires a ``Module`` element, which contains the name of the module     |
+|                           | that provides the filter. This element may contain an ``Options`` element, which      |
+|                           | contains the set of options to provide to the module. The options required by         |
+|                           | a specific module depend on the module: see the documentation for the module          |
+|                           | for details.                                                                          |
+|                           |                                                                                       |
+|                           | A transport can specify multiple filters. When multiple filters are specified,        |
+|                           | AMPS provides the command to each specified filter, in the order in which the filters |
+|                           | appear in the transaction log.                                                        |
+|                           |                                                                                       |
+|                           | There is no default for this element. If no ``TransportFilter`` is specified,         |
+|                           | AMPS processes commands exactly as they are received.                                 |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``ClientMessageAgeLimit`` | The maximum amount of time for the client to lag behind. If a message for the client  |
+|                           | has been held longer than this time, the client will be disconnected. This parameter  |
+|                           | is an AMPS time interval (for example, ``30s`` for 30 seconds, or                     |
+|                           | ``1h`` for 1 hour).                                                                   |
+|                           |                                                                                       |
+|                           | Default: No age limit, or the setting configured at the instance level                |
++---------------------------+---------------------------------------------------------------------------------------+
+| ``ClientMaxCapacity``     | The amount of available capacity a single client can consume. Before a client is      |
+|                           | offlined, this limit applies to the ``MessageMemoryLimit``. After a client is         |
+|                           | offlined, this limit includes the ``MessageDiskLimit``. This parameter is a           |
+|                           | percentage of the total.                                                              |
+|                           |                                                                                       |
+|                           | Default: ``100%`` (no effective limit), or the setting configured at the instance     |
+|                           | level                                                                                 |
++---------------------------+---------------------------------------------------------------------------------------+
+
+**Table 7.1:** *Transport Parameters*
+
+Starting with 5.1, AMPS supports encrypting client connections using the
+SSL (Secure Sockets Layer) network protocol. The following parameters
+apply to transports that use SSL. While AMPS performs additional
+configuration validation if the transport is configured with a ``Type``
+of ``tcps``, if a ``Certificate`` and ``PrivateKey`` are specified for a
+``Transport`` of ``tcp`` type, AMPS will use SSL for that ``Transport``.
+These options also apply to transports of type ``amps-replication-secure``.
+
+.. _#table-configref-transport-ssl:
+
++-----------------------+-----------------------------------------------------------+
+| **Element**           | **Description**                                           |
++=======================+===========================================================+
+| ::                    | The certificate file to use for the server.               |
+|                       |                                                           |
+|     Certificate       | Default: There is no default for this option.             |
++-----------------------+-----------------------------------------------------------+
+| ::                    | The private key to use for the server.                    |
+|                       |                                                           |
+|     PrivateKey        | Default: There is no default for this option.             |
++-----------------------+-----------------------------------------------------------+
+| ``Ciphers``           | The cipher list to use for this transport. The cipher list| 
+|                       | is passed to the OpenSSL  implementation without being    |
+|                       | interpreted by the AMPS server.                           |
+|                       |                                                           |
+|                       | Default: There is no default for this option. For OpenSSL,|
+|                       | details on the format of the cipher list are available at |
+|                       | https://www.openssl.org/docs/man1.1.0/apps/ciphers.html   |
++-----------------------+-----------------------------------------------------------+
+
+**Table 7.2:** *SSL Transport Parameters*
+
+For protocols of ``Type`` ``amps-unix``, AMPS requires the following
+additional configuration option:
+
+.. _#table-configref-transport-amps-unix:
+
++-----------------------+----------------------------------------------------+
+| **Element**           | **Description**                                    |
++=======================+====================================================+
+| ::                    | Specifies the location on the filesystem where the |
+|                       | Unix-domain socket will be created. This location  |
+|     FileName          | is the path that will be provided to clients that  |
+|                       | need to connect using this transport.              |
+|                       |                                                    |
+|                       | This element is required for transports of type    |
+|                       | ``amps-unix``. There is no default.                |
++-----------------------+----------------------------------------------------+
+
+**Table 7.3:** *Transport Parameters*
+
+For protocols of ``Type`` ``websocket``, AMPS supports the following
+additional configuration option:
+
+.. _#table-configref-transport-websocket:
+
++-----------------------+----------------------------------------------------+
+| **Element**           | **Description**                                    |
++=======================+====================================================+
+| ``PerMessageDeflate`` | Controls per-message deflation for websocket       |
+|                       | connections.                                       |
+|                       |                                                    |
+|                       | When this value is ``disabled``, AMPS does not     |
+|                       | perform per-message deflation. If this option is   |
+|                       | not present, or is set to any other value, AMPS    |
+|                       | performs per-message deflation.                    |
+|                       |                                                    |
+|                       | Per-message deflation is normally negotiated       |
+|                       | between an application and AMPS during the opening |
+|                       | handshake of a websocket connection. 60East        |
+|                       | recommends leaving this option enabled unless you  |
+|                       | have a specific reason for disabling it.           |
+|                       |                                                    |
+|                       | Default: ``enabled``                               |
++-----------------------+----------------------------------------------------+
+
+**Table 7.4:** *Websocket Transport Parameters*
+
+.. _#listing-transports:
+
+.. include:: ./slow-client-config.inc
+**Example 7.1:** *Slow Client Management Configuration Example*
+
+.. _#listing-transports-resources:
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        ...
+
+
+        <MessageMemoryLimit>10GB</MessageMemoryLimit>
+        <MessageDiskPath>/mnt/fastio/AMPS/offline</MessageDiskPath>
+        <ClientMessageAgeLimit>30s</ClientMessageAgeLimit>
+
+        ...
+      
+        <Transports>
+            <!-- This transport shares the 10GB MessageMemoryLimit
+                defined for the instance. -->
+            <Transport>
+                <Name>regular-json-tcp</Name>
+                <Type>tcp</Type>
+                <InetAddr>9007</InetAddr>
+                <MessageType>json</MessageType>
+            </Transport>
+
+            <!-- This transport shares the 10GB MessageMemoryLimit
+                defined for the instance. -->
+            <Transport>
+                <Name>regular-bson-tcp</Name>
+                <Type>tcp</Type>
+                <InetAddr>9010</InetAddr>
+                <MessageType>bson</MessageType>
+                
+                <!-- However, this transport does not allow clients to fall as far behind as the
+                    instance-level setting -->
+                
+                <ClientMessageAgeLimit>15s</ClientMessageAgeLimit>
+            </Transport>
+
+            <!-- This transport has a separate 35GB MessageMemoryLimit
+                and a 70GB MessageDiskLimit. It uses the instance-wide
+                30s parameter for the ClientMessageAgeLimit -->
+            <Transport>
+                <Name>highpri-json-tcp</Name>
+                <Type>tcp</Type>
+                <InetAddr>9995</InetAddr>
+                <MessageType>json</MessageType>
+                <MessageMemoryLimit>35GB</MessageMemoryLimit>
+                <MessageDiskLimit>70GB</MessageDiskLimit>
+            </Transport>
+        </Transports>
+    </AMPSConfig>
+
+**Example 7.2:** *Transports Example with Resource Management*
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        <Transports>
+
+            <Transport>
+                <Name>translate-legacy-topics</Name>
+                <Type>tcp</Type>
+                <InetAddr>9017</InetAddr>
+                <Protocol>amps</Protocol>
+                <TransportFilter>
+                    <Module>amps-topic-translator</Module>
+                    <Options>
+                       <Topic>orders_for_northamerica:NAOrders</Topic>
+                       <Topic>catalog_items:Catalog</Topic>
+                       <Topic>customer_.*:Customers</Topic>
+                    </Options>   
+                </TransportFilter>
+            </Transport>
+
+        </Transports>
+    </AMPSConfig>
+
+**Example 7.3:** *Transport Filter Example*
+
+
+.. code-block:: xml
+
+    <AMPSConfig>
+        <Transports>
+
+            <Transport>
+                <Name>ssl-all-message-types</Name>
+                <Type>tcps</Type>
+                <InetAddr>9007</InetAddr>
+                <Protocol>amps</Protocol>
+                <Certificate>${AMPS_INSTALL}/cert.pem</Certificate>
+                <PrivateKey>${AMPS_INSTALL}/key.pem</PrivateKey>
+                <Ciphers>HIGH:!aNULL</Ciphers>
+            </Transport>
+
+        </Transports>
+    </AMPSConfig>
+
+**Example 7.4:** *SSL Transport Example*

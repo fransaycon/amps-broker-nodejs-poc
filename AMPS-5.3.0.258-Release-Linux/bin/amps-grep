@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+
+############################################################################
+##
+## Copyright (c) 2012-2017 60East Technologies Inc., All Rights Reserved.
+##
+## This computer software is owned by 60East Technologies Inc. and is
+## protected by U.S. copyright laws and other laws and by international
+## treaties.  This computer software is furnished by 60East Technologies
+## Inc. pursuant to a written license agreement and may be used, copied,
+## transmitted, and stored only in accordance with the terms of such
+## license agreement and with the inclusion of the above copyright notice.
+## This computer software or any other copies thereof may not be provided
+## or otherwise made available to any other person.
+##
+## U.S. Government Restricted Rights.  This computer software: (a) was
+## developed at private expense and is in all respects the proprietary
+## information of 60East Technologies Inc; (b) was not developed with
+## government funds; (c) is a trade secret of 60East Technologies Inc.
+## for all purposes of the Freedom of Information Act; and (d) is a
+## commercial item and thus, pursuant to Section 12.212 of the Federal
+## Acquisition Regulations (FAR) and DFAR Supplement Section 227.7202,
+## Government's use, duplication or disclosure of the computer software
+## is subject to the restrictions set forth by 60East Technologies Inc.
+##
+############################################################################
+
+"""
+Utility script to scrape AMPS logs for a search term and output the
+sets of AMPS log lines that contain the search term.  If your search term is
+found within a multi-line set of AMPS log lines, this util will include the
+starting log line (identified as lines that begin with a timestamp).
+"""
+from __future__ import absolute_import
+from __future__ import print_function
+
+from optparse import OptionParser
+import re
+from signal import signal, SIGPIPE, SIG_DFL
+import string
+import sys
+
+def is_timestamped(line):
+    """
+    Check for a leading timestamp, and use as sentinel value in identifying
+    related groups of lines from the AMPS logs.
+    """
+    return line.startswith('20')
+
+def check_for_match(line, options):
+    if options.extended_regex is not None:
+        flags = 0
+        if options.ignore_case:
+            flags = re.IGNORECASE
+            
+        return re.search(options.extended_regex, line, flags) is not None
+    else:
+        # Exit early on first match found
+        if options.ignore_case:
+            for term in options.literal_terms:
+                if string.lower(term) in string.lower(line):
+                    return True
+        else:
+            for term in options.literal_terms:
+                if term in line:
+                    return True
+
+        return False
+
+def output_match(line, line_number, prefix_base, options):
+    prefix_copy = prefix_base
+    if options.line_number:
+        prefix_copy += str(line_number) + ':'
+    print(prefix_copy + line.rstrip())
+
+
+def search_file(filename, log, options):
+    match_found = False
+
+    # Look-behind cache, so matches start with a timestamp-prefixed log entry
+    cache = []
+
+    # The prefix is used when the filename and/or line numbers are requested
+    prefix = ''
+    if options.with_filename:
+        prefix += filename + ':'
+
+    for line_num, line in enumerate(log, 1):
+        # Bool value of invert_match cmd-line option flip/flops conditional
+        # and conditionally enables/disables fall-through for when to
+        # reset match_found variable
+        if match_found == options.invert_match:
+            # This code block handles suppression of output
+            if is_timestamped(line):
+                # Only reset variable when matching is inverted
+                if options.invert_match:
+                    match_found = False
+                cache = []
+        else:
+            # This code block handles when output is generated
+            if is_timestamped(line):
+                # Only reset variable when normal matching is expected
+                if not options.invert_match:
+                    match_found = False
+                # Output cache contents
+                for ln, l in cache:
+                    output_match(l, ln, prefix, options)
+                cache = []
+
+        if not match_found:
+            match_found = check_for_match(line, options)
+        cache.append((line_num, line))
+
+    # Do final check at EOF to see if we need to write out our cache
+    if match_found != options.invert_match:
+        for ln, l in cache:
+            output_match(l, ln, prefix, options)
+
+def main(argv):
+    # Ignore SIGPIPE signal for valid use cases such as piping output to "head"
+    signal(SIGPIPE, SIG_DFL)
+
+    usage = "%prog [options] [files]"
+    version = "%prog 1.0"
+    description = "This utility is intended to facilitate searching AMPS log files for " + \
+                  "search terms (either literal terms or regular expressions).  Search " + \
+                  "matches are against entire multi-line blocks where a single multi-" + \
+                  "line block consists of an initial line that begins with a datestamp " + \
+                  "and continues with all consecutive lines that don't begin with a " + \
+                  "datestamp.  This utility also supports piped input, to search for " + \
+                  "multiple search terms within individual multi-line blocks."
+    parser = OptionParser(usage=usage, version=version, description=description,
+                          add_help_option=False)
+    parser.add_option("-e", "--search-term", dest='literal_terms', action='append')
+    parser.add_option("-E", "--extended-regex", dest='extended_regex', action='store')
+    parser.add_option("-n", "--line-number", dest='line_number', action='store_true')
+    parser.add_option("-H", "--with-filename", dest='with_filename', action='store_true')
+    parser.add_option("-h", "--no-filename", dest='with_filename', action='store_false')
+    parser.add_option("-i", "--ignore-case", dest='ignore_case', action='store_true')
+    parser.add_option("-v", "--invert-match", dest='invert_match', action='store_true', default=False)
+    (options, args) = parser.parse_args()
+
+    # Provide usage message, when no search terms are provided
+    if len(args) == 0 and options.literal_terms is None and options.extended_regex is None:
+        parser.print_help()
+        sys.exit(1)
+
+    # If no search-term/regex option is specified, take 1st arg as search term
+    if len(args) and options.literal_terms is None and options.extended_regex is None:
+        options.literal_terms = [args.pop(0)]
+    
+    # Support reading from STDIN (piped inputs)
+    if len(args) == 0:
+        search_file('(standard input)', sys.stdin, options)
+    elif len(args) > 1 and options.with_filename is None:
+        # Emulate grep when multiple file args are provided
+        options.with_filename = True
+        
+    # One or more file arguments were provided
+    for filename in args:
+        with open(filename) as log:
+            search_file(filename, log, options)
+            
+if __name__ == '__main__':
+    main(sys.argv[1:])

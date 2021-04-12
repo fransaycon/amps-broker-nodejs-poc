@@ -1,0 +1,948 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>26. Operation and Deployment &#8212; AMPS User Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="27. Securing AMPS" href="securing.html" />
+    <link rel="prev" title="25. Replication and High Availability" href="ha.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">26. Operation and Deployment</a><ul>
+<li><a class="reference internal" href="#capacity-planning">Capacity Planning</a><ul>
+<li><a class="reference internal" href="#memory">Memory</a></li>
+<li><a class="reference internal" href="#storage">Storage</a><ul>
+<li><a class="reference internal" href="#amps-log-files">AMPS log files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sow">SOW</a><ul>
+<li><a class="reference internal" href="#transaction-logs">Transaction Logs</a></li>
+<li><a class="reference internal" href="#other-storage-considerations">Other Storage Considerations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cpu">CPU</a></li>
+<li><a class="reference internal" href="#network">Network</a><ul>
+<li><a class="reference internal" href="#replication-network-bandwidth">Replication Network Bandwidth</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#numa-considerations">NUMA Considerations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linux-operating-system-configuration">Linux Operating System Configuration</a><ul>
+<li><a class="reference internal" href="#ulimit">ulimit</a></li>
+<li><a class="reference internal" href="#transparent-huge-pages">Transparent Huge Pages</a></li>
+<li><a class="reference internal" href="#proc-sys-fs-aio-max-nr">/proc/sys/fs/aio-max-nr</a></li>
+<li><a class="reference internal" href="#proc-sys-fs-file-max">/proc/sys/fs/file-max</a></li>
+<li><a class="reference internal" href="#proc-sys-vm-min-free-kbytes">/proc/sys/vm/min_free_kbytes</a></li>
+<li><a class="reference internal" href="#proc-sys-vm-max-map-count">/proc/sys/vm/max_map_count</a></li>
+<li><a class="reference internal" href="#proc-sys-vm-swappiness">/proc/sys/vm/swappiness</a></li>
+<li><a class="reference internal" href="#proc-sys-net-ipv4-tcp-frto">/proc/sys/net/ipv4/tcp_frto</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#upgrading-an-amps-installation">Upgrading an AMPS Installation</a><ul>
+<li><a class="reference internal" href="#upgrade-steps">Upgrade Steps</a></li>
+<li><a class="reference internal" href="#upgrading-amps-data-files">Upgrading AMPS Data Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#monitoring">Monitoring</a></li>
+<li><a class="reference internal" href="#stopping-amps">Stopping AMPS</a></li>
+<li><a class="reference internal" href="#sow-parameters">SOW Parameters</a></li>
+<li><a class="reference internal" href="#slow-clients">Slow Clients</a><ul>
+<li><a class="reference internal" href="#slow-client-offlining-for-large-result-sets">Slow Client Offlining for Large Result Sets</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#minidump">Minidump</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="ha.html" title="previous chapter">25. Replication and High Availability</a></li>
+      <li>Next: <a href="securing.html" title="next chapter">27. Securing AMPS</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="operation-and-deployment">
+<span id="ug-operation"></span><span id="index-0"></span><h1>26. Operation and Deployment<a class="headerlink" href="#operation-and-deployment" title="Permalink to this headline">¶</a></h1>
+<p>This chapter contains guidelines and best-practices to help plan and
+prepare an environment to meet the demands that AMPS is expected to
+manage.</p>
+<div class="section" id="capacity-planning">
+<span id="operation-deployment-capacity-planning"></span><h2>Capacity Planning<a class="headerlink" href="#capacity-planning" title="Permalink to this headline">¶</a></h2>
+<p id="index-1">Sizing an AMPS deployment can be a complicated process that includes
+many factors including configuration parameters used for AMPS, the data
+used within the deployment, and how the deployment will be used. This
+section presents guidelines that you can use in sizing your host
+environment for an AMPS deployment given what needs to be considered
+along every dimension: Memory, Storage, CPU, and Network.</p>
+<div class="section" id="memory">
+<h3>Memory<a class="headerlink" href="#memory" title="Permalink to this headline">¶</a></h3>
+<p id="index-2">Beyond storing its own binary images in system memory, AMPS also tries to store its SOW and
+indexing state in memory to maximize the performance of record updates and SOW queries.</p>
+<p>AMPS needs less than 1GB for its own binary image and initial start up
+state for most configurations. In the worst-case, because of indexing
+for queries, AMPS may need up to twice the size of messages stored in
+the SOW. AMPS maintains a copy of the latest journal file in memory for
+quick access, and maintains a small amount of metadata for each message
+in an AMPS queue. The <cite>MessageMemoryLimit</cite> configured for the instance
+(or the total of all <cite>MessageMemoryLimit</cite> settings for each <cite>Transport</cite>
+in the instance) specifies the total amount of memory devoted to buffering
+messages for clients, including conflated subscriptions, aggregated
+subscriptions, and paginated subscriptions.</p>
+<p>This puts a general memory consumption estimate for AMPS itself at:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="n">GB</span> <span class="o">+</span> <span class="p">(</span> <span class="mi">2</span><span class="n">S</span> <span class="o">*</span> <span class="n">M</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="n">C</span> <span class="o">*</span> <span class="mi">4096</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="n">TMemLimit</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">J</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">Q</span> <span class="o">*</span> <span class="mi">250</span> <span class="nb">bytes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Example 26.1:</strong> <em>Memory Estimation equation</em></p>
+<p>where:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">S</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">message</span> <span class="pre">size</span> <span class="pre">for</span> <span class="pre">topics</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">SOW</span> <span class="pre">(including</span> <span class="pre">views</span> <span class="pre">and</span> <span class="pre">conflated</span> <span class="pre">topics)</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">messages</span> <span class="pre">in</span> <span class="pre">all</span> <span class="pre">topics</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">SOW</span> <span class="pre">(including</span> <span class="pre">views</span> <span class="pre">and</span> <span class="pre">conflated</span> <span class="pre">topics)</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Clients</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">TMemLimit</span> <span class="pre">=</span> <span class="pre">Total</span> <span class="pre">of</span> <span class="pre">all</span> <span class="pre">MessageMemoryLimit</span> <span class="pre">settings</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">instance</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">J</span> <span class="pre">=</span> <span class="pre">JournalSize</span> <span class="pre">setting</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Q</span> <span class="pre">=</span> <span class="pre">Total</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">messages</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">queues</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">instance</span></code></div>
+</div>
+</div></blockquote>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="n">GB</span> <span class="o">+</span> <span class="p">(</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">20</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="mi">200</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="mi">10</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span><span class="p">)</span> <span class="o">+</span>
+      <span class="p">(</span> <span class="mi">1</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span><span class="p">,</span><span class="mi">000</span> <span class="o">*</span> <span class="mi">2</span> <span class="p">)</span>  <span class="o">+</span> <span class="p">(</span> <span class="mi">800</span><span class="p">,</span><span class="mi">000</span> <span class="o">*</span> <span class="mi">260</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Example 26.2:</strong> <em>Example memory estimation equation</em></p>
+<p>where:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">S</span> <span class="pre">=</span> <span class="pre">1024</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">20,000,000</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">200</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">TMemLimit</span> <span class="pre">=</span> <span class="pre">10,000,000,000</span> <span class="pre">(10GB)</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">J</span> <span class="pre">=</span> <span class="pre">1,000,000,000</span> <span class="pre">(1GB)</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Q</span> <span class="pre">=</span> <span class="pre">800,000</span></code></div>
+</div>
+</div></blockquote>
+<p>An AMPS deployment expected to hold 20 million messages with an average
+message size of 1KB, that has a total MaxMemoryLimit of 10GB,
+uses a JournalSize of 1GB, and expects to have a total of 800,000 messages
+active in message queues at any given time and 200 connected clients would
+consume roughly 53GB.</p>
+<p>60East recommends leaving headroom on the system above the capacity estimate
+for operating system tasks and unexpected traffic. For critical systems that
+cannot afford downtime even when unexpected events occur, a good recommendation
+is to allocate 200% of the standard capacity for AMPS, or enough capacity
+to handle the largest volume increase historically observed for the system.
+(For example, if the largest volume spike observed was 350% of the typical
+volume at that time, then planning to be able to handle <em>at least</em> 350% of
+the typical volume would be important for a critical system).</p>
+</div>
+<div class="section" id="storage">
+<h3>Storage<a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<p id="index-3">AMPS needs enough space to store its own binary images, configuration files, SOW persistence
+files, log files, transaction log journals, and slow client offline storage, if any. Not
+every deployment configures a SOW or transaction log, so the storage
+requirements are largely driven by the configuration.</p>
+<div class="section" id="amps-log-files">
+<h4>AMPS log files<a class="headerlink" href="#amps-log-files" title="Permalink to this headline">¶</a></h4>
+<p>Log file sizes vary depending on the log level and how the engine is
+used. For example, in the worst-case, <code class="docutils literal"><span class="pre">trace</span></code> logging, AMPS will need
+at least enough storage for every message published into AMPS and every
+message sent out of AMPS plus 20%.</p>
+<p>For <code class="docutils literal"><span class="pre">info</span></code> level logging, a good estimate of AMPS log file sizes would
+be 2MB per 10 million messages published.</p>
+<p>Logging space overhead can be capped by implementing a log rotation
+strategy which uses the same file name for each rotation. This strategy
+effectively truncates the file when it reaches the log rotation
+threshold to prevent it from growing larger.</p>
+</div>
+</div>
+<div class="section" id="sow">
+<h3>SOW<a class="headerlink" href="#sow" title="Permalink to this headline">¶</a></h3>
+<p id="index-4">When calculating the SOW storage, there are a couple of factors to keep
+in mind. The first is the average size of messages stored in the SOW,
+the number of messages stored in the SOW and the <code class="docutils literal"><span class="pre">SlabSize</span></code> defined in
+the configuration file. Using these values, it is possible to estimate
+the minimum and maximum storage requirements for the SOW:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">Min</span> <span class="o">=</span> <span class="p">(</span> <span class="n">MsgSize</span> <span class="o">*</span> <span class="n">MsgCount</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="n">Cores</span> <span class="o">*</span> <span class="n">SlabSize</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Example 26.3:</strong> <em>Minimum SOW Size</em></p>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">Min</span> <span class="pre">=</span> <span class="pre">Minimum</span> <span class="pre">SOW</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">MsgSize</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">SOW</span> <span class="pre">Message</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">MsgCount</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Sow</span> <span class="pre">Messages</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">SlabSize</span> <span class="pre">=</span> <span class="pre">Slab</span> <span class="pre">Size</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">SOW</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Cores</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">processor</span> <span class="pre">cores</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">system</span></code></div>
+</div>
+</div></blockquote>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">Max</span> <span class="o">=</span>  <span class="p">(</span> <span class="p">(</span> <span class="n">MsgCount</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span> <span class="n">SlabSize</span> <span class="o">/</span> <span class="n">MsgSize</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="n">SlabSize</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">Cores</span> <span class="o">*</span> <span class="n">SlabSize</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Example 26.4:</strong> <em>Maximum SOW Size</em></p>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">Max</span> <span class="pre">=</span> <span class="pre">Maximum</span> <span class="pre">SOW</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">MsgCount</span> <span class="pre">=</span> <span class="pre">maximum</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">messages</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">SlabSize</span> <span class="pre">=</span> <span class="pre">Slab</span> <span class="pre">size</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">SOW</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">MsgSize</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">SOW</span> <span class="pre">Message</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">SlabSize</span> <span class="pre">=</span> <span class="pre">Slab</span> <span class="pre">size</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">SOW</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">MsgCount</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">SOW</span> <span class="pre">Messages</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Cores</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">CPU</span> <span class="pre">cores</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">system</span></code></div>
+</div>
+</div></blockquote>
+<p>The storage requirements should be between the two values above, however
+it is still possible for the SOW to consume additional storage based on
+the unused capacity configured for each SOW topic. Further, notice that
+AMPS reserves the configured <code class="docutils literal"><span class="pre">SlabSize</span></code> for each processor core in the
+system the first time a thread running on that core writes to the SOW.</p>
+<p>For example, in an AMPS configuration file with the <code class="docutils literal"><span class="pre">SlabSize</span></code> set to
+1MB, the SOW for this topic will consume 1MB per processor core with no
+messages stored in the SOW. Pre-allocating SOW capacity in chunks, as a
+chunk is needed, is more efficient for the operating system, storage
+devices, and helps amortize the SOW extension costs over more messages.</p>
+<p>It is also important to be aware of the maximum message size that AMPS
+guarantees the SOW can hold. The maximum message size is calculated in
+the following manner:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">Max</span> <span class="o">=</span> <span class="n">SlabSize</span> <span class="o">-</span> <span class="mi">64</span> <span class="nb">bytes</span>
+</pre></div>
+</div>
+<p><strong>Example 26.5:</strong> <em>Maximum Message Size allowed in SOW</em></p>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">Max</span> <span class="pre">=</span> <span class="pre">Maximum</span> <span class="pre">SOW</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">SlabSize</span> <span class="pre">=</span> <span class="pre">The</span> <span class="pre">configured</span> <span class="pre">SlabSize</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">SOW</span></code></div>
+</div>
+</div></blockquote>
+<p>This calculation says that the maximum message size that can be stored
+in the SOW in a single message storage is the <code class="docutils literal"><span class="pre">SlabSize</span></code> minus 64
+bytes for the record header information. AMPS enforces a lower limit of
+approximately 1MB: if the maximum size works out to less than 1MB, AMPS
+will use 1MB as the maximum size for the topic.</p>
+<div class="section" id="transaction-logs">
+<h4>Transaction Logs<a class="headerlink" href="#transaction-logs" title="Permalink to this headline">¶</a></h4>
+<p>Transaction logs are used for message replay, replication, and to ensure
+consistency in environments where each message is critical. Transaction
+logs are optional in AMPS, and transaction logs can be configured for
+individual topics or filters. When planning for transaction logs, there
+are three main considerations:</p>
+<ul class="simple">
+<li>The total size needed for the transaction log, including in
+disaster recovery scenarios</li>
+<li>The size to allow for each file that makes up the transaction log</li>
+<li>How many files to preallocate</li>
+</ul>
+<p>You can calculate the approximate total size of the transaction log as
+follows:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">Capacity</span> <span class="o">=</span> <span class="p">(</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">512</span> <span class="nb">bytes</span> <span class="p">)</span> <span class="o">*</span> <span class="n">N</span>
+</pre></div>
+</div>
+<p><strong>Example 26.6:</strong> <em>Transaction Log Sizing Approximation</em></p>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">Capacity</span> <span class="pre">=</span> <span class="pre">Estimated</span> <span class="pre">storage</span> <span class="pre">capacity</span> <span class="pre">required</span> <span class="pre">for</span> <span class="pre">transaction</span> <span class="pre">log</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">S</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">message</span> <span class="pre">size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">messages</span> <span class="pre">to</span> <span class="pre">retain</span></code></div>
+</div>
+</div></blockquote>
+<p>Size your files to match the aging policy for the transaction log data.
+To remove data from the transaction log, you simply archive or delete
+files that are no longer needed. You can size your files to make this
+easier. For example, if your application typically generates 100GB a day
+of transaction log, you could size your files in 10GB units to make it
+easier to remove 100GB increments.</p>
+<p>AMPS allows you to preallocate files for the transaction log. For
+applications that are very latency-sensitive, preallocation can help
+provide consistent latency. We recommend that those applications
+preallocate files, if storage capacity and retention policy permit. For
+example, an application that sees heavy throughput during a working day
+might preallocate enough files so that there is no need for additional
+allocation within the working day.</p>
+<p>Notice that, if your application uses replication, the AMPS transaction log
+maintenance actions will not delete unreplicated messages that were initially
+published to this instance.  This means that, when calculating the maximum
+storage space required, the recovery window for a failure is also important.
+For example, many systems have a policy of not restarting a failed system
+until a scheduled maintenance window: if one server in a replicated set of
+servers could, potentially, be offline for up to 8 hours, then the other
+servers must be able to store a minimum of 8 hours of journals, even in cases
+where the normal retention period would be shorter.</p>
+</div>
+<div class="section" id="other-storage-considerations">
+<h4>Other Storage Considerations<a class="headerlink" href="#other-storage-considerations" title="Permalink to this headline">¶</a></h4>
+<p>The previous sections discuss the scope of sizing the storage, however
+scenarios exist where the performance of the storage devices must also
+be taken into consideration.</p>
+<p>One such scenario is the following use case in which the AMPS
+transaction log is expected to be heavily used. If performance greater
+than 50MB/second is required out of the AMPS transaction log, experience
+has demonstrated that flash storage (or better) would be recommended.
+Magnetic hard disks lack the performance to produce results greater than
+this with a consistent latency profile.</p>
+</div>
+</div>
+<div class="section" id="cpu">
+<h3>CPU<a class="headerlink" href="#cpu" title="Permalink to this headline">¶</a></h3>
+<p id="index-5">SOW queries with content filtering make heavy use
+of CPU-based operations and, as such, CPU performance directly impacts
+the content filtering performance and rates at which AMPS processes
+messages. The number of cores within a CPU largely determines how
+quickly SOW queries execute.</p>
+<p>AMPS contains optimizations which are only enabled on recent 64-bit x86
+CPUs. To achieve the highest level performance, consider deploying on a
+CPU which includes support for the SSE 4.2 instruction set.</p>
+<p>To give an idea of AMPS performance, repeated testing has demonstrated
+that a moderate query filter with 5 predicates can be executed against
+1KB messages at more than 1,000,000 messages per second, per core on an
+Intel i7 3GHz CPU. This applies to both subscription based content
+filtering and SOW queries. Actual messaging rates will vary based on
+matching ratios and network utilization.</p>
+</div>
+<div class="section" id="network">
+<h3>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h3>
+<p id="index-6">When capacity planning a network for AMPS, the requirements are largely dependent on the following factors:</p>
+<ul class="simple">
+<li>average message size</li>
+<li>the rate at which publishers will publish messages to AMPS</li>
+<li>the number of publishers and the number of subscribers.</li>
+</ul>
+<p>AMPS requires sufficient network capacity to service inbound publishing
+as well as outbound messaging requirements. In most deployments,
+outbound messaging to subscribers and query clients has the highest
+bandwidth requirements due to the increased likeliness for a “one to
+many” relationship of a single published message matching
+subscriptions/queries for many clients.</p>
+<p>Estimating network capacity requires knowledge about several factors,
+including but not limited to: the average message size published to the
+AMPS instance, the number of messages published per second, the average
+expected match ratio per subscription, the number of subscriptions, and
+the background query load. Once these key metrics are known, then the
+necessary network capacity can be calculated:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">*</span> <span class="n">Sz</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">M</span> <span class="o">*</span> <span class="n">Sb</span> <span class="p">)</span> <span class="o">+</span> <span class="n">Q</span>
+</pre></div>
+</div>
+<p><strong>Example 26.7:</strong> <em>Network capacity formula</em></p>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">R</span>&#160; <span class="pre">=</span> <span class="pre">Rate</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Sz</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">Message</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">M</span>&#160; <span class="pre">=</span> <span class="pre">Match</span> <span class="pre">Ratio</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Sb</span> <span class="pre">=</span> <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">Subscribers</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Q</span>&#160; <span class="pre">=</span> <span class="pre">Query</span> <span class="pre">Load</span></code></div>
+</div>
+</div></blockquote>
+<p>where “Query Load” is defined as:</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="n">Mq</span> <span class="o">*</span> <span class="n">S</span> <span class="o">*</span> <span class="n">Qs</span>
+</pre></div>
+</div>
+<p>where</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal"><span class="pre">Mq</span> <span class="pre">=</span> <span class="pre">Messages</span> <span class="pre">per</span> <span class="pre">Query</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">S</span> <span class="pre">=</span> <span class="pre">Average</span> <span class="pre">Message</span> <span class="pre">Size</span></code></div>
+<div class="line"><code class="docutils literal"><span class="pre">Qs</span> <span class="pre">=</span> <span class="pre">Queries</span> <span class="pre">Per</span> <span class="pre">Second</span></code></div>
+</div>
+</div></blockquote>
+<p>In a deployment required to process published messages at a rate of 5000
+messages per second, with each message having an average message size of
+600 bytes, the expected match rate per subscription is 2% (or 0.02) with
+100 subscriptions. The deployment is also expected to process 5 queries
+per 1 minute ( or 12 queries per second), with each query expected to
+return 1000 messages.</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="mi">5000</span> <span class="o">*</span> <span class="mi">600</span> <span class="n">B</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="mi">100</span> <span class="p">)</span> <span class="o">+</span> <span class="p">(</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">600</span> <span class="n">B</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="mi">12</span> <span class="p">)</span> <span class="o">~</span> <span class="mi">9</span> <span class="n">MB</span> <span class="o">/</span> <span class="n">s</span> <span class="o">~</span> <span class="mi">72</span> <span class="n">Mb</span> <span class="o">/</span> <span class="n">s</span>
+</pre></div>
+</div>
+<p>Based on these requirements, this deployment would need at least 72Mb/s
+of network capacity to achieve the desired goals. This analysis
+demonstrates AMPS by itself would fall into a 100Mb/s class network. It
+is important to note, this analysis does not examine any other network
+based activity which may exist on the host, and as such a larger
+capacity networking infrastructure than 100Mb/s would likely be
+required.</p>
+<div class="section" id="replication-network-bandwidth">
+<h4>Replication Network Bandwidth<a class="headerlink" href="#replication-network-bandwidth" title="Permalink to this headline">¶</a></h4>
+<p>For replication connections, the general recommendation is to estimate
+bandwidth needs as though each outgoing replication destination is
+a subscriber that subscribes to all of the replicated topics, and each incoming
+destination is a publisher that fully publishes the replicated topics. Although
+AMPS replication connections support compression, the general recommendation
+is to provision enough network capacity to support the full replication
+stream, and then to use compression to save capacity.</p>
+</div>
+</div>
+<div class="section" id="numa-considerations">
+<h3>NUMA Considerations<a class="headerlink" href="#numa-considerations" title="Permalink to this headline">¶</a></h3>
+<p>AMPS is designed to take advantage of non-uniform memory access (NUMA).
+For the lowest latency in networking, we recommend that you install your
+NIC in the slot closest to NUMA node 0. AMPS runs critical threads on
+node 0, so positioning the NIC closest to that node provides the
+shortest path from processor to NIC.</p>
+<p>When a single instance of AMPS is deployed on the system, as is the
+case with most critical production systems, 60East recommends leaving
+AMPS NUMA tuning enabled (this is the default).</p>
+<p>If more than one instance of AMPS is running on the same system,
+60East recommends disabling AMPS NUMA tuning in the AMPS configuration
+file and relying on the operating system NUMA management.</p>
+<p>When AMPS is deployed in a virtual machine, 60East recommends disabling AMPS-level
+NUMA tuning in the AMPS configuration file.</p>
+</div>
+</div>
+<div class="section" id="linux-operating-system-configuration">
+<span id="operation-linux-os-system-configuration"></span><h2>Linux Operating System Configuration<a class="headerlink" href="#linux-operating-system-configuration" title="Permalink to this headline">¶</a></h2>
+<p>This section covers some settings which are specific to running AMPS on
+a Linux Operating System.</p>
+<div class="section" id="ulimit">
+<span id="section-operation-deployment-linux-ulimit"></span><h3>ulimit<a class="headerlink" href="#ulimit" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">ulimit</span></code> command is used by a Linux administrator to get and set
+user limits on various system resources.</p>
+<p><code class="docutils literal"><span class="pre">ulimit</span> <span class="pre">-c</span></code></p>
+<p>It is common for an AMPS instance to be configured to consume gigabytes
+of memory for large SOW caches. If a failure were to occur in a large
+deployment it could take seconds (maybe even hours, depending on storage
+performance and process size!) to dump the core file. AMPS has a
+minidump reporting mechanism built in that collects information
+important to debugging an instance before exiting. This minidump is much
+faster than dumping a core file to disk. For this reason, it is
+recommended that the per user core file size limit is set to 0 to
+prevent a large process image from being dumped to storage.</p>
+<p><code class="docutils literal"><span class="pre">ulimit</span> <span class="pre">-n</span></code></p>
+<p>The number of file descriptors allowed for a user running AMPS needs to
+be at least double the sum of counts for the following: connected
+clients, SOW topics and pre-allocated journal files. <em>Minimum: 4096.
+Recommended: 32768, or the value recommended by AMPS in any diagnostic
+messages, whichever is greater</em></p>
+</div>
+<div class="section" id="transparent-huge-pages">
+<span id="index-7"></span><h3>Transparent Huge Pages<a class="headerlink" href="#transparent-huge-pages" title="Permalink to this headline">¶</a></h3>
+<p>Transparent huge pages can add a large amount of overhead to memory management.
+For best performance, 60East recommends disabling transparent huge pages
+(by setting the value to <code class="docutils literal"><span class="pre">never</span></code>) or require applications to explicitly
+request transparent huge pages (by setting the value to <code class="docutils literal"><span class="pre">madvise</span></code>).</p>
+<p>Unless the system runs other applications that are known to explicitly
+request transparent huge pages and benefit from having them available,
+60East generally recommends disabling transparent huge pages.</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">never</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">kernel</span><span class="o">/</span><span class="n">mm</span><span class="o">/</span><span class="n">transparent_hugepage</span><span class="o">/</span><span class="n">enabled</span>
+</pre></div>
+</div>
+<p>This will change the value until the operating system is rebooted. To make a
+permanent change to this setting, add this command to the startup scripts,
+or add the <code class="docutils literal"><span class="pre">transparent_hugepage=never</span></code> option to the kernel startup
+flags (see the documentation for your Linux distribution for details).</p>
+<p><em>Recommended: never</em></p>
+</div>
+<div class="section" id="proc-sys-fs-aio-max-nr">
+<h3>/proc/sys/fs/aio-max-nr<a class="headerlink" href="#proc-sys-fs-aio-max-nr" title="Permalink to this headline">¶</a></h3>
+<p>Each AMPS instance requires AIO in the kernel to support at least 16384
+plus 8192 for each SOW topic in simultaneous I/O operations. The setting
+<code class="docutils literal"><span class="pre">aio-max-nr</span></code> is global to the host and impacts all applications. As
+such this value needs to be set high enough to service all applications
+using AIO on the host. <em>Minimum: 65536. Recommended: 1048576</em></p>
+<p>To view the value of this setting, as root you can enter the following
+command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">aio</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">nr</span>
+</pre></div>
+</div>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">fs</span><span class="o">.</span><span class="n">aio</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">nr</span> <span class="o">=</span> <span class="mi">1048576</span>
+</pre></div>
+</div>
+<p>This command will update the value for <code class="docutils literal"><span class="pre">/proc/sys/fs/aio-max-nr</span></code> and
+allow 1,048,576 simultaneous I/O operations, but will only do so until
+the next time the machine is rebooted. To make a permanent change to
+this setting, as a root user, edit the <code class="docutils literal"><span class="pre">/etc/sysctl.conf</span></code> file and
+either edit or append the following setting:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">fs</span><span class="o">.</span><span class="n">aio</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">nr</span> <span class="o">=</span> <span class="mi">1048576</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="proc-sys-fs-file-max">
+<h3>/proc/sys/fs/file-max<a class="headerlink" href="#proc-sys-fs-file-max" title="Permalink to this headline">¶</a></h3>
+<p>Each AMPS instance needs file descriptors to service connections and
+maintain file handles for open files. This number needs to be at least
+double the sum of counts for the following: connected clients, SOW
+topics and pre-allocated journal files. This file-max setting is global
+to the host and impacts all applications, so this needs to be set high
+enough to service all applications on the host. <em>Minimum: 262144
+Recommended: 6815744</em></p>
+<p>To view the value of this setting, as root you can enter the following
+command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">file</span><span class="o">-</span><span class="nb">max</span>
+</pre></div>
+</div>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">fs</span><span class="o">.</span><span class="n">file</span><span class="o">-</span><span class="nb">max</span> <span class="o">=</span> <span class="mi">6815744</span>
+</pre></div>
+</div>
+<p>This command will update the value for <code class="docutils literal"><span class="pre">/proc/sys/fs/file-max</span></code> and
+allow 6,815,744 concurrent files to be opened, but will only do so until
+the next time the machine is rebooted. To make a permanent change to
+this setting, as a root user, edit the <code class="docutils literal"><span class="pre">/etc/sysctl.conf</span></code> file and
+either edit or append the following setting:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">fs</span><span class="o">.</span><span class="n">file</span><span class="o">-</span><span class="nb">max</span> <span class="o">=</span> <span class="mi">6815744</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="proc-sys-vm-min-free-kbytes">
+<h3>/proc/sys/vm/min_free_kbytes<a class="headerlink" href="#proc-sys-vm-min-free-kbytes" title="Permalink to this headline">¶</a></h3>
+<p>This paramter sets the minimum amount of memory to keep free in the system.
+Setting this value properly can help the operating system function more
+effectively in low-memory situations. If this value is set too low, the
+operating system can have difficulty reclaiming memory, which can lead
+to unnecessary out-of-memory events. If this value is set too high, overall
+system efficiency decreases as the operating system can spend more time
+than necessary reclaiming memory.</p>
+<p>60East recommends setting this parameter to 1% of the physical memory
+on the system, rounding up to the nearest GB.</p>
+<p id="index-8">Notice that the units of this parameter are in kilobytes. For example, to set
+this value for a system that has 128GB of memory, you would calculate 1% of
+the physical memory (1.28 GB), round up to the nearest GB (2 GB) and then
+allocate <cite>2000000</cite> KB as the <cite>min_free_kbytes</cite>.</p>
+<p><em>Minimum: 1000000 (1GB) Recommended: 1% of physical memory, rounded up to the nearest GB</em></p>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">vm</span><span class="o">.</span><span class="n">min_free_kbytes</span><span class="o">=</span><span class="mi">2000000</span>
+</pre></div>
+</div>
+<p>Notice that this tuning recommendation is designed for a server-class machine
+with a reasonable amount of memory. For a small development machine or
+blade (for example, a system with less than 32GB of memory), leaving this
+parameter at the operating system default may be more appropriate.</p>
+</div>
+<div class="section" id="proc-sys-vm-max-map-count">
+<h3>/proc/sys/vm/max_map_count<a class="headerlink" href="#proc-sys-vm-max-map-count" title="Permalink to this headline">¶</a></h3>
+<p>AMPS makes extensive use of memory mapped files, and frequently modifies the
+maps. The <code class="docutils literal"><span class="pre">/proc/sys/vm/max_map_count</span></code> parameter sets the maximum number of
+maps that the Linux kernel will allow for a process. If the number of
+requested maps exceeds the number of maps in this parameter, memory allocation
+operations can fail even when there is sufficient memory available.</p>
+<p id="index-9">This setting is global to the host and applies to all applications, so this
+needs to be set high enough for the most map-intensive application on the host.</p>
+<p><em>Minimum: 65530 Recommended: 500000</em></p>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">vm</span><span class="o">.</span><span class="n">max_map_count</span><span class="o">=</span><span class="mi">500000</span>
+</pre></div>
+</div>
+<p>This command will update the value for <code class="docutils literal"><span class="pre">/proc/sys/vm/max_map_count</span></code> and
+allow 500,000 maps to be created, but will only do so until
+the next time the machine is rebooted. To make a permanent change to
+this setting, as a root user, edit the <code class="docutils literal"><span class="pre">/etc/sysctl.conf</span></code> file and
+either edit or append the following setting:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">vm</span><span class="o">.</span><span class="n">max_map_count</span><span class="o">=</span><span class="mi">500000</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="proc-sys-vm-swappiness">
+<h3>/proc/sys/vm/swappiness<a class="headerlink" href="#proc-sys-vm-swappiness" title="Permalink to this headline">¶</a></h3>
+<p>AMPS performs best when the data that it needs to retain is in memory. If
+the operating system needs to use swap because this system requires more
+memory than is available, performance degrades substantially.</p>
+<p>60East recommends that, for systems that host performance-critical instances
+of AMPS, the <code class="docutils literal"><span class="pre">vm.swappiness</span></code> setting is set to <code class="docutils literal"><span class="pre">1</span></code>. This will minimize
+swapping on this system, which will improve performance with the tradeoff
+of making it more likely for processes to be killed by the operating system
+in low-memory situations.</p>
+<p id="index-10">This setting is global to the host and applies to all applications.</p>
+<p><em>Recommended: 1</em></p>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">vm</span><span class="o">.</span><span class="n">swappiness</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>This command will update the value for <code class="docutils literal"><span class="pre">/proc/sys/vm/swappiness</span></code> and
+direct the operating system to avoid using swap space until the system
+is under severe memory pressure.</p>
+<p>Using the command above will change the swappiness setting until the
+operating system is rebooted.To make a permanent change to
+this setting, as a root user, edit the <code class="docutils literal"><span class="pre">/etc/sysctl.conf</span></code> file and
+either edit or append the following setting:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">vm</span><span class="o">.</span><span class="n">swappiness</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="proc-sys-net-ipv4-tcp-frto">
+<h3>/proc/sys/net/ipv4/tcp_frto<a class="headerlink" href="#proc-sys-net-ipv4-tcp-frto" title="Permalink to this headline">¶</a></h3>
+<p>This option controls whether Forward RTO-Recovery (FRTO) is enabled for the
+TCP network. Enabling FRTO can be beneficial for overall network performance
+if a system is <em>sending</em> packets over wireless networks with substantial
+interference (for example, public WiFi in an urban area). However, this
+recovery algorithm can reduce performance in wired networks. While this option
+is enabled on most current Linux distributions by default, disabling the
+option can improve network performance.</p>
+<p>60East recommends disabling this option unless the server is directly
+delivering traffic over a congested WiFi network.</p>
+<p id="index-11">This setting is global to the host and applies to all applications.</p>
+<p><em>Recommended: 0</em></p>
+<p>To edit this value, as root you can enter the following command:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">sysctl</span> <span class="o">-</span><span class="n">w</span> <span class="n">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_frto</span><span class="o">=</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>This command will update the value for <code class="docutils literal"><span class="pre">/proc/sys/net/ipv4/tcp_frto</span></code> and
+direct the operating system to disable FRTO.</p>
+<p>Using the command above will change the setting until the
+operating system is rebooted. To make a permanent change to
+this setting, as a root user, edit the <code class="docutils literal"><span class="pre">/etc/sysctl.conf</span></code> file and
+either edit or append the following setting:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_frto</span><span class="o">=</span><span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="upgrading-an-amps-installation">
+<span id="section-operation-upgrading"></span><h2>Upgrading an AMPS Installation<a class="headerlink" href="#upgrading-an-amps-installation" title="Permalink to this headline">¶</a></h2>
+<p id="index-12">This chapter describes how to upgrade an existing installation of AMPS.
+The steps presented here focus on upgrading the installation itself, and
+should be the only steps you need for upgrades that change the HOTFIX
+version number or the MAINTENANCE version number (as described in
+<a class="reference internal" href="intro.html#table-version-number-info"><span class="std std-ref">Table 26.2</span></a>).</p>
+<p>For changes that update the MAJOR or MINOR version number, AMPS may add
+features, change file or network formats, or change behavior. For these
+upgrades, you may need to make changes to the AMPS configuration file or
+update applications to adapt to new features or changes in behavior.</p>
+<p>60East recommends maintaining a test environment that you can use to
+test upgrades, particularly when an upgrade changes MAJOR or MINOR
+versions and you are taking advantage of new features or changed
+behavior.</p>
+<p>When the AMPS instance participates in replication, you must coordinate
+the instance upgrades when upgrading across AMPS versions.</p>
+<p>In this release, AMPS supports replication to and from versions 5.2.0.0 and
+later for the purposes of rolling upgrade. For long-term deployment,
+60East recommends that all AMPS instances that replicate to each other have
+the same MAJOR and MINOR version number, and preferably run the same release
+of AMPS.</p>
+<div class="section" id="upgrade-steps">
+<h3>Upgrade Steps<a class="headerlink" href="#upgrade-steps" title="Permalink to this headline">¶</a></h3>
+<p>Upgrading an AMPS installation involves the following steps:</p>
+<ol class="arabic simple">
+<li>Stop the running instance</li>
+<li>Install the new AMPS binaries</li>
+<li>If you are upgrading from an AMPS version prior to 5.0.0.0, upgrade any
+data files or configuration files that you want to retain</li>
+<li>If necessary, update the configuration file for the instance</li>
+<li>If necessary, update any applications that will use new features</li>
+<li>Restart the service</li>
+</ol>
+<p>AMPS supports replication from version 5.2.0.0 and later to this
+version of AMPS for the purposes of rolling upgrade with no (or minimal)
+downtime. 60East recommends that production installations of AMPS have the
+same MAJOR and MINOR version number at a minimum, and preferably run
+identical versions of AMPS.</p>
+</div>
+<div class="section" id="upgrading-amps-data-files">
+<h3>Upgrading AMPS Data Files<a class="headerlink" href="#upgrading-amps-data-files" title="Permalink to this headline">¶</a></h3>
+<p>AMPS may change the format and content of data files when upgrading
+across versions, as specified by the major and minor version number.
+This most commonly occurs when new features are added to AMPS that
+require different or additional information in the persisted files. The
+HISTORY file for the AMPS release lists when changes have been made that
+require data file changes.</p>
+<p>For this version of AMPS, you must upgrade data files if the previous
+AMPS version is earlier than 5.0. For versions of AMPS 5.0 and later,
+there have been no changes to the data file format.</p>
+<p>The AMPS distribution includes the <code class="docutils literal"><span class="pre">amps_upgrade</span></code> utility to process
+and upgrade data files. Unless you are upgrading from a version of
+AMPS prior to 5.0, there is no need to use this utility when
+upgrading AMPS.</p>
+</div>
+</div>
+<div class="section" id="best-practices">
+<span id="operations-and-deployment-best-pactices"></span><h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h2>
+<p>This section covers a selection of best practices for deploying AMPS.</p>
+<div class="section" id="monitoring">
+<span id="operations-and-deployment-best-practices-monitoring"></span><h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this headline">¶</a></h3>
+<p>AMPS exposes the statistics available for monitoring via a RESTful
+interface, known as the <a class="reference internal" href="monitoring.html#ug-monitoring"><span class="std std-ref">Monitoring Interface</span></a>,
+which is configured as the administration port. This
+interface allows developers and administrators to easily inspect various
+aspects of AMPS performance and resource consumption using standard
+monitoring tools.</p>
+<p>At times AMPS will emit log messages notifying that a thread has
+encountered a deadlock or stressful operation. These messages will
+repeat with the word “stuck” in them. AMPS will attempt to resolve these
+issues, however after 60 seconds of a single thread being stuck, AMPS
+will automatically emit a minidump to the previously configured minidump
+directory. This minidump can be used by 60East support to assist in
+troubleshooting the location of the stuck thread or the stressful
+process.</p>
+<p>Another area to examine when monitoring AMPS is the <code class="docutils literal"><span class="pre">last_active</span></code>
+monitor for the processors. This can be found in the
+<code class="docutils literal"><span class="pre">/amps/instance/processors/all/last_active</span></code> url in the monitoring
+interface. If the <code class="docutils literal"><span class="pre">last_active</span></code> value continually increases for more
+than one minute and there is a noticeable decline in the quality of
+service, then it may be best to fail-over and restart the AMPS instance.</p>
+</div>
+<div class="section" id="stopping-amps">
+<h3>Stopping AMPS<a class="headerlink" href="#stopping-amps" title="Permalink to this headline">¶</a></h3>
+<p>To stop AMPS, ensure that AMPS runs the <code class="docutils literal"><span class="pre">amps-action-do-shutdown</span></code>
+action. By default, this action is run when AMPS receives <code class="docutils literal"><span class="pre">SIGHUP</span></code>,
+<code class="docutils literal"><span class="pre">SIGINT</span></code>, or <code class="docutils literal"><span class="pre">SIGTERM</span></code>. However, you can also configure an Action to
+shut down AMPS in response to other conditions. For example, if your
+company policy is to reboot servers every Saturday night, and AMPS is
+not running as a system service (or daemon), you could schedule an AMPS
+shutdown every Saturday before the system reboot.</p>
+<p>When AMPS is installed to run as a system service (or daemon), AMPS
+installs shutdown scripts that will cleanly stop AMPS during a system
+shutdown or reboot.</p>
+</div>
+<div class="section" id="sow-parameters">
+<span id="operations-and-deployment-best-practices-sow-parameters"></span><h3>SOW Parameters<a class="headerlink" href="#sow-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Choosing the ideal <code class="docutils literal"><span class="pre">SlabSize</span></code> for your SOW topic is a balance between
+the frequency of SOW expansion and storage space efficiency. A large
+<code class="docutils literal"><span class="pre">SlabSize</span></code> will preallocate space for records when AMPS begins writing
+to the SOW.</p>
+<p>If detailed tuning is not necessary, 60East recommends leaving the
+<code class="docutils literal"><span class="pre">SlabSize</span></code> at the default size if your messages are smaller than the
+default <code class="docutils literal"><span class="pre">SlabSize</span></code>. If your messages are larger than the default
+SlabSize, a good starting point for the <code class="docutils literal"><span class="pre">SlabSize</span></code> is to set it to
+several times the maximum message size you expect to store in the SOW.</p>
+<p>There are three considerations when setting the optimium <code class="docutils literal"><span class="pre">SlabSize</span></code>:</p>
+<ul class="simple">
+<li>Frequency of allocations</li>
+<li>Overall size of the SOW</li>
+<li>Efficient use of space</li>
+</ul>
+<p>A <code class="docutils literal"><span class="pre">SlabSize</span></code> that is small results in frequent extensions of your SOW
+topic to occur. These frequent extensions can reduce throughput in a
+heavily loaded system, and in extreme cases can exhaust the kernel limit
+on the number of regions that a process can map. Increasing the
+<code class="docutils literal"><span class="pre">SlabSize</span></code> will reduce the number of allocations.</p>
+<p>When the <code class="docutils literal"><span class="pre">SlabSize</span></code> is large, then the risk of the SOW resize
+affecting performance is reduced. Since each slab is larger, however,
+there will be more space consumed if you are only storing a small number
+of messages: this cost will amortize as the number of messages in the
+SOW exceeds the <em>number of cores in the system</em> * <em>the number of
+messages that fit into a slab</em>.</p>
+<p>To most efficiently use space, set a <code class="docutils literal"><span class="pre">SlabSize</span></code> that minimizes the
+amount of unused space in a slab. For example, if your message sizes are
+average 512 bytes but can reach a maximum of 1.2 MB, one approach would
+be to set a <code class="docutils literal"><span class="pre">SlabSize</span></code> of 2.5MB to hold approximately 5 average-sized
+messages and two of the larger-sized messages. Looking at the actual
+distribution of message sizes in the SOW (which can be done with the
+<code class="docutils literal"><span class="pre">amps_sow_dump</span></code> utility) can help you determine how best to size slabs
+for maximum space efficiency.</p>
+<p>For optimizing the <code class="docutils literal"><span class="pre">SlabSize</span></code>, determine how important each aspect of
+SOW tuning is for your application, and adjust the configuration to
+balance allocation frequency, overall SOW size, and space to meet the
+needs of your application.</p>
+</div>
+<div class="section" id="slow-clients">
+<span id="operations-and-deployment-best-practices-slow-clients"></span><h3>Slow Clients<a class="headerlink" href="#slow-clients" title="Permalink to this headline">¶</a></h3>
+<p id="index-13">As described in <a class="reference internal" href="ha.html#ug-slow-client-management"><span class="std std-ref">Slow Client Management</span></a>,
+AMPS provides capacity limits for slow clients to reduce the memory resources
+consumed by slow clients. This section discusses tuning slow client handling to
+achieve your availability goals.</p>
+<div class="section" id="slow-client-offlining-for-large-result-sets">
+<span id="ug-ops-client-offlining"></span><span id="index-14"></span><h4>Slow Client Offlining for Large Result Sets<a class="headerlink" href="#slow-client-offlining-for-large-result-sets" title="Permalink to this headline">¶</a></h4>
+<p>The default settings for AMPS work well in a wide variety of
+applications with minimal tuning.</p>
+<p>If you have particularly large SOW topics, and your application is
+disconnecting clients due to exceeding the offlining threshold when the
+clients retrieving large SOW query result sets, 60East recommends the
+following settings as a baseline for further tuning:</p>
+<table border="1" class="docutils" id="index-15">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Recommendation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code></td>
+<td><p class="first">This controls the maximum memory
+consumed by AMPS for client
+messages. You can increase this
+parameter to allow AMPS to use more
+memory to records. Notice, however,
+that memory devoted to client
+messages is unavailable for other
+purposes.</p>
+<p class="last">Recommended starting point for
+tuning large result sets: 10%
+of the system memory (for example,
+on a server with 128GB of memory,
+start with a 13GB limit).
+60East recommends tuning the
+<code class="docutils literal"><span class="pre">MessageDiskLimit</span></code> first. If
+necessary, increase this parameter
+by 1-2% at a time. Use caution with
+settings over 20%: devoting large
+amounts of memory to client messages
+may cause swapping and reduce,
+rather than increase, overall
+performance.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MessageDiskLimit</span></code></td>
+<td><p class="first">The maximum amount of space to
+consume for offline messages.</p>
+<p class="last">Recommended starting point for
+tuning large result sets: Average
+record size * number of expected
+records * number of simultaneous
+clients, or <code class="docutils literal"><span class="pre">MessageMemoryLimit</span></code>,
+whichever is greater.</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MessageDiskPath</span></code></td>
+<td><p class="first">The path in which to store offline
+message files.</p>
+<p class="last">60East recommends that the message
+disk path be hosted on fast,
+high-capacity storage such as a
+PCIe-attached flash drive. The
+available storage capacity of the
+disk must be greater than the
+configured <code class="docutils literal"><span class="pre">MessageDiskLimit</span></code>. Pay
+attention to the performance
+characteristics of the device: for
+example, some devices suffer reduced
+performance when they run low on
+free space, so for those devices you
+would want to make sure that there
+is space available on the device
+even when AMPS is close to the
+<code class="docutils literal"><span class="pre">MessageDiskLimit</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 26.1:</strong> <em>Client Offline Settings for Large Result Sets</em></p>
+<p>60East recommends that you use these settings as a baseline for further
+tuning, bearing in mind the needs and expected messaging patterns of
+your application.</p>
+</div>
+</div>
+<div class="section" id="minidump">
+<h3>Minidump<a class="headerlink" href="#minidump" title="Permalink to this headline">¶</a></h3>
+<p id="index-16">AMPS includes the ability to generate a minidump file which can be used
+in support scenarios to attempt to troubleshoot a problematic instance.</p>
+<p>The minidump captures thread state information: a snapshot of where in the
+source code each thread is, the call stack for each thread, and the register
+information for each frame of the call stack. A minidump also contains basic
+information about the system that AMPS was running on, such as the processor
+type and number of sockets. Minidumps do not contain the full internal state
+of AMPS or the full contents of application memory. They do not contain
+detailed information about the host system, and have no information about
+the state of the host or operating system. Instead, minidumps identify the
+point of failure to help 60East quickly narrow down the issue without
+generating large files or potentially compromising sensitive data.</p>
+<p>Minidumps can be produced much faster than a standard core dump, and use
+significantly less space since the minidump contains only a small subset of
+the information a core dump would contain (see
+<a class="reference internal" href="#section-operation-deployment-linux-ulimit"><span class="std std-ref">Ulimit</span></a>
+for more configuration options). Because of this, the AMPS server may produce
+minidumps for temporary conditions that the server subsequently recovers
+from, and allows creation of a minidump on demand.</p>
+<p>Generation of a minidump file occurs in the following ways:</p>
+<ol class="arabic simple">
+<li>When AMPS detects a crash internally, a minidump file will
+automatically be generated. This includes cases where an AMPS
+thread or critical internal component has not reported progress for an
+extended period of time (typically 300 seconds).</li>
+<li>When a user clicks on the <code class="docutils literal"><span class="pre">minidump</span></code> link in the
+<code class="docutils literal"><span class="pre">amps/instance/administrator</span></code> link from the administrator console
+(see the <em>AMPS Monitoring Reference</em> for more information).</li>
+<li>By sending the running AMPS process the <code class="docutils literal"><span class="pre">SIGQUIT</span></code> signal.</li>
+<li>In response to a configured action.</li>
+<li>If a thread fails to report progress with the AMPS thread monitor for
+60 seconds, a minidump will automatically be generated. This should be
+sent to AMPS support for evaluation along with a description of the
+operations taking place at the time.</li>
+</ol>
+<p>By default the minidump is configured to write to <code class="docutils literal"><span class="pre">/tmp</span></code>, but this can be
+changed in the AMPS configuration by modifying the <code class="docutils literal"><span class="pre">MiniDumpDirectory</span></code>.
+60East recommends monitoring the minidump directory.</p>
+<p>If minidumps occur, contact 60East support for diagnosis and troubleshooting.
+Bear in mind that minidumps are often a symptom of a slowdown in the server
+due to resource constraints rather than an indication that the server has
+exited.</p>
+<p>Once a minidump is submitted to 60East (and acknowledged as received), there
+is no further need to retain that minidump. 60East recommends removing
+minidumps when they are no longer needed.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2017 60East Technologies, Inc.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

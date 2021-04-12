@@ -1,0 +1,72 @@
+
+Appendix A: Obsolete Configuration Parameters
+=============================================
+
+.. index:: slow client conversion, ClientMaxBufferThreshold,
+   ClientBufferThreshold, ClientOffline, ClientOfflineDirectory,
+   SlowClientDisconnect,
+
+This section lists obsolete configuration parameters and provides
+pointers to the current parameters, where applicable.
+
++------------------------------+---------------------------------------------+
+| Element                      | Description                                 |
++==============================+=============================================+
+| ``ClientOffline``            | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter. To |
+|                              | disable slow client offlining, set          |
+|                              | ``MessageMemoryLimit`` to 100%.             |
++------------------------------+---------------------------------------------+
+| ``ClientBufferThreshold``    | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter. To |
+|                              | set a limit for an individual client, set   |
+|                              | ``ClientMaxCapacity`` to the appropriate    |
+|                              | percentage.                                 |
++------------------------------+---------------------------------------------+
+| ``ClientMaxBufferThreshold`` | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter. To |
+|                              | set a limit for an individual client, set   |
+|                              | ``ClientMaxCapacity`` to the appropriate    |
+|                              | percentage.                                 |
++------------------------------+---------------------------------------------+
+| ``ClientOfflineThreshold``   | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter:    |
+|                              | offlining occurs when the total amount of   |
+|                              | space uses for messages exceeds the         |
+|                              | ``MessageMemoryLimit``. Disconnection       |
+|                              | occurs when the total amount of space       |
+|                              | exceeds the ``MessageDiskLimit``.           |
++------------------------------+---------------------------------------------+
+| ``ClientOfflineDirectory``   | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter.    |
+|                              | Use ``MessageDiskPath`` instead.            |
++------------------------------+---------------------------------------------+
+| ``IncrementSize``            | Beginning with AMPS 5.0, SOW configuration  |
+|                              | no longer uses ``IncrementSize``. Rather    |
+|                              | than setting ``RecordSize`` and             |
+|                              | ``IncrementSize``, use the ``SlabSize``     |
+|                              | parameter (to convert files, use            |
+|                              | ``RecordSize`` \* ``IncrementSize`` for the |
+|                              | ``SlabSize`` parameter)                     |
++------------------------------+---------------------------------------------+
+| ``RecordSize``               | Beginning with AMPS 5.0, SOW configuration  |
+|                              | no longer uses ``RecordSize``. Rather than  |
+|                              | setting ``RecordSize`` and                  |
+|                              | ``IncrementSize``, use the ``SlabSize``     |
+|                              | parameter (to convert files, use            |
+|                              | ``RecordSize`` \* ``IncrementSize`` for the |
+|                              | ``SlabSize`` parameter)                     |
++------------------------------+---------------------------------------------+
+| ``SlowClientDisconnect``     | Beginning with AMPS 5.0, slow client        |
+|                              | offlining no longer uses this parameter. To |
+|                              | disable SlowClientDisconnect, set a large   |
+|                              | value for ``MessageMemoryLimit`` or         |
+|                              | ``MessageDiskLimit`` (for example, setting  |
+|                              | 100% of the MessageMemoryLimit will allow   |
+|                              | unrestricted memory growth, while setting   |
+|                              | the capacity of the device as               |
+|                              | MessageDiskLimit will allow unrestricted    |
+|                              | offlining).                                 |
++------------------------------+---------------------------------------------+
+
+**Table 1A.1:** *Obsolete Parameters*

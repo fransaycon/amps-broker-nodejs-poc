@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>15. Protocols &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendix A: Obsolete Configuration Parameters" href="obsolete-config.html" />
+    <link rel="prev" title="14. Actions" href="actions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="actions.html" title="previous chapter">14. Actions</a></li>
+      <li>Next: <a href="obsolete-config.html" title="next chapter">Appendix A: Obsolete Configuration Parameters</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="protocols">
+<span id="index-0"></span><h1>15. Protocols<a class="headerlink" href="#protocols" title="Permalink to this headline">¶</a></h1>
+<p>In AMPS, <code class="docutils literal"><span class="pre">Protocols</span></code> define the format of the commands that clients use to
+communicate with the server.</p>
+<p>AMPS offers a range of preconfigured protocols. The most commonly-used protocols
+are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Protocol</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">amps</span></code></td>
+<td>Standard protocol for AMPS clients</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">websocket</span></code></td>
+<td>Standard protocol for websocket connections using the AMPS Javascript library</td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal"><span class="pre">Protocols</span></code> element configures options for a given protocol. The element
+is a container for one or more <code class="docutils literal"><span class="pre">Protocol</span></code> elements. Each <code class="docutils literal"><span class="pre">Protocol</span></code> is a
+combination of a <code class="docutils literal"><span class="pre">Module</span></code>, that defines the basic protocol, and a set of
+options to configure the behavior of that basic protocol.</p>
+<p>Many installations of AMPS have no need to configure a <code class="docutils literal"><span class="pre">Protocols</span></code> block.</p>
+<table border="1" class="docutils" id="table-configref-protocols-parameters">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Name</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">The name to use for the customized Protocol. This name is used in the <code class="docutils literal"><span class="pre">Transport</span></code>
+element to refer to the customized Protocol.</p>
+<p class="last">There is no default for this value. 60East recommends that the <code class="docutils literal"><span class="pre">Name</span></code> of the
+customized Protocol contain the name of the <code class="docutils literal"><span class="pre">Module</span></code>. For example, a customized
+protocol that adjusts the behavior of the <code class="docutils literal"><span class="pre">websocket</span></code> protocol might be named
+<code class="docutils literal"><span class="pre">websocket-custom</span></code>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Module</span>
+</pre></div>
+</div>
+</td>
+<td><p class="first">This element defines the protocol module to customize. The <code class="docutils literal"><span class="pre">Module</span></code> must be the
+name of a protocol module loaded into AMPS.</p>
+<p>By default, AMPS loads the following protocols:</p>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Protocol Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">amps</span></code></td>
+<td><p class="first">Standard AMPS messaging, using compact headers in JSON format.</p>
+<p class="last">AMPS accepts <code class="docutils literal"><span class="pre">json</span></code> as a synonym for <code class="docutils literal"><span class="pre">amps</span></code> in a protocol
+declaration.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">fix-session</span></code></td>
+<td>FIX session protocol, for use with systems that publish FIX
+messages using this format.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">websocket</span></code></td>
+<td>Websocket protocol, using JSON format headers.</td>
+</tr>
+<tr class="row-odd"><td><em>Legacy protocols</em></td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">fix</span></code></td>
+<td>Standard AMPS messaging, using headers in FIX format.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">nvfix</span></code></td>
+<td>Standard AMPS messaging, using headers in NVFIX format.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">soap</span></code></td>
+<td>Standard AMPS messaging, using headers in SOAP format.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">xml</span></code></td>
+<td>Standard AMPS messaging, using headers in XML format.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 15.1:</strong> <em>Protocol Parameters</em></p>
+<p>The <code class="docutils literal"><span class="pre">websocket</span></code> protocol accepts the following additional configuration options:</p>
+<table border="1" class="docutils" id="table-configref-protocol-websocket">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Element</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">WWWAuthenticate</span></code></td>
+<td><p class="first">The type of authentication used for this protocol.</p>
+<p>The <code class="docutils literal"><span class="pre">websocket</span></code> protocol accepts two options for this element:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Negotiate</td>
+<td>Use the &#8220;negotiate&#8221; scheme for HTTP authentication.</td>
+</tr>
+<tr class="row-odd"><td>Basic</td>
+<td>Use basic authentication.  When basic authentication is
+specified, the <cite>Realm</cite> must also  be set. The syntax for
+setting the realm value is <code class="docutils literal"><span class="pre">Realm=&lt;name</span> <span class="pre">of</span> <span class="pre">realm&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>For example, to use basic authentication and set the realm to a value of
+<code class="docutils literal"><span class="pre">HTTP</span> <span class="pre">Special</span></code>, you would use the following <code class="docutils literal"><span class="pre">WWWAuthenticate</span></code> element.</p>
+<p class="last"><code class="docutils literal"><span class="pre">&lt;WWWAuthenticate&gt;Basic</span> <span class="pre">realm=&quot;HTTP</span> <span class="pre">Special&quot;&lt;/WWWAuthenticate&gt;</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TrustedAdmin</span></code></td>
+<td><p class="first">Specify whether connections that use this protocol should accept connections
+from clients that have successfully authenticated to the admininstrative
+interface.</p>
+<p class="last">Default: <code class="docutils literal"><span class="pre">false</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">HttpHeader</span></code></td>
+<td><p class="first">Specify that the server will return the custom header specified in response
+to a websocket request. A protocol of <code class="docutils literal"><span class="pre">websocket</span></code> type can have any
+number of these elements configured, and AMPS will return all of the
+headers defined.</p>
+<p class="last">There is no default for this element.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 15.2:</strong> <em>Websocket Transport Parameters</em></p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;AMPSConfig&gt;</span>
+
+   ...
+   <span class="nt">&lt;Protocols&gt;</span>
+     <span class="nt">&lt;Protocol&gt;</span>
+       <span class="nt">&lt;Name&gt;</span>websocket-portal<span class="nt">&lt;/Name&gt;</span>
+       <span class="nt">&lt;Module&gt;</span>websocket<span class="nt">&lt;/Module&gt;</span>
+       <span class="nt">&lt;WWWAuthenticate&gt;</span>Basic realm=&quot;AMPS Admin&quot;<span class="nt">&lt;/WWWAuthenticate&gt;</span>
+       <span class="nt">&lt;TrustedAdmin&gt;</span>enabled<span class="nt">&lt;/TrustedAdmin&gt;</span>
+     <span class="nt">&lt;/Protocol&gt;</span>
+   <span class="nt">&lt;/Protocols&gt;</span>
+
+ <span class="nt">&lt;/AMPSConfig&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 15.1:</strong> <em>Websockets Protocol Configuration Example</em></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>13. Entitlement &#8212; Advanced Message Processing System (AMPS) Configuration Guide 5.3.0.255
+ documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.3.0.255',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="14. Actions" href="actions.html" />
+    <link rel="prev" title="12. Authentication" href="authentication.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/flag_logo.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="authentication.html" title="previous chapter">12. Authentication</a></li>
+      <li>Next: <a href="actions.html" title="next chapter">14. Actions</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="entitlement">
+<span id="configref-entitlement"></span><span id="index-0"></span><h1>13. Entitlement<a class="headerlink" href="#entitlement" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">Entitlement</span></code> element specifies the module to use for validating
+permissions to resources within AMPS. AMPS allows you to set the default
+<code class="docutils literal"><span class="pre">Entitlement</span></code> for the instance as a whole, and also to set the
+<code class="docutils literal"><span class="pre">Entitlement</span></code> on each Transport individually.</p>
+<p><code class="docutils literal"><span class="pre">Entitlement</span></code> elements are not required. The instance authentication
+defaults to using the <code class="docutils literal"><span class="pre">amps-default-entitlement-module</span></code> if no
+<code class="docutils literal"><span class="pre">Entitlement</span></code> element is specified for the instance. An individual
+<code class="docutils literal"><span class="pre">Transport</span></code> defaults to using the instance <code class="docutils literal"><span class="pre">Entitlement</span></code> if no
+<code class="docutils literal"><span class="pre">Entitlement</span></code> element is provided for that <code class="docutils literal"><span class="pre">Transport</span></code>.</p>
+<table border="1" class="docutils" id="table-configref-entitlement-parameters">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><em>Name</em></th>
+<th class="head"><em>Description</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Module</span></code></td>
+<td><p class="first">The element specifies the name of the module
+that will be used for entitlement. The value of
+this element must be the name of an entitlement
+module loaded in the Modules section of the
+configuration file or one of the entitlement
+modules that AMPS loads by default.</p>
+<p class="last">By default, AMPS loads the entitlement modules
+listed in
+<a class="reference internal" href="#configref-entitlement-modules-default"><span class="std std-ref">Table 13.2</span></a>.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Options</span></code></td>
+<td>A list of options to provide to the module for
+this instance of the module. AMPS allows you to
+pass options to the module by specifying
+elements within the <code class="docutils literal"><span class="pre">Options</span></code> element. The
+exact options that the module requires, if any,
+are determined by the creator of the module.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 13.1:</strong> <em>Entitlement Parameters</em></p>
+<p>AMPS loads the following entitlement modules by default:</p>
+<table border="1" class="docutils" id="configref-entitlement-modules-default">
+<colgroup>
+<col width="51%" />
+<col width="49%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Module Name</th>
+<th class="head">Policy</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">amps-default-entitlement-module</span></code></td>
+<td>Allow all permissions to every user.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">amps-default-no-entitlement-module</span></code></td>
+<td>Deny all permissions to every user.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 13.2:</strong> <em>AMPS default entitlement modules</em></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, 60East Technologies, Inc..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
