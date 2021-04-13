@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Sample AMPS configuration
+
+     This file defines an AMPS instance that provides publish and
+     subscribe, topic filtering, and content filtering for JSON messages.
+     The instance provides messaging services on port 9007 of the server.
+     This configuration also provides an adminstrative interface on
+     port 8085, and logs serious messages (error and higher severity) to
+     stdout. 
+
+     This sample file does not configure State of the World (SOW) Topics,
+     Transaction Logs, Queues, Aggregation and Views, Historical Query,
+     Replication, Authentication and Entitlement, Conflating Topic Replicas,
+     or other features of AMPS.
+
+     More details for the features available and how to configure them are
+     provided in the AMPS User Guide and the AMPS Configuration Reference.
+     Both are available at http://crankuptheamps.com/documentation/
+
+  -->
+
+<AMPSConfig>
+
+  <!-- Name of the AMPS instance -->
+
+  <Name>AMPS-Sample</Name>
+
+  <!-- Configure the administrative HTTP server on port 8085
+
+       This HTTP server provides admin functions and statistics
+       for the instance
+   -->
+
+  <Admin>
+    <InetAddr>localhost:8085</InetAddr>
+  </Admin>
+
+  <Protocols>
+      <!-- This protocol is using the websocket module,which is
+      required for JavaScript client. -->
+      <Protocol>
+          <Name>websocket-any</Name>
+          <Module>websocket</Module>
+      </Protocol>
+
+  </Protocols>
+
+  <!-- Configure a transport that accepts any known message type over
+       TCP port 9007 using the amps protocol. -->
+
+  <Transports>
+    <Transport>
+      <Name>websocket-any</Name>
+      <Type>tcp</Type>
+      <InetAddr>9007</InetAddr>
+      <Protocol>websocket-any</Protocol>
+    </Transport>
+  </Transports>
+
+ <!-- Log messages of severity 'error' and higher to stdout.
+      Also include 00-0015 (an 'info' level message) to indicate
+      successful startup. -->
+
+  <Logging>
+    <Target>
+      <Protocol>stdout</Protocol>
+      <Level>error</Level>
+      <IncludeErrors>00-0015</IncludeErrors>
+    </Target>
+  </Logging>
+
+</AMPSConfig>

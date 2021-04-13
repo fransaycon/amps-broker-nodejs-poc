@@ -2,5 +2,8 @@
   "name": "amps-poc",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "amps": "^5.3.2-0.751550.05a2849"
+  }
 }
