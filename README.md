@@ -1,4 +1,4 @@
-# AMPS-POC
+# AMPS Broker Nodes POC
 
 ## Prerequisites
 Docker should be installed
